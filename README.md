@@ -1,4 +1,4 @@
-# 🛠️ Rent Fast - E-commerce de Renta de Herramientas de Construcción
+# 🛠️ Rent Fast - E-commerce de Renta de Herramientas
 
 Universidad Autónoma de Ciudad Juárez
 
