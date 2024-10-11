@@ -26,7 +26,7 @@ Rent Fast es una plataforma innovadora para la renta de herramientas.
 | Manuel Villarreal    | 201024   |
 | Juan Flores          | 214720     |
 | David Cano           | 215814          |
-| Miguel Quiñonez     | 204032                   |
+| Miguel Quiñonez      | 204032                   |
 
 ---
 
