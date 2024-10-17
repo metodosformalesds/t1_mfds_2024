@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.views import generic
 
-def landing_page(request):
-    return render(request, 'landing.html')
+class LandingPageView(generic.TemplateView):
+    template_name = "visitors/landing.html"
