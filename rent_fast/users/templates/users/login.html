@@ -2,14 +2,37 @@
 
 {% load tailwind_filters %}
 {% block content %}
-<h2>Iniciar Sesion</h2>
-    <form action="" method="post">
-        {% csrf_token %}
-        {{ form|crispy }}
-        <button 
-        class="inline-block rounded border border-indigo-600 bg-indigo-600 px-12 py-3 text-sm font-medium text-white hover:bg-transparent hover:text-indigo-600 focus:outline-none focus:ring active:text-indigo-500"
-        type="submit">Login</button>
-    </form>
+
+<div class="bg-[#F7FAFA] h-screen flex items-center justify-center">
+    <div class="w-full max-w-md bg-[#F7FAFA] ">
+        <h1 class="text-4xl font-bold text-center text-[#121417] mb-8">Bienvenidos a Juarez Tools</h1>
+        <form>
+            <div class="mb-6">
+                <label for="email" class="block text-[#121417] text-lg font-medium mb-2">Correo</label>
+                <input type="email" id="email" name="email" placeholder="Correo" class="appearance-none border border-gray-300 w-full py-3 px-4 text-[#0D171C bg-gray-50 rounded-lg focus:outline-none focus:bg-white focus:ring-2 focus:ring-[#1A80E5]" required>
+            </div>
+            <div class="mb-6">
+                <label for="password" class="block text-[#121417] text-lg font-medium mb-2">Contraseña</label>
+                <input type="password" id="password" name="password" placeholder="Contraseña" class="appearance-none border border-gray-300 w-full py-3 px-4 text-[#0D171C bg-gray-50 rounded-lg focus:outline-none focus:bg-white focus:ring-2 focus:ring-[#1A80E5]" required>
+                <p class="text-left text-sm text-[#1A80E5] mt-2"><a href="#">¿Olvidaste tu contraseña?</a></p>
+            </div>
+            <div class="flex items-center justify-center">
+                <button class="bg-[#1A80E5] hover:bg-blue-600 text-[#0D171C] font-bold py-3 px-6 rounded-full focus:outline-none focus:ring-4 focus:ring-[#1A80E5]/50 text-lg" type="submit">
+                    Iniciar Sesión
+                </button>
+            </div>
+            <div class="mb-6">
+                <p class="text-left text-sm text-[#637887] mt-2">¿No tienes cuenta?</a></p>
+            </div>
+            <div class="flex items-center justify-center">
+                <button class="bg-[#E8EDF2] hover:bg-[#cfd6dc] text-[#0D171C] font-bold py-3 px-6 rounded-full focus:outline-none focus:ring-4 focus:ring-[#1A80E5]/50 text-lg" type="">
+                    Registrate
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
 {% endblock content %}
 
 
