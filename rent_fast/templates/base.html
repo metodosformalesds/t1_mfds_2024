@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coffee Shop</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+    hola, 
+    {% if user.is_authenticated %}
+        <form action="{% url 'logout' %}" method="post"></form>
+        {% csrf_token %}
+        <button class="submit">
+            LogOut
+        </button>
+    {% else %}
+        <a href="{% url 'login' %}">Login</a>
+    {% endif %}
+    <div class="container mx-auto px-4">
+        {% block content %}
+        {% endblock content %}
+    </div>
+</body>
+</html>
