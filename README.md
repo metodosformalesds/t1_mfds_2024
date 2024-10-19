@@ -49,3 +49,11 @@ Rent Fast es una plataforma innovadora para la renta de herramientas.
 ---
 
 ✨ _Rent Fast - ✨ semestre Agosto-Diciembre 2024
+
+Run server:
+source .envs/rent_fast/Scripts/activate
+
+cd rent_fast
+
+./manage.py runserver
+ 
