@@ -13,8 +13,8 @@
         <h2 class="text-lg font-bold leading-tight tracking-[-0.015em] text-[#0e141b]">Rent Fast</h2>          </div>
       <div class="flex flex-1 justify-end gap-8">
         <div class="flex items-center gap-9">
-        <a class="text-sm font-medium leading-normal text-black bg-gray-300 hover:bg-gray-400 py-2 px-4 rounded" href="{%  url "register" %}">Registrarse</a>
-        <a class="text-sm font-medium leading-normal text-white bg-blue-500 hover:bg-blue-600 py-2 px-4 rounded" href="#">Iniciar sesión</a>
+        <a class="text-sm font-medium leading-normal text-black bg-gray-300 hover:bg-gray-400 py-2 px-4 rounded" href="{% url 'login' %}">Registrarse</a>
+        <a class="text-sm font-medium leading-normal text-white bg-blue-500 hover:bg-blue-600 py-2 px-4 rounded" href="{% url 'login' %}">Iniciar sesión</a>
        </div>
 </div>
         <button class="flex h-10 min-w-0 max-w-[480px] cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-xl bg-[#e7edf3] px-2.5 text-sm font-bold leading-normal tracking-[0.015em] text-[#0e141b]">
@@ -35,9 +35,9 @@
                 <h1 class="@[480px]:text-5xl @[480px]:font-black @[480px]:leading-tight @[480px]:tracking-[-0.033em] text-4xl font-black leading-tight tracking-[-0.033em] text-white">Alquila herramientas cerca de ti, de personas como tú.</h1>
                 <h2 class="@[480px]:text-base @[480px]:font-normal @[480px]:leading-normal text-sm font-normal leading-normal text-white">La forma más conveniente de alquilar herramientas.</h2>
               </div>
-              <button class="@[480px]:h-12 @[480px]:px-5 @[480px]:text-base @[480px]:font-bold @[480px]:leading-normal @[480px]:tracking-[0.015em] flex h-10 min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl bg-[#1568c1] px-4 text-sm font-bold leading-normal tracking-[0.015em] text-slate-50">
+              <a href="{% url 'login' %}" class="@[480px]:h-12 @[480px]:px-5 @[480px]:text-base @[480px]:font-bold @[480px]:leading-normal @[480px]:tracking-[0.015em] flex h-10 min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl bg-[#1568c1] px-4 text-sm font-bold leading-normal tracking-[0.015em] text-slate-50">
                 <span class="truncate">Ingresar ahora</span>
-              </button>
+              </a>
             </div>
           </div>
         </div>
