@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mx-auto w-1/2">
+    <h1 class="text-2xl font-bold text-center mb-4">Proceso de Registro</h1>
+    
+    <!-- Indicador de los pasos -->
+    <div class="flex justify-between mb-6">
+        <div class="{% if wizard.steps.current == 'user' %}font-bold{% endif %}">
+            Paso 1: Información de Usuario
+        </div>
+        <div class="{% if wizard.steps.current == 'personal' %}font-bold{% endif %}">
+            Paso 2: Información Personal
+        </div>
+        <div class="{% if wizard.steps.current == 'address' %}font-bold{% endif %}">
+            Paso 3: Dirección
+        </div>
+    </div>
+    
+    <!-- Aquí se renderiza el formulario del paso actual -->
+    <form method="post">
+        {% csrf_token %}
+        {{ wizard.management_form }}
+        {{ wizard.form.as_p }}
+        
+        <div class="flex justify-between mt-4">
+            <!-- Botón de "Anterior" (excepto en el primer paso) -->
+            {% if wizard.steps.prev %}
+                <button type="submit" name="wizard_goto_step" value="{{ wizard.steps.prev }}" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded">
+                    Anterior
+                </button>
+            {% endif %}
+            
+            <!-- Botón de "Siguiente" o "Registrar" (si es el último paso) -->
+            <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                {% if wizard.steps.next %} Siguiente {% else %} Registrar {% endif %}
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}
