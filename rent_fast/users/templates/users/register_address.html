@@ -1,5 +1,37 @@
 {% extends "base.html" %}
 {% load tailwind_filters %}
 {% block content %}
+<div class="bg-slate-50 flex items-center justify-center min-h-screen">
+    <div class="bg-white p-8 rounded shadow-md w-full max-w-md">
+        <h2 class="text-2xl font-bold mb-6 text-center">Registra tu dirección</h2>
+        <form method="post" novalidate>
+            {% csrf_token %}
+            {{ wizard.management_form }}
 
+            <div class="mb-4">
+                <label for="id_calle" class="block text-gray-700 font-medium">Calle</label>
+                {{ wizard.form.calle|as_crispy_field }}
+            </div>
+
+            <div class="mb-4">
+                <label for="id_ciudad" class="block text-gray-700 font-medium">Ciudad</label>
+                {{ wizard.form.ciudad|as_crispy_field }}
+            </div>
+
+            <div class="mb-4">
+                <label for="id_estado" class="block text-gray-700 font-medium">Estado</label>
+                {{ wizard.form.estado|as_crispy_field }}
+            </div>
+
+            <div class="mb-4">
+                <label for="id_codigo_postal" class="block text-gray-700 font-medium">Código Postal</label>
+                {{ wizard.form.codigo_postal|as_crispy_field }}
+            </div>
+
+            <button type="submit" class="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                Guardar Dirección
+            </button>
+        </form>
+    </div>
+</div>
 {% endblock %}
