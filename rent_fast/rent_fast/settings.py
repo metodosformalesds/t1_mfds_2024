@@ -14,8 +14,26 @@ from pathlib import Path
 
 import os
 
+import environ
+
+# Define BASE_DIR para obtener la ruta base del proyecto
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Ahora puedes usar BASE_DIR para definir rutas
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# Configura el almacenamiento temporal de archivos
+FILE_UPLOAD_TEMP_DIR = os.path.join(MEDIA_ROOT, 'tmp')
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+env = environ.Env()
+
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
+
+IDANALYZER_API_KEY = env('IDANALYZER_API_KEY')
+
 
 
 # Quick-start development settings - unsuitable for production
@@ -41,6 +59,7 @@ INSTALLED_APPS = [
     "formtools",
     "crispy_forms",
     "crispy_tailwind",
+    "requests",
     "users"
 ]
 
