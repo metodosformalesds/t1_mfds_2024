@@ -1,50 +1,44 @@
 {% extends "base.html" %}
-
 {% load tailwind_filters %}
+
 {% block content %}
-
 <div class="bg-[#F7FAFA] h-screen flex items-center justify-center">
-    <div class="w-full max-w-md bg-[#F7FAFA] ">
-      <h1 class="text-4xl font-bold text-center text-[#121417] mb-8">Bienvenidos a Rent Fast</h1>
-      <form>
-        <div class="mb-6">
-          <label for="email" class="block text-[#121417] text-lg font-medium mb-2">Correo</label>
-          <input type="email" id="email" name="email" placeholder="Correo" class="appearance-none border border-gray-300 w-full py-3 px-4 text-[#0D171C bg-gray-50 rounded-lg focus:outline-none focus:bg-white focus:ring-2 focus:ring-[#1A80E5]" required>
-        </div>
-        <div class="mb-6">
-          <label for="password" class="block text-[#121417] text-lg font-medium mb-2">Contraseña</label>
-          <input type="password" id="password" name="password" placeholder="Contraseña" class="appearance-none border border-gray-300 w-full py-3 px-4 text-[#0D171C bg-gray-50 rounded-lg focus:outline-none focus:bg-white focus:ring-2 focus:ring-[#1A80E5]" required>
-          <p class="text-left text-sm text-[#1A80E5] mt-2"><a href="#">¿Olvidaste tu contraseña?</a></p>
-        </div>
-        <div class="flex items-center justify-center">
-          <button class="bg-[#1A80E5] hover:bg-blue-600 text-[#0D171C] font-bold py-3 px-6 rounded-full focus:outline-none focus:ring-4 focus:ring-[#1A80E5]/50 text-lg" type="submit">
-            Iniciar Sesión
-          </button>
-        </div>
-        <div class="mb-6">
-          <p class="text-left text-sm text-[#637887] mt-2">¿No tienes cuenta?</p>
-        </div>
-        <div class="flex items-center justify-center mb-4">
-          <a href="{% url 'register' %}" class="bg-[#E8EDF2] hover:bg-[#cfd6dc] text-[#0D171C] font-bold py-3 px-6 rounded-full focus:outline-none focus:ring-4 focus:ring-[#1A80E5]/50 text-lg" type="">
-            Regístrate
-          </a>
-        </div>
+    <div class="w-full max-w-md bg-[#F7FAFA]">
+        <h1 class="text-4xl font-bold text-center text-[#121417] mb-8">Bienvenidos a Rent Fast</h1>
 
-        <!-- Botones de registro con Google y Facebook -->
-        <div class="text-center mb-4">
-          <p class="text-[#121417] text-lg font-semibold">o</p>
-        </div>
-        <div class="flex items-center justify-center gap-4">
-          <a href="#" class="bg-[#4285F4] hover:bg-blue-700 text-[#0D171C] font-bold py-3 px-6 rounded-full focus:outline-none focus:ring-4 focus:ring-[#4285F4]/50 text-lg">
-            Google
-          </a>
-          <a href="#" class="bg-[#1877F2] hover:bg-[#3b5998] text-[#0D171C] font-bold py-3 px-6 rounded-full focus:outline-none focus:ring-4 focus:ring-[#1877F2]/50 text-lg">
-            Facebook
-          </a>
-        </div>
-      </form>
+        <form method="post">
+            {% csrf_token %}
+            {{ form|crispy }}
+
+            <div class="flex items-center justify-center mt-6">
+                <button class="bg-[#1A80E5] hover:bg-blue-600 text-[#0D171C] font-bold py-3 px-6 rounded-full focus:outline-none focus:ring-4 focus:ring-[#1A80E5]/50 text-lg" type="submit">
+                    Iniciar Sesión
+                </button>
+            </div>
+
+            <div class="flex items-center justify-center mb-4 mt-6">
+                <p class="text-sm text-[#637887]">¿No tienes cuenta? 
+                    <a href="{% url 'register' %}" class="text-[#1A80E5] font-semibold">Regístrate</a>
+                </p>
+            </div>
+
+            <div class="text-left mb-6">
+                <p class="text-sm text-[#1A80E5]"><a href="#">¿Olvidaste tu contraseña?</a></p>
+            </div>
+
+            <div class="text-center mb-4">
+                <p class="text-[#121417] text-lg font-semibold">o</p>
+            </div>
+
+            <div class="flex items-center justify-center gap-4">
+                <a href="#" class="bg-[#4285F4] hover:bg-blue-700 text-[#0D171C] font-bold py-3 px-6 rounded-full focus:outline-none focus:ring-4 focus:ring-[#4285F4]/50 text-lg">
+                    Google
+                </a>
+                <a href="#" class="bg-[#1877F2] hover:bg-[#3b5998] text-[#0D171C] font-bold py-3 px-6 rounded-full focus:outline-none focus:ring-4 focus:ring-[#1877F2]/50 text-lg">
+                    Facebook
+                </a>
+            </div>
+        </form>
     </div>
-  </div>
-
+</div>
 {% endblock content %}
-
