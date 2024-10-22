@@ -66,7 +66,6 @@ INSTALLED_APPS = [
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
-        # google
     'allauth.socialaccount.providers.google',
 
 ]
@@ -163,3 +162,6 @@ CRISPY_ALLOWED_TEMPLATE_PACKS = "tailwind"
 
 CRISPY_TEMPLATE_PACK = "tailwind"
 
+# Redirección después del login y registro con Google
+LOGIN_REDIRECT_URL = '/registro/personal/'  # O la URL que corresponda a tu wizard
+SOCIALACCOUNT_LOGIN_ON_GET = True  # Para redirigir inmediatamente tras el login exitoso

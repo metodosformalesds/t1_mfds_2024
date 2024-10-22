@@ -4,7 +4,7 @@
 <div class="flex min-h-screen justify-center items-center bg-slate-50">
     <div class="bg-white p-8 rounded shadow-md w-full max-w-md">
         <h2 class="text-2xl font-bold mb-6 text-center">Registro Personal</h2>
-        <form method="POST" enctype="multipart/form-data">  <!-- Asegúrate de incluir enctype -->
+        <form method="POST" enctype="multipart/form-data">
             {% csrf_token %}
             {{ wizard.management_form }}
             
@@ -30,7 +30,7 @@
 
             <div class="mb-6">
                 <label class="block text-gray-700 font-medium">Sube tu INE Mexicano</label>
-                {{ wizard.form.ine_image|as_crispy_field }}  <!-- Campo para subir la imagen -->
+                {{ wizard.form.ine_image|as_crispy_field }}
             </div>
 
             <button class="bg-blue-500 text-white py-2 rounded w-full hover:bg-blue-600 focus:outline-none" type="submit">

@@ -32,62 +32,54 @@ class RegisterWizard(SessionWizardView):
     def get_template_names(self):
         return [TEMPLATES[self.steps.current]]
 
+    def get(self, *args, **kwargs):
+        # Si el usuario ya está autenticado, redirigir directamente al segundo paso
+        if self.request.user.is_authenticated and not self.request.user.has_perm('app.perfil_completo'):  # puedes usar una marca para verificar si ya tiene perfil
+            return redirect('register_personal')  # Redirige a la página de info personal
+        return super().get(*args, **kwargs)
+
     def post(self, *args, **kwargs):
-        """
-        Sobrescribir la función `post` para realizar la verificación antes de avanzar al siguiente paso.
-        """
         step = self.steps.current
 
-        # Solo verificar el INE en el paso "personal"
         if step == 'personal':
-            # Verificar el formulario y la imagen del INE
             form = self.get_form(data=self.request.POST, files=self.request.FILES)
             if form.is_valid():
                 ine_image = form.cleaned_data.get('ine_image')
                 ine_verification_status = self.verify_ine(ine_image)
-
-                # Si la verificación falla, muestra un error y no avances
                 if not ine_verification_status:
                     messages.error(self.request, "La verificación del documento INE falló. Inténtalo nuevamente.")
                     return self.render_to_response(self.get_context_data(form=form))
-
-                # Si la verificación es exitosa, muestra un mensaje de éxito y avanza al siguiente paso
                 messages.success(self.request, "¡El documento INE fue verificado con éxito!")
-                # Avanzar al siguiente paso (dirección)
                 return self.render_next_step(form)
 
-        # Continuar normalmente con el flujo del wizard
         return super().post(*args, **kwargs)
 
     def done(self, form_list, **kwargs):
-        """
-        Lógica cuando se completan todos los pasos del wizard.
-        """
-        # Extraer los datos de cada formulario
         form_data = [form.cleaned_data for form in form_list]
 
-        # Paso 1: Crear el usuario
-        user_data = form_data[0]
-        user = User.objects.create_user(
-            username=user_data['username'],
-            email=user_data['email'],
-            password=user_data['password1'],
-        )
+        if not self.request.user.is_authenticated:
+            user_data = form_data[0]
+            user = User.objects.create_user(
+                username=user_data['username'],
+                email=user_data['email'],
+                password=user_data['password1'],
+            )
+        else:
+            user = self.request.user  # Usuario autenticado con Google
 
-        # Paso 2: Crear la dirección del usuario
         address_data = form_list[2]
         direccion = Direccion.objects.create(
             calle=address_data.cleaned_data['calle'],
             ciudad=address_data.cleaned_data['ciudad'],
-            estado=address_data.cleaned_data['estado'],
-            codigo_postal=address_data.cleaned_data['codigo_postal'],
+            estado=address_data['estado'],
+            codigo_postal=address_data['codigo_postal'],
         )
 
-        # Paso 3: Guardar el perfil del usuario y la imagen del INE
         personal_form = form_list[1]
-        user_profile = personal_form.save(user, direccion)
+        personal_form.save(user, direccion)
 
         return redirect('login')
+
 
     def verify_ine(self, ine_image):
         """
