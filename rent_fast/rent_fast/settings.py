@@ -60,8 +60,17 @@ INSTALLED_APPS = [
     "crispy_forms",
     "crispy_tailwind",
     "requests",
-    "users"
+    "users",
+#allauth appss
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+        # google
+    'allauth.socialaccount.providers.google',
+
 ]
+
+SITE_ID =1
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -71,6 +80,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'allauth.account.middleware.AccountMiddleware',
 ]
 
 ROOT_URLCONF = 'rent_fast.urls'
