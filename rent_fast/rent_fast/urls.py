@@ -24,6 +24,7 @@ urlpatterns = [
     path('', LandingPageView.as_view(), name='landing_page'),
     path('admin/', admin.site.urls), 
     path("usuarios/", include("users.urls")),
+    path("herramientas/", include("tools.urls")),
     path('accounts/', include('allauth.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

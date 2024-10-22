@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Listado de Herramientas</h2>
+<table>
+    <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Descripción</th>
+            <th>Costo por Hora</th>
+            <th>Costo por Día</th>
+            <th>Estado</th>
+            <th>Dirección</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for tool in tools %}
+        <tr>
+            <td>{{ tool.nombre }}</td>
+            <td>{{ tool.descripcion }}</td>
+            <td>{{ tool.costo_hora }}</td>
+            <td>{{ tool.costo_dia }}</td>
+            <td>{{ tool.estado }}</td>
+            <td>{{ tool.direccion }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
