@@ -61,6 +61,7 @@ INSTALLED_APPS = [
     "crispy_tailwind",
     "requests",
     "users",
+    "tools",
 #allauth appss
     'allauth',
     'allauth.account',
