@@ -37,7 +37,11 @@ def arrendatario_home(request):
     """
     Vista para el home del Arrendatario.
     """
-    return render(request, "arrendatarios/arrendatario_home.html")
+    search_query = request.GET.get('search', '') # para buscar 
+    tools = Tool.objects.all()  # valor de la busqueda
+    if search_query:
+        tools = tools.filter(nombre__icontains=search_query)# filtrar por buscar
+    return render(request, "arrendatarios/arrendatario_home.html", {'tools': tools, 'search_query': search_query})
 
 class ToolFormView(LoginRequiredMixin, generic.FormView):
     template_name = "tools/add_tool.html"
