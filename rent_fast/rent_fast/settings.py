@@ -45,7 +45,9 @@ SECRET_KEY = 'django-insecure--s+12dn1clpyqk_w5l@3seh72h012vipmuv)bxrh@!)9vt#^+5
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["127.0.0.1", "localhost", "00lar.pythonanywhere.com"]
+ALLOWED_HOSTS = ["127.0.0.1", "localhost", "00lar.pythonanywhere.com", "https://8000-idx-t1mfds2024git-1729092128078.cluster-3ch54x2epbcnetrm6ivbqqebjk.cloudworkstations.dev"]
+CSRF_TRUSTED_ORIGINS = ['https://8000-idx-t1mfds2024git-1729092128078.cluster-3ch54x2epbcnetrm6ivbqqebjk.cloudworkstations.dev']
+
 
 # Application definition
 
@@ -163,4 +165,4 @@ CRISPY_ALLOWED_TEMPLATE_PACKS = "tailwind"
 
 CRISPY_TEMPLATE_PACK = "tailwind"
 
-LOGIN_REDIRECT_URL = '/home/'
+LOGIN_REDIRECT_URL = '/herramientas/'

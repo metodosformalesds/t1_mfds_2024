@@ -56,4 +56,8 @@ source .envs/rent_fast/Scripts/activate
 cd rent_fast
 
 ./manage.py runserver
+
+pip install -r requirements.txt
  
+ Linux:
+ source ~/.envs/coffee_shop/bin/activate

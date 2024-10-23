@@ -19,9 +19,9 @@ def home_view(request):
             return redirect('arrendatario_home')
         else:
             # Si el usuario no tiene un perfil de arrendador o arrendatario
-            return render(request, "tools/no_role.html")  # Una página que indica que no tiene rol asignado
+            return render(request, "tools/no_role.html")  
     except:
-        return render(request, "tools/error.html")  # Página de error en caso de fallo inesperado
+        return render(request, "tools/error.html")  
 
 
 
@@ -37,12 +37,19 @@ def arrendatario_home(request):
     """
     Vista para el home del Arrendatario.
     """
-    search_query = request.GET.get('search', '') # para buscar 
-    tools = Tool.objects.all()  # valor de la busqueda
+    search_query = request.GET.get('search', '')  # Recogemos el valor de búsqueda (si existe)
+    
     if search_query:
-        tools = tools.filter(nombre__icontains=search_query)# filtrar por buscar
-    return render(request, "arrendatarios/arrendatario_home.html", {'tools': tools, 'search_query': search_query})
-
+        # Si hay búsqueda, filtramos por el nombre de la herramienta
+        tools = Tool.objects.filter(nombre__icontains=search_query)
+        # Renderizamos el template anterior con los resultados de búsqueda
+        return render(request, "arrendatarios/arrendatario_home_searcher.html", {
+            'tools': tools,
+            'search_query': search_query
+        })
+    else:
+        # Si no hay búsqueda, mostramos el nuevo template inicial
+        return render(request, "arrendatarios/arrendatario_home_new.html")
 class ToolFormView(LoginRequiredMixin, generic.FormView):
     template_name = "tools/add_tool.html"
     form_class = ToolForm
