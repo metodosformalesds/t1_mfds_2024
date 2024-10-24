@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="flex items-center gap-4 text-[#0e141b]">
+    <div class="size-4">
+      <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M44 11.2727C44 14.0109 39.8386 16.3957 33.69 17.6364C39.8386 18.877 44 21.2618 44 24C44 26.7382 39.8386 29.123 33.69 30.3636C39.8386 31.6043 44 33.9891 44 36.7273C44 40.7439 35.0457 44 24 44C12.9543 44 4 40.7439 4 36.7273C4 33.9891 8.16144 31.6043 14.31 30.3636C8.16144 29.123 4 26.7382 4 24C4 21.2618 8.16144 18.877 14.31 17.6364C8.16144 16.3957 4 14.0109 4 11.2727C4 7.25611 12.9543 4 24 4C35.0457 4 44 7.25611 44 11.2727Z" fill="currentColor"></path>
+      </svg>
+    </div>
+    <h2 class="text-lg font-bold leading-tight tracking-[-0.015em] text-[#0e141b]">Rent Fast</h2>
+  </div>
+
+  <div class="flex flex-1 justify-end gap-6 items-center">
+    <!-- Botones -->
+    <a class="text-sm font-medium leading-normal text-black bg-gray-200 hover:bg-gray-300 py-1.5 px-4 rounded transition ease-in-out duration-200" href="/explorar" onclick="window.location.href='/explorar'">Explorar</a>
+    <a class="text-sm font-medium leading-normal text-black bg-gray-200 hover:bg-gray-300 py-1.5 px-4 rounded transition ease-in-out duration-200" href="/rentar" onclick="window.location.href='/rentar'">Rentar</a>
+    <a class="text-sm font-medium leading-normal text-black bg-gray-200 hover:bg-gray-300 py-1.5 px-4 rounded transition ease-in-out duration-200" href="/compras" onclick="window.location.href='/compras'">Compras</a>
+
+    <!-- Botón Carrito de compras -->
+    <a class="bg-gray-200 p-2 rounded-full hover:bg-gray-300 transition ease-in-out duration-200" href="/carrito" onclick="window.location.href='/carrito'">
+      <img src="https://img.icons8.com/ios/452/shopping-cart.png" alt="Carrito" class="w-6 h-6"/>
+    </a>
+
+    <!-- Botón Foto de perfil con imagen de Junior H -->
+    <a class="bg-gray-200 p-2 rounded-full hover:bg-gray-300 transition ease-in-out duration-200" href="#" onclick="window.location.href='/perfil'">
+      <img src="https://www.billboard.com/wp-content/uploads/2020/04/Junior-H-press-photo-2020-billboard-1548-1586379618.jpg?w=942&h=623&crop=1" alt="Foto de perfil" class="w-8 h-8 rounded-full object-cover"/>
+    </a>
+  </div>
+</header>
+
+<div class="flex flex-1 justify-center px-40 py-5">
+  <div class="layout-content-container flex max-w-[960px] flex-1 flex-col">
+    <div class="flex flex-wrap gap-2 p-4">
+      <a class="text-base font-medium leading-normal text-[#4e7397]" href="#" onclick="window.location.href='/inicio'">Inicio</a>
+      <span class="text-base font-medium leading-normal text-[#4e7397]">/</span>
+      <span class="text-base font-medium leading-normal text-[#0e141b]">Herramientas eléctricas</span>
+    </div>
+    <h2 class="px-4 pb-3 pt-5 text-[22px] font-bold leading-tight tracking-[-0.015em] text-[#0e141b]">Taladro inalámbrico compacto Bosch 18V</h2>
+    <div class="grid grid-cols-[repeat(auto-fit,minmax(158px,1fr))] gap-3 p-4">
+      <div class="flex flex-col gap-3">
+        <div class="aspect-square w-full rounded-xl bg-cover bg-center bg-no-repeat" style='background-image: url("https://cdn.usegalileo.ai/sdxl10/1039fd19-5b0f-4e98-93a7-22e58bdb779c.png");'></div>
+      </div>
+      <div class="flex flex-col gap-3">
+        <div class="aspect-square w-full rounded-xl bg-cover bg-center bg-no-repeat" style='background-image: url("https://cdn.usegalileo.ai/sdxl10/9136de18-1ed4-4d02-bf7c-f99b773d6664.png");'></div>
+      </div>
+      <div class="flex flex-col gap-3">
+        <div class="aspect-square w-full rounded-xl bg-cover bg-center bg-no-repeat" style='background-image: url("https://cdn.usegalileo.ai/sdxl10/48bf204f-b9d3-48ef-8050-40722c3ea8ca.png");'></div>
+      </div>
+      <div class="flex flex-col gap-3">
+        <div class="aspect-square w-full rounded-xl bg-cover bg-center bg-no-repeat" style='background-image: url("https://cdn.usegalileo.ai/sdxl10/da29d44c-d244-42bc-82d6-8e303ce3ca18.png");'></div>
+      </div>
+      <div class="flex flex-col gap-3">
+        <div class="aspect-square w-full rounded-xl bg-cover bg-center bg-no-repeat" style='background-image: url("https://cdn.usegalileo.ai/sdxl10/439da595-ab59-4dd6-af60-2ae10ffa3cb4.png");'></div>
+      </div>
+    </div>
+    <div class="flex flex-wrap gap-3 px-4 py-3">
+      <div class="flex min-w-[111px] flex-1 basis-[fit-content] flex-col items-start gap-2 rounded-lg border border-[#d0dbe7] p-3">
+        <p class="tracking-light text-2xl font-bold leading-tight text-[#0e141b]">$300</p>
+        <div class="flex items-center gap-2"><p class="text-sm font-normal leading-normal text-[#4e7397]">Por día</p></div>
+      </div>
+      <div class="flex min-w-[111px] flex-1 basis-[fit-content] flex-col items-start gap-2 rounded-lg border border-[#d0dbe7] p-3">
+        <p class="tracking-light text-2xl font-bold leading-tight text-[#0e141b]">4.8</p>
+        <div class="flex items-center gap-2"><p class="text-sm font-normal leading-normal text-[#4e7397]">Calificación promedio</p></div>
+      </div>
+      <div class="flex min-w-[111px] flex-1 basis-[fit-content] flex-col items-start gap-2 rounded-lg border border-[#d0dbe7] p-3">
+        <p class="tracking-light text-2xl font-bold leading-tight text-[#0e141b]">3,000+</p>
+        <div class="flex items-center gap-2"><p class="text-sm font-normal leading-normal text-[#4e7397]">Usuarios totales</p></div>
+      </div>
+    </div>
+
+    <!-- Sección de botones -->
+    <div class="flex flex-col space-y-3 px-4 py-5">
+    <button class="bg-[#1980e6] text-white px-6 py-2 rounded-md font-bold" onclick="window.location.href='/reservar'">Reservar ahora</button>
+    <button class="bg-[#1980e6] text-white px-6 py-2 rounded-md font-bold flex justify-center items-center gap-2" onclick="window.location.href='/cotizar-envio'">Cotizar precio de envío<img src="https://cdn-icons-png.flaticon.com/256/732/732135.png" alt="Uber icon" class="w-5 h-5"/></button>
+    <button class="bg-blue-200 text-blue-700 px-6 py-2 rounded-md font-bold" onclick="window.location.href='/leer-contratos'">Leer contratos</button>
+    </div>
+
+    <!-- Información del dueño de la herramienta -->
+    <div class="flex items-center px-4 py-4">
+      <img class="w-12 h-12 rounded-full" src="https://randomuser.me/api/portraits/men/31.jpg" alt="Foto del dueño"/>
+      <p class="ml-4 text-[#0e141b] font-bold">Herramienta de:</p>
+    </div>
+
+    <!-- Nueva sección Ubicación -->
+    <h2 class="px-4 pb-3 pt-5 text-[22px] font-bold leading-tight tracking-[-0.015em] text-[#0e141b]">Ubicación: Parajes de Oriente</h2>
+    <h2 class="px-4 pb-3 pt-5 text-[22px] font-bold leading-tight tracking-[-0.015em] text-[#0e141b]">Descripción</h2>
+    <p class="px-4 pb-3 pt-1 text-base font-normal leading-normal text-[#0e141b]">El kit Bosch GSR18V-190B22 18V Compact 1/2 In. Drill/Driver cuenta con un taladro con 480 In.-Lbs. de torque, para más potencia al enfrentar las tareas más difíciles en el sitio de trabajo. Tiene una transmisión de dos velocidades: una optimizada para conducción de alto torque y otra para perforación de alta velocidad. Este taladro proporciona 20+1 configuraciones de embrague para conducción precisa y menos daño a los sujetadores. Esta herramienta compacta es útil para aplicaciones elevadas, con una longitud de cabeza corta y un peso de solo 2.75 libras (herramienta solamente, sin incluir la batería). El kit GSR18V-190 18V Compact 1/2 In. Drill/Driver incluye dos baterías SlimPack de 1.5 Ah, un cargador de 18V y una bolsa de transporte. Es un kit de herramienta básica; la batería y el cargador se venden por separado.</p>
+    <h2 class="px-4 pb-3 pt-5 text-[22px] font-bold leading-tight tracking-[-0.015em] text-[#0e141b]">Preguntas Frecuentes</h2>
+    <div class="flex flex-col gap-3 p-4">
+      <details class="group flex flex-col rounded-xl border border-[#d0dbe7] bg-slate-50 px-[15px] py-[7px]" open="">
+        <summary class="flex cursor-pointer items-center justify-between gap-6 py-2">
+          <p class="text-sm font-medium leading-normal text-[#0e141b]">¿Puedo extender mi alquiler?</p>
+          <div class="text-[#0e141b] group-open:rotate-180" data-icon="CaretDown" data-size="20px" data-weight="regular">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
+              <path d="M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80A8,8,0,0,1,53.66,90.34L128,164.69l74.34-74.35a8,8,0,0,1,11.32,11.32Z"></path>
+            </svg>
+          </div>
+        </summary>
+        <p class="pb-2 text-sm font-normal leading-normal text-[#4e7397]">¡Sí! Si necesitas mantener la herramienta más tiempo del esperado, puedes extender fácilmente tu alquiler a través de la app ToolShare. Solo avisa al dueño con anticipación.</p>
+      </details>
+      <details class="group flex flex-col rounded-xl border border-[#d0dbe7] bg-slate-50 px-[15px] py-[7px]">
+        <summary class="flex cursor-pointer items-center justify-between gap-6 py-2">
+          <p class="text-sm font-medium leading-normal text-[#0e141b]">¿Cómo funciona la entrega?</p>
+          <div class="text-[#0e141b] group-open:rotate-180" data-icon="CaretDown" data-size="20px" data-weight="regular">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
+              <path d="M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80A8,8,0,0,1,53.66,90.34L128,164.69l74.34-74.35a8,8,0,0,1,11.32,11.32Z"></path>
+            </svg>
+          </div>
+        </summary>
+        <p class="pb-2 text-sm font-normal leading-normal text-[#4e7397]">Sí, si necesitas mantener la herramienta más tiempo del esperado, puedes extender fácilmente tu alquiler a través de la app ToolShare. Solo avisa al dueño con anticipación.</p>
+      </details>
+      <details class="group flex flex-col rounded-xl border border-[#d0dbe7] bg-slate-50 px-[15px] py-[7px]">
+        <summary class="flex cursor-pointer items-center justify-between gap-6 py-2">
+          <p class="text-sm font-medium leading-normal text-[#0e141b]">¿Qué pasa si daño la herramienta?</p>
+          <div class="text-[#0e141b] group-open:rotate-180" data-icon="CaretDown" data-size="20px" data-weight="regular">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
+              <path d="M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80A8,8,0,0,1,53.66,90.34L128,164.69l74.34-74.35a8,8,0,0,1,11.32,11.32Z"></path>
+            </svg>
+          </div>
+        </summary>
+        <p class="pb-2 text-sm font-normal leading-normal text-[#4e7397]">Sí, si necesitas mantener la herramienta más tiempo del esperado, puedes extender fácilmente tu alquiler a través de la app ToolShare. Solo avisa al dueño con anticipación.</p>
+      </details>
+    </div>
+    <div class="flex px-4 py-3">
+      <button class="flex h-12 min-w-[84px] max-w-[480px] flex-1 cursor-pointer items-center justify-center overflow-hidden rounded-xl bg-[#1980e6] px-5 text-base font-bold leading-normal tracking-[0.015em] text-slate-50" onclick="window.location.href='/alquilar-ahora'">
+        <span class="truncate">Alquilar ahora</span>
+      </button>
+    </div>
+  </div>
+</div>
+{% endblock %}
