@@ -61,3 +61,13 @@ pip install -r requirements.txt
  
  Linux:
  source ~/.envs/coffee_shop/bin/activate
+
+ credenciales:
+
+(arrendador):
+usuario:arrendador
+password:rentfast
+
+(arrendatario):
+usuario:arrendatario
+password:rentfast
