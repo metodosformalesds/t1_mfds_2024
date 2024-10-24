@@ -2,39 +2,59 @@
 {% load tailwind_filters %}
 
 {% block content %}
-<div class="bg-[#F7FAFA] h-screen flex items-center justify-center">
-    <div class="w-full max-w-md bg-[#F7FAFA]">
-        <h1 class="text-4xl font-bold text-center text-[#121417] mb-8">Bienvenidos a Rent Fast</h1>
+<div class="bg-cover bg-center bg-no-repeat h-screen flex items-center justify-center" style="background-image: url('https://iili.io/2fRttlS.jpg');">
+    <div class="w-full max-w-md bg-white/80 backdrop-blur-lg rounded-lg shadow-lg p-8">
+        <!-- Título del login -->
+        <h1 class="text-4xl font-bold text-center text-[#121417] mb-6">Bienvenidos a Rent Fast</h1>
 
-        <form method="post">
+        <!-- Formulario de inicio de sesión -->
+        <form method="post" class="space-y-6">
             {% csrf_token %}
+            <!-- Campos del formulario usando crispy -->
             {{ form|crispy }}
 
-            <div class="flex items-center justify-center mt-6">
-                <button class="bg-[#1A80E5] hover:bg-blue-600 text-[#0D171C] font-bold py-3 px-6 rounded-full focus:outline-none focus:ring-4 focus:ring-[#1A80E5]/50 text-lg" type="submit">
+            <!-- Botón de inicio de sesión -->
+            <div class="flex items-center justify-center mt-4">
+                <button class="w-full bg-[#1A80E5] hover:bg-blue-600 text-white font-bold py-3 rounded-full transition duration-300 ease-in-out focus:outline-none focus:ring-4 focus:ring-[#1A80E5]/50 text-lg" type="submit">
                     Iniciar Sesión
                 </button>
             </div>
 
-            <div class="flex items-center justify-center mb-4 mt-6">
+            <!-- Texto de registro y olvido de contraseña -->
+            <div class="text-center mt-4">
                 <p class="text-sm text-[#637887]">¿No tienes cuenta? 
-                    <a href="{% url 'register' %}" class="text-[#1A80E5] font-semibold">Regístrate</a>
+                    <a href="{% url 'register' %}" class="text-[#1A80E5] font-semibold hover:underline">Regístrate</a>
+                </p>
+                <p class="text-sm text-[#1A80E5] mt-3">
+                    <a href="#" class="hover:underline">¿Olvidaste tu contraseña?</a>
                 </p>
             </div>
 
-            <div class="text-left mb-6">
-                <p class="text-sm text-[#1A80E5]"><a href="#">¿Olvidaste tu contraseña?</a></p>
+            <!-- Línea divisora -->
+            <div class="relative mt-6 mb-6">
+                <div class="absolute inset-0 flex items-center">
+                    <div class="w-full border-t border-gray-300"></div>
+                </div>
+                <div class="relative flex justify-center text-sm">
+                    <span class="bg-white px-2 text-[#121417] font-semibold">o</span>
+                </div>
             </div>
 
-            <div class="text-center mb-4">
-                <p class="text-[#121417] text-lg font-semibold">o</p>
-            </div>
-
-            <div class="flex items-center justify-center gap-4">
-                <a href="#" class="bg-[#4285F4] hover:bg-blue-700 text-[#0D171C] font-bold py-3 px-6 rounded-full focus:outline-none focus:ring-4 focus:ring-[#4285F4]/50 text-lg">
+            <!-- Botones de login social (Google y Facebook) -->
+            <div class="flex flex-col gap-3">
+                <a href="#" class="flex items-center justify-center w-full bg-[#4285F4] hover:bg-blue-700 text-white font-bold py-3 rounded-full transition duration-300 ease-in-out focus:outline-none focus:ring-4 focus:ring-[#4285F4]/50 text-lg">
+                    <svg class="mr-2 w-6 h-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+                        <path fill="#4285F4" d="M24 9.5c3.4 0 5.6 1.4 6.9 2.6l5.1-5.1C32.2 3.6 28.5 2 24 2 15.7 2 8.7 7.3 6.2 14.8l5.9 4.6C13.2 12.2 18.1 9.5 24 9.5z"/>
+                        <path fill="#34A853" d="M46.3 24.5c0-1.5-.1-3-.3-4.5H24v9h12.7c-.6 3-2.5 5.5-5.3 7.1l8.3 6.5c4.8-4.4 7.6-10.9 7.6-18.1z"/>
+                        <path fill="#FBBC05" d="M12.1 28.6c-.5-1.5-.7-3.1-.7-4.6s.2-3.1.7-4.6l-5.9-4.6C4.9 17.7 4 20.8 4 24s.9 6.3 2.2 9.2l5.9-4.6z"/>
+                        <path fill="#EA4335" d="M24 46c5.7 0 10.5-1.9 14-5.3l-8.3-6.5c-2.3 1.6-5.2 2.6-8.3 2.6-5.9 0-10.9-4-12.7-9.5l-5.9 4.6C8.7 40.7 15.7 46 24 46z"/>
+                    </svg>
                     Google
                 </a>
-                <a href="#" class="bg-[#1877F2] hover:bg-[#3b5998] text-[#0D171C] font-bold py-3 px-6 rounded-full focus:outline-none focus:ring-4 focus:ring-[#1877F2]/50 text-lg">
+                <a href="#" class="flex items-center justify-center w-full bg-[#1877F2] hover:bg-[#3b5998] text-white font-bold py-3 rounded-full transition duration-300 ease-in-out focus:outline-none focus:ring-4 focus:ring-[#1877F2]/50 text-lg">
+                    <svg class="mr-2 w-6 h-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+                        <path fill="#ffffff" d="M12 12h-2v4h2v12h5V16h3.641l.359-4h-4V9.604C17 8.666 17.217 8 18.57 8H20V4h-3.57C13.852 4 12 5.656 12 8.396V12z"/>
+                    </svg>
                     Facebook
                 </a>
             </div>

@@ -1,6 +1,59 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Bienvenido Arrendador</h1>
-<p>Esta es tu página principal, aquí puedes gestionar tus herramientas, ver tu perfil, etc.</p>
+<div class="group/design-root relative flex size-full min-h-screen flex-col overflow-x-hidden bg-slate-50" style='font-family: "Work Sans", "Noto Sans", sans-serif;'>
+    <div class="layout-container flex h-full grow flex-col">
+      <!-- Header -->
+
+      <!-- Contenido principal -->
+      <div class="flex flex-1 justify-center px-40 py-5">
+        <div class="layout-content-container flex max-w-[960px] flex-1 flex-col">
+          <div class="flex flex-wrap justify-between gap-3 p-4">
+            <p class="tracking-light min-w-72 text-[32px] font-bold leading-tight text-[#0e141b]">Mis herramientas</p>
+            <button class="flex h-8 min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl bg-[#e7edf3] px-4 text-sm font-medium leading-normal text-[#0e141b]">
+              <span class="truncate">Ver perfil</span>
+            </button>
+          </div>
+
+          <!-- Tab de navegación -->
+          <div class="pb-3">
+            <div class="flex justify-between border-b border-[#d0dbe7] px-4">
+              <a class="flex flex-1 flex-col items-center justify-center border-b-[3px] border-b-[#1980e6] pb-[13px] pt-4 text-[#0e141b]" href="#">
+                <p class="text-sm font-bold leading-normal tracking-[0.015em] text-[#0e141b]">En renta</p>
+              </a>
+              <a class="flex flex-1 flex-col items-center justify-center border-b-[3px] border-b-transparent pb-[13px] pt-4 text-[#4e7397]" href="#">
+                <p class="text-sm font-bold leading-normal tracking-[0.015em] text-[#4e7397]">En revisión</p>
+              </a>
+              <a class="flex flex-1 flex-col items-center justify-center border-b-[3px] border-b-transparent pb-[13px] pt-4 text-[#4e7397]" href="#">
+                <p class="text-sm font-bold leading-normal tracking-[0.015em] text-[#4e7397]">Rentadas</p>
+              </a>
+            </div>
+          </div>
+
+          <!-- Mostrar herramientas dinámicamente -->
+          {% for tool in tools %}
+          <div class="p-4">
+            <div class="flex items-stretch justify-between gap-4 rounded-xl">
+              <div class="flex flex-[2_2_0px] flex-col gap-4">
+                <div class="flex flex-col gap-1">
+                  <p class="text-sm font-normal leading-normal text-[#4e7397]">{{ tool.estado }}</p>
+                  <p class="text-base font-bold leading-tight text-[#0e141b]">{{ tool.nombre }}</p>
+                  <p class="text-sm font-normal leading-normal text-[#4e7397]">${{ tool.costo_dia }}</p>
+                </div>
+                <button class="flex h-8 w-fit min-w-[84px] max-w-[480px] cursor-pointer flex-row-reverse items-center justify-center overflow-hidden rounded-xl bg-[#e7edf3] px-4 text-sm font-medium leading-normal text-[#0e141b]">
+                  <span class="truncate">Editar</span>
+                </button>
+              </div>
+              <div class="aspect-video w-full flex-1 rounded-xl bg-cover bg-center bg-no-repeat" style='background-image: url("{% if tool.imagenes %}{{ tool.imagenes.url }}{% else %}https://cdn.usegalileo.ai/sdxl10/84ed65ba-6d8e-4158-b97a-6d36dabc415d.png{% endif %}");'></div>
+            </div>
+          </div>
+          {% endfor %}
+
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
 {% endblock %}
+
+

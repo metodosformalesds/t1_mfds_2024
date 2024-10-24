@@ -31,7 +31,13 @@ def arrendador_home(request):
     """
     Vista para el home del Arrendador.
     """
-    return render(request, "arrendadores/arrendador_home.html")
+    arrendador = Arrendador.objects.get(usuario=request.user)
+    tools = Tool.objects.filter(arrendador=arrendador)
+
+    return render(request, "arrendadores/arrendador_home.html", {
+        'tools': tools,
+    })
+
 
 @login_required
 def arrendatario_home(request):
@@ -75,16 +81,15 @@ class ToolDetailView(DetailView):
     model = Tool
     template_name = "tools/tool_details.html"
     context_object_name = 'tool'
-    
-    
+
 @login_required
 def add_tool_view(request):
-    arrendador = Arrendador.objects.get(usuario=request.user) # Obtenemos el arrendador
+    arrendador = Arrendador.objects.get(usuario=request.user)  # Obtenemos el arrendador
     if request.method == 'POST':
         form = ToolForm(request.POST, request.FILES)
         if form.is_valid():
-            form.save(arrendador=arrendador) # Guardar la herramienta asociada al arrendador
-            return redirect('arrendador_home') # Redirige a la página del arrendador después de crear la herramienta
+            form.save(arrendador=arrendador)  # Guardar la herramienta asociada al arrendador
+            return redirect('arrendador_home')  # Redirige a la página del arrendador después de crear la herramienta
     else:
         form = ToolForm()
 

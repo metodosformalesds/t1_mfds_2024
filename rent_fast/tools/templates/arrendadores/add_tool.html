@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="relative flex size-full min-h-screen flex-col bg-slate-50 group/design-root overflow-x-hidden" style='font-family: "Public Sans", "Noto Sans", sans-serif;'>
+    <div class="layout-container flex h-full grow flex-col">
+
+
+      <!-- Contenido del formulario -->
+      <div class="px-40 flex flex-1 justify-center py-5">
+        <div class="layout-content-container flex flex-col w-[512px] max-w-[512px] py-5 max-w-[960px] flex-1">
+          <div class="flex flex-wrap justify-between gap-3 p-4">
+            <div class="flex min-w-72 flex-col gap-3">
+              <p class="text-[#0e141b] tracking-light text-[32px] font-bold leading-tight">Rentar nueva herramienta</p>
+              <p class="text-[#4e7397] text-sm font-normal leading-normal">Generar dinero rentando herramientas a otras personas.</p>
+            </div>
+          </div>
+
+          <!-- Formulario de Django -->
+          <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="flex max-w-[480px] flex-wrap items-end gap-4 px-4 py-3">
+              <label class="flex flex-col min-w-40 flex-1">
+                <p class="text-[#0e141b] text-base font-medium leading-normal pb-2">Nombre de la herramienta</p>
+                {{ form.nombre }}
+              </label>
+            </div>
+
+            <div class="flex max-w-[480px] flex-wrap items-end gap-4 px-4 py-3">
+              <label class="flex flex-col min-w-40 flex-1">
+                <p class="text-[#0e141b] text-base font-medium leading-normal pb-2">Describe tu herramienta</p>
+                {{ form.descripcion }}
+              </label>
+            </div>
+
+            <div class="flex max-w-[480px] flex-wrap items-end gap-4 px-4 py-3">
+              <label class="flex flex-col min-w-40 flex-1">
+                <p class="text-[#0e141b] text-base font-medium leading-normal pb-2">Costo de alquiler por día</p>
+                {{ form.costo_dia }}
+              </label>
+            </div>
+
+            <div class="flex max-w-[480px] flex-wrap items-end gap-4 px-4 py-3">
+              <label class="flex flex-col min-w-40 flex-1">
+                <p class="text-[#0e141b] text-base font-medium leading-normal pb-2">Estado</p>
+                {{ form.estado }}
+              </label>
+            </div>
+
+            <div class="flex max-w-[480px] flex-wrap items-end gap-4 px-4 py-3">
+              <label class="flex flex-col min-w-40 flex-1">
+                <p class="text-[#0e141b] text-base font-medium leading-normal pb-2">Imágenes</p>
+                {{ form.imagenes }}
+              </label>
+            </div>
+
+            <div class="flex justify-center px-4 py-3">
+              <button type="submit" class="flex w-full max-w-[480px] items-center justify-center rounded-xl h-12 px-6 bg-[#1980e6] text-white text-base font-bold">
+                Crear publicación
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
