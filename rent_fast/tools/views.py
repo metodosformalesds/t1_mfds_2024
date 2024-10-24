@@ -6,6 +6,7 @@ from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
+from django.views.generic import DetailView
 
 @login_required
 def home_view(request):
@@ -41,15 +42,16 @@ def arrendatario_home(request):
     
     if search_query:
         # Si hay búsqueda, filtramos por el nombre de la herramienta
-        tools = Tool.objects.filter(nombre__icontains=search_query)
-        # Renderizamos el template anterior con los resultados de búsqueda
-        return render(request, "arrendatarios/arrendatario_home_searcher.html", {
-            'tools': tools,
-            'search_query': search_query
-        })
+        tools = Tool.objects.filter(nombre__icontains=search_query, estado="Disponible")
     else:
-        # Si no hay búsqueda, mostramos el nuevo template inicial
-        return render(request, "arrendatarios/arrendatario_home_new.html")
+        # Si no hay búsqueda, obtenemos todas las herramientas disponibles
+        tools = Tool.objects.filter(estado="Disponible")
+    
+    return render(request, "arrendatarios/arrendatario_home_new.html", {
+        'tools': tools,
+        'search_query': search_query
+    })
+
 class ToolFormView(LoginRequiredMixin, generic.FormView):
     template_name = "tools/add_tool.html"
     form_class = ToolForm
@@ -68,3 +70,8 @@ class ToolListView(generic.ListView):
     model = Tool
     template_name = "tools/list_tool.html"
     context_object_name = "tools"
+
+class ToolDetailView(DetailView):
+    model = Tool
+    template_name = "tools/tool_details.html"
+    context_object_name = 'tool'

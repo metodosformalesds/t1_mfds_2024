@@ -49,23 +49,19 @@
 
             <h2 class="px-4 pb-3 pt-5 text-[22px] font-bold leading-tight tracking-[-0.015em] text-[#111418]">Most popular</h2>
             <div class="grid grid-cols-[repeat(auto-fit,minmax(158px,1fr))] gap-3 p-4">
-              <!-- Elementos de ejemplo, estos pueden ser fijos o dinámicos -->
-              <div class="flex flex-col gap-3 pb-3">
-                <div class="aspect-square w-full rounded-xl bg-cover bg-center bg-no-repeat" style='background-image: url("https://cdn.usegalileo.ai/sdxl10/7d40dc2f-49ab-42a0-b7bf-baddf7689681.png");'></div>
-                <div>
-                  <p class="text-base font-medium leading-normal text-[#111418]">Jackhammer</p>
-                  <p class="text-sm font-normal leading-normal text-[#60708a]">$25/day</p>
+              {% for tool in tools %}
+              <a href="{% url 'tool_detail' tool.id %}">
+                <div class="flex flex-col gap-3 pb-3">
+                  <div class="aspect-square w-full rounded-xl bg-cover bg-center bg-no-repeat" style='background-image: url("{% if tool.imagenes %}{{ tool.imagenes.url }}{% else %}https://cdn.usegalileo.ai/sdxl10/84ed65ba-6d8e-4158-b97a-6d36dabc415d.png{% endif %}");'></div>
+                  <div>
+                    <p class="text-base font-medium leading-normal text-[#111418]">{{ tool.nombre }}</p>
+                    <p class="text-sm font-normal leading-normal text-[#60708a]">${{ tool.costo_dia }}/day</p>
+                  </div>
                 </div>
-              </div>
-              <div class="flex flex-col gap-3 pb-3">
-                <div class="aspect-square w-full rounded-xl bg-cover bg-center bg-no-repeat" style='background-image: url("https://cdn.usegalileo.ai/sdxl10/aa13443d-709b-4ac7-8012-46730d5cb61d.png");'></div>
-                <div>
-                  <p class="text-base font-medium leading-normal text-[#111418]">Wet Tile Saw</p>
-                  <p class="text-sm font-normal leading-normal text-[#60708a]">$20/day</p>
-                </div>
-              </div>
-              <!-- Repetir el resto de los elementos -->
+              </a>
+              {% endfor %}
             </div>
+            
           </div>
         </div>
       </div>
