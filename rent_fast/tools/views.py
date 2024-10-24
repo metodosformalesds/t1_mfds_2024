@@ -75,3 +75,17 @@ class ToolDetailView(DetailView):
     model = Tool
     template_name = "tools/tool_details.html"
     context_object_name = 'tool'
+    
+    
+@login_required
+def add_tool_view(request):
+    arrendador = Arrendador.objects.get(usuario=request.user) # Obtenemos el arrendador
+    if request.method == 'POST':
+        form = ToolForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save(arrendador=arrendador) # Guardar la herramienta asociada al arrendador
+            return redirect('arrendador_home') # Redirige a la página del arrendador después de crear la herramienta
+    else:
+        form = ToolForm()
+
+    return render(request, 'arrendadores/add_tool.html', {'form': form})
