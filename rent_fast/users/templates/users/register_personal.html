@@ -3,6 +3,14 @@
 {% block content %}
 <div class="flex min-h-screen justify-center items-center bg-slate-50">
     <div class="bg-white p-8 rounded shadow-md w-full max-w-md">
+        <!-- Enlace de "Regresar" con ícono de flecha SVG -->
+        <a href="{% url 'register' %}" class="flex items-center text-black pb-4">
+            <svg class="mr-2" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M10.854 4.146a.5.5 0 0 1 0 .708L7.707 8l3.147 3.146a.5.5 0 0 1-.708.708l-3.5-3.5a.5.5 0 0 1 0-.708l3.5-3.5a.5.5 0 0 1 .708 0z"/>
+            </svg>
+            Regresar
+        </a>
+        
         <h2 class="text-2xl font-bold mb-6 text-center">Registro Personal</h2>
 
         <!-- Mensajes de éxito y error -->
@@ -22,35 +30,59 @@
             {% csrf_token %}
             {{ wizard.management_form }}
 
+            <!-- Campo de foto de perfil -->
+            <div class="flex flex-col items-center mb-6">
+                <label class="text-gray-700 font-medium mb-2">Foto de perfil</label>
+                <div class="w-24 h-24 bg-gray-300 rounded-full flex items-center justify-center overflow-hidden mb-2">
+                    <img id="profile-preview" src="" alt="Foto de perfil" class="w-full h-full object-cover hidden">
+                </div>
+                <input type="file" name="profile_picture" id="profile-picture" accept="image/*" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-gray-400 file:text-white hover:file:bg-gray-500 cursor-pointer" onchange="previewImage(event)">
+            </div>
+
+            <!-- Campo de nombre -->
             <div class="mb-4">
                 <label for="nombre" class="block text-gray-700 font-medium">Nombre</label>
                 {{ wizard.form.nombre|as_crispy_field }}
             </div>
 
+            <!-- Campo de apellidos -->
             <div class="mb-4">
                 <label for="apellidos" class="block text-gray-700 font-medium">Apellidos</label>
                 {{ wizard.form.apellidos|as_crispy_field }}
             </div>
 
+            <!-- Campo de teléfono -->
             <div class="mb-4">
                 <label for="telefono" class="block text-gray-700 font-medium">Teléfono</label>
                 {{ wizard.form.telefono|as_crispy_field }}
             </div>
 
+            <!-- Campo de selección de rol -->
             <div class="mb-4">
                 <label class="block text-gray-700 font-medium">¿Qué serás?</label>
                 {{ wizard.form.role|as_crispy_field }}
             </div>
 
+            <!-- Campo para subir INE Mexicano -->
             <div class="mb-6">
                 <label class="block text-gray-700 font-medium">Sube tu INE Mexicano</label>
                 {{ wizard.form.ine_image|as_crispy_field }}
             </div>
 
+            <!-- Botón de envío -->
             <button class="bg-blue-500 text-white py-2 rounded w-full hover:bg-blue-600 focus:outline-none" type="submit">
                 Continuar
             </button>
         </form>
     </div>
 </div>
+
+<script>
+    // Función para previsualizar la imagen de perfil seleccionada
+    function previewImage(event) {
+        const image = document.getElementById('profile-preview');
+        image.src = URL.createObjectURL(event.target.files[0]);
+        image.classList.remove('hidden');
+    }
+</script>
 {% endblock %}

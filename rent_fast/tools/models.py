@@ -34,3 +34,14 @@ class Renta(models.Model):
         if not self.costo_total:
             self.costo_total = self.calcular_costo_total()
         super().save(*args, **kwargs)
+        
+class Carrito(models.Model):
+    arrendatario = models.ForeignKey(Arrendatario, on_delete=models.CASCADE)
+    herramienta = models.ForeignKey('Tool', on_delete=models.CASCADE)
+    fecha_agregada = models.DateTimeField(auto_now_add=True)
+    fecha_inicio = models.DateField()
+    fecha_fin = models.DateField()
+    costo_total = models.DecimalField(max_digits=10, decimal_places=2)
+
+    def _str_(self):
+        return f"{self.herramienta.nombre} en el carrito de {self.arrendatario}"

@@ -3,6 +3,12 @@
 {% block content %}
 <div class="bg-slate-50 flex items-center justify-center min-h-screen">
     <div class="bg-white p-8 rounded shadow-md w-full max-w-md">
+        <a href="{% url 'address' %}" class="flex items-center text-black pb-4">
+            <svg class="mr-2" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M10.854 4.146a.5.5 0 0 1 0 .708L7.707 8l3.147 3.146a.5.5 0 0 1-.708.708l-3.5-3.5a.5.5 0 0 1 0-.708l3.5-3.5a.5.5 0 0 1 .708 0z"/>
+            </svg>
+            Regresar
+        </a>
         <h2 class="text-2xl font-bold mb-6 text-center">Registra tu dirección</h2>
         <form method="post" novalidate>
             {% csrf_token %}

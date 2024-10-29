@@ -3,12 +3,15 @@ import base64
 from django.core.files.storage import FileSystemStorage
 from django.contrib.auth.models import User
 from django.contrib import messages  
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 from formtools.wizard.views import SessionWizardView
-from .forms import UserForm, PersonalInfoForm, AddressForm
-from .models import Arrendador, Arrendatario, Direccion
 from django.conf import settings
 from django.views.generic import TemplateView
+from django.views import View
+from django.contrib.auth.mixins import LoginRequiredMixin
+
+from .forms import UserForm, PersonalInfoForm, AddressForm
+from .models import Arrendador, Arrendatario, Direccion
 
 # Configura el almacenamiento de archivos
 file_storage = FileSystemStorage(location='media/tmp')
@@ -29,7 +32,7 @@ TEMPLATES = {
 class RegisterWizard(SessionWizardView):
     """
     Asistente de registro en varios pasos que permite a los usuarios crear una cuenta y verificar
-    su identidad con INE.
+    su identidad con INE, además de subir una foto de perfil.
     """
     form_list = FORMS
     template_name = 'users/register_wizard.html'
@@ -51,25 +54,33 @@ class RegisterWizard(SessionWizardView):
 
     def post(self, *args, **kwargs):
         """
-        Manejo especial para la verificación de INE en el paso 'personal'.
+        Manejo especial para la verificación de INE en el paso 'personal' y guarda de la foto de perfil.
         """
         step = self.steps.current
         if step == 'personal':
             form = self.get_form(data=self.request.POST, files=self.request.FILES)
             if form.is_valid():
+                # Verificación de INE
                 ine_image = form.cleaned_data.get('ine_image')
                 ine_verification_status = self.verify_ine(ine_image)
                 if not ine_verification_status:
                     messages.error(self.request, "La verificación del documento INE falló. Inténtalo nuevamente.")
                     return self.render_to_response(self.get_context_data(form=form))
                 messages.success(self.request, "¡El documento INE fue verificado con éxito!")
+                
+                # Foto de perfil
+                profile_picture = form.cleaned_data.get('profile_picture')
+                if profile_picture:
+                    # Guardamos la foto de perfil si se ha subido
+                    self.storage.extra_data['profile_picture'] = profile_picture
+
                 return self.render_next_step(form)
         return super().post(*args, **kwargs)
 
     def done(self, form_list, **kwargs):
         """
         Procesa los datos al completar el asistente de registro.
-        Crea el usuario, dirección y datos personales.
+        Crea el usuario, dirección, datos personales y guarda la foto de perfil si está presente.
         """
         form_data = [form.cleaned_data for form in form_list]
 
@@ -87,15 +98,16 @@ class RegisterWizard(SessionWizardView):
         # Procesa y guarda la dirección
         address_data = form_list[2]
         direccion = Direccion.objects.create(
-            calle=address_data.cleaned_data['calle'],
-            ciudad=address_data.cleaned_data['ciudad'],
+            calle=address_data['calle'],
+            ciudad=address_data['ciudad'],
             estado=address_data['estado'],
             codigo_postal=address_data['codigo_postal'],
         )
 
-        # Guarda información personal vinculada al usuario y dirección
+        # Guarda información personal vinculada al usuario y dirección, incluyendo foto de perfil
         personal_form = form_list[1]
-        personal_form.save(user, direccion)
+        profile_picture = self.storage.extra_data.get('profile_picture')  # Obtener foto de perfil guardada en extra_data
+        personal_form.save(user=user, direccion=direccion, profile_picture=profile_picture)
 
         return redirect('login')
 
@@ -144,3 +156,24 @@ class Landing(TemplateView):
     Vista de la página de aterrizaje para visitantes.
     """
     template_name = "visitors/landing.html"  # Asegúrate de que la ruta coincida con la estructura del proyecto
+
+class RegisterAddres(LoginRequiredMixin, View):
+    """
+    Vista para agregar la dirección del usuario autenticado.
+    """
+    template_name = "users/register_address.html"
+
+    def get(self, request):
+        # Muestra el formulario vacío de dirección
+        form = AddressForm()
+        return render(request, self.template_name, {'form': form})
+
+    def post(self, request):
+        # Procesa los datos del formulario enviados a través de POST
+        form = AddressForm(request.POST)
+        if form.is_valid():
+            direccion = form.save(commit=False)
+            direccion.user = request.user  # Asocia la dirección con el usuario autenticado
+            direccion.save()
+            return redirect('some_success_page')  # Redirige a la página de éxito después de guardar la dirección
+        return render(request, self.template_name, {'form': form})
