@@ -3,7 +3,13 @@
 
 {% block content %}
 <div class="bg-cover bg-center bg-no-repeat h-screen flex items-center justify-center" style="background-image: url('https://iili.io/2fRttlS.jpg');">
-    <div class="w-full max-w-md bg-white/80 backdrop-blur-lg rounded-lg shadow-lg p-8">
+    <div class="w-full max-w-md bg-white/80 backdrop-blur-lg rounded-lg shadow-lg p-8 relative">
+        <!-- Enlace para regresar arriba dentro del cuadro -->
+        <a href="{% url 'landing' %}" class="absolute top-4 left-4 bg-white p-2 rounded-full hover:bg-gray-200 transition ease-in-out duration-200">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-6 h-6 text-gray-700">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+            </svg>
+        </a>
         <!-- Título del login -->
         <h1 class="text-4xl font-bold text-center text-[#121417] mb-6">Bienvenidos a Rent Fast</h1>
 
@@ -50,12 +56,6 @@
                         <path fill="#EA4335" d="M24 46c5.7 0 10.5-1.9 14-5.3l-8.3-6.5c-2.3 1.6-5.2 2.6-8.3 2.6-5.9 0-10.9-4-12.7-9.5l-5.9 4.6C8.7 40.7 15.7 46 24 46z"/>
                     </svg>
                     Google
-                </a>
-                <a href="#" class="flex items-center justify-center w-full bg-[#1877F2] hover:bg-[#3b5998] text-white font-bold py-3 rounded-full transition duration-300 ease-in-out focus:outline-none focus:ring-4 focus:ring-[#1877F2]/50 text-lg">
-                    <svg class="mr-2 w-6 h-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-                        <path fill="#ffffff" d="M12 12h-2v4h2v12h5V16h3.641l.359-4h-4V9.604C17 8.666 17.217 8 18.57 8H20V4h-3.57C13.852 4 12 5.656 12 8.396V12z"/>
-                    </svg>
-                    Facebook
                 </a>
             </div>
         </form>
