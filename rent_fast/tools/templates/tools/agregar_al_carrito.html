@@ -1,0 +1,17 @@
+<!-- templates/tools/carrito.html -->
+
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Tu Carrito</h2>
+<ul>
+    {% for item in carrito_items %}
+    <li>
+        <strong>{{ item.herramienta.nombre }}</strong><br>
+        Desde: {{ item.fecha_inicio }} - Hasta: {{ item.fecha_fin }}<br>
+        Costo Total: ${{ item.costo_total }}
+    </li>
+    {% endfor %}
+</ul>
+<button onclick="window.location.href='{% url 'home' %}'">Proceder al Pago</button>
+{% endblock %}

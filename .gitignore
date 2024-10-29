@@ -165,3 +165,7 @@ cython_debug/
 #media 
 media/
 ine_images/
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml

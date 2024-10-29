@@ -10,6 +10,11 @@
     pkgs.python311
     pkgs.python311Packages.pip
     pkgs.python310Packages.pipx
+    pkgs.postgresql_16
+    pkgs.awscli
+    pkgs.awsebcli
+    pkgs.sudo
+    pkgs.openssh
     # pkgs.nodejs_20
     # pkgs.nodePackages.nodemon
   ];

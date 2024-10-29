@@ -45,6 +45,15 @@
 
     <!-- Sección de botones -->
     <div class="flex flex-col space-y-3 px-4 py-5">
+<!-- Botón para alquilar ahora -->
+<div class="flex px-4 py-3">
+  <button 
+    class="flex h-12 min-w-[84px] max-w-[480px] flex-1 cursor-pointer items-center justify-center overflow-hidden rounded-xl bg-[#1980e6] px-5 text-base font-bold leading-normal tracking-[0.015em] text-slate-50" 
+    onclick="window.location.href='{% url 'seleccionar_fechas' tool.id %}'">
+    <span class="truncate">Alquilar ahora</span>
+  </button>
+</div>
+
       <button class="bg-[#1980e6] text-white px-6 py-2 rounded-md font-bold" onclick="window.location.href='/reservar'">Reservar ahora</button>
       <button class="bg-[#1980e6] text-white px-6 py-2 rounded-md font-bold flex justify-center items-center gap-2" onclick="window.location.href='/cotizar-envio'">Cotizar precio de envío<img src="https://cdn-icons-png.flaticon.com/256/732/732135.png" alt="Uber icon" class="w-5 h-5"/></button>
       <button class="bg-blue-200 text-blue-700 px-6 py-2 rounded-md font-bold" onclick="window.location.href='/leer-contratos'">Leer contratos</button>

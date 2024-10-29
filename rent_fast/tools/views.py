@@ -1,12 +1,13 @@
 from django.views import generic
-from .forms import ToolForm
+from .forms import ToolForm, RentaForm, CarritoForm
 from users.models import Arrendador, Arrendatario
-from .models import Tool
-from django.urls import reverse_lazy
+from .models import Tool, Renta, Carrito
+from django.urls import reverse_lazy, reverse
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import DetailView
+from datetime import datetime
 
 @login_required
 def home_view(request):
@@ -94,3 +95,16 @@ def add_tool_view(request):
         form = ToolForm()
 
     return render(request, 'arrendadores/add_tool.html', {'form': form})
+    
+@login_required
+def carrito_view(request):
+    arrendatario = request.user.arrendatario
+    carrito_items = Carrito.objects.filter(arrendatario=arrendatario)
+    
+    # Calcular el costo total del carrito
+    monto_total = sum(item.costo_total for item in carrito_items)
+    
+    return render(request, 'tools/carrito.html', {
+        'carrito_items': carrito_items,
+        'monto_total': monto_total,
+    })
