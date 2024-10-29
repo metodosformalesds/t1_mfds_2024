@@ -148,3 +148,20 @@ def agregar_al_carrito_view(request, tool_id):
     
     # Si las fechas no están en la sesión, redirigir a seleccionar fechas
     return redirect('seleccionar_fechas', tool_id=tool_id)
+
+@login_required
+def rent_tool_view(request, tool_id):
+    tool = get_object_or_404(Tool, id=tool_id)
+    if request.method == 'POST':
+        form = RentaForm(request.POST)
+        if form.is_valid():
+            renta = form.save(commit=False)
+            renta.herramienta = tool
+            renta.arrendatario = request.user.arrendatario  # Suponiendo que tienes un perfil de arrendatario
+            renta.costo_total = renta.calcular_costo_total()
+            renta.save()
+            # Redirigir al carrito o a la vista del carrito
+            return redirect('carrito')
+    else:
+        form = RentaForm()
+    return render(request, 'tools/rent_tool.html', {'form': form, 'tool': tool})
