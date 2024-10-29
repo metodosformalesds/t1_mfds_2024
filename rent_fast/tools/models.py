@@ -1,5 +1,6 @@
 from django.db import models
-from users.models import Arrendador  
+from users.models import Arrendador, Arrendatario
+from datetime import timedelta  
 
 class Tool(models.Model):
     arrendador = models.ForeignKey(Arrendador, on_delete=models.CASCADE)  # Relación con Arrendador
