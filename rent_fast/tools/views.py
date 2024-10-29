@@ -108,3 +108,75 @@ def carrito_view(request):
         'carrito_items': carrito_items,
         'monto_total': monto_total,
     })
+
+
+@login_required
+def seleccionar_fechas_view(request, tool_id):
+    herramienta = get_object_or_404(Tool, id=tool_id)
+    
+    if request.method == 'POST':
+        form = RentaForm(request.POST)
+        if form.is_valid():
+            # Guardamos las fechas en la sesión para usarlas en el carrito
+            request.session['fecha_inicio'] = str(form.cleaned_data['fecha_inicio'])
+            request.session['fecha_fin'] = str(form.cleaned_data['fecha_fin'])
+            return redirect('agregar_al_carrito', tool_id=tool_id)
+    else:
+        form = RentaForm()
+    
+    return render(request, 'tools/seleccionar_fechas.html', {'form': form, 'tool': herramienta})
+
+@login_required
+def agregar_al_carrito_view(request, tool_id):
+    herramienta = get_object_or_404(Tool, id=tool_id)
+    arrendatario = getattr(request.user, 'arrendatario', None)
+
+    # Verificar si el usuario tiene perfil de arrendatario
+    if not arrendatario:
+        return render(request, 'tools/no_role.html', {'error': "Necesitas un perfil de arrendatario para alquilar herramientas."})
+
+    # Obtener las fechas desde la sesión
+    fecha_inicio = request.session.get('fecha_inicio')
+    fecha_fin = request.session.get('fecha_fin')
+    
+    if fecha_inicio and fecha_fin:
+        # Convertir las fechas a objetos de fecha y calcular el costo total
+        fecha_inicio = datetime.strptime(fecha_inicio, '%Y-%m-%d').date()
+        fecha_fin = datetime.strptime(fecha_fin, '%Y-%m-%d').date()
+        dias_renta = (fecha_fin - fecha_inicio).days + 1
+        costo_total = dias_renta * herramienta.costo_dia
+
+        # Guardar en el carrito
+        carrito_item = Carrito.objects.create(
+            arrendatario=arrendatario,
+            herramienta=herramienta,
+            fecha_inicio=fecha_inicio,
+            fecha_fin=fecha_fin,
+            costo_total=costo_total
+        )
+        
+        # Limpiar las fechas de la sesión
+        del request.session['fecha_inicio']
+        del request.session['fecha_fin']
+
+        return redirect('carrito')  # Redirige al carrito después de agregar el producto
+    
+    # Si las fechas no están en la sesión, redirigir a seleccionar fechas
+    return redirect('seleccionar_fechas', tool_id=tool_id)
+
+@login_required
+def rent_tool_view(request, tool_id):
+    tool = get_object_or_404(Tool, id=tool_id)
+    if request.method == 'POST':
+        form = RentaForm(request.POST)
+        if form.is_valid():
+            renta = form.save(commit=False)
+            renta.herramienta = tool
+            renta.arrendatario = request.user.arrendatario  # Suponiendo que tienes un perfil de arrendatario
+            renta.costo_total = renta.calcular_costo_total()
+            renta.save()
+            # Redirigir al carrito o a la vista del carrito
+            return redirect('carrito')
+    else:
+        form = RentaForm()
+    return render(request, 'tools/rent_tool.html', {'form': form, 'tool': tool})

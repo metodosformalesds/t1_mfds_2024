@@ -52,11 +52,12 @@ class UserForm(forms.ModelForm):
 
         return cleaned_data
 
-# Paso 2: Formulario de información personal (con selección de rol)
+# Paso 2: Formulario de información personal (con selección de rol y foto de perfil)
 class PersonalInfoForm(forms.Form):
     """
     Formulario para capturar información personal del usuario y su rol en la plataforma.
-    Incluye campos para nombre, apellidos, teléfono, rol (arrendador o arrendatario) y carga de imagen INE.
+    Incluye campos para nombre, apellidos, teléfono, rol (arrendador o arrendatario), 
+    carga de imagen INE y foto de perfil.
     """
     ROLE_CHOICES = [
         ('arrendador', 'Arrendador'),
@@ -68,11 +69,42 @@ class PersonalInfoForm(forms.Form):
     telefono = forms.CharField(max_length=15, label="Teléfono")
     role = forms.ChoiceField(choices=ROLE_CHOICES, widget=forms.RadioSelect, label="¿Qué serás?")
     ine_image = forms.ImageField(label="Subir INE Mexicano", required=True)
+    profile_picture = forms.ImageField(label="Foto de perfil", required=False)  # Nuevo campo de foto de perfil
+
+    def clean_nombre(self):
+        """
+        Valida que el campo nombre solo contenga letras y espacios.
+        """
+        nombre = self.cleaned_data.get('nombre')
+        if not nombre.replace(" ", "").isalpha():
+            raise forms.ValidationError("El nombre solo puede contener letras y espacios.")
+        return nombre
+
+    def clean_apellidos(self):
+        """
+        Valida que el campo apellidos solo contenga letras y espacios.
+        """
+        apellidos = self.cleaned_data.get('apellidos')
+        if not apellidos.replace(" ", "").isalpha():
+            raise forms.ValidationError("Los apellidos solo pueden contener letras y espacios.")
+        return apellidos
+
+    def clean_telefono(self):
+        """
+        Valida que el campo teléfono solo contenga números y tenga exactamente 10 dígitos.
+        """
+        telefono = self.cleaned_data.get('telefono')
+        if not telefono.isdigit():
+            raise forms.ValidationError("El teléfono solo puede contener números.")
+        if len(telefono) != 10:
+            raise forms.ValidationError("El teléfono debe tener 10 dígitos.")
+        return telefono
 
     def save(self, user, direccion):
         """
         Guarda la información del perfil del usuario en la base de datos.
-        Crea un perfil de Arrendador o Arrendatario según el rol seleccionado y asocia la dirección y la imagen del INE.
+        Crea un perfil de Arrendador o Arrendatario según el rol seleccionado y 
+        asocia la dirección, imagen del INE y foto de perfil.
         """
         role = self.cleaned_data.get('role')
         if role == 'arrendador':
@@ -82,6 +114,7 @@ class PersonalInfoForm(forms.Form):
                 apellidos=self.cleaned_data['apellidos'],
                 telefono=self.cleaned_data['telefono'],
                 ine_image=self.cleaned_data['ine_image'],
+                profile_picture=self.cleaned_data.get('profile_picture'),  # Guarda la foto de perfil
                 direccion=direccion
             )
         else:
@@ -91,6 +124,7 @@ class PersonalInfoForm(forms.Form):
                 apellidos=self.cleaned_data['apellidos'],
                 telefono=self.cleaned_data['telefono'],
                 ine_image=self.cleaned_data['ine_image'],
+                profile_picture=self.cleaned_data.get('profile_picture'),  # Guarda la foto de perfil
                 direccion=direccion
             )
 
@@ -103,4 +137,3 @@ class AddressForm(forms.ModelForm):
     class Meta:
         model = Direccion
         fields = ['calle', 'ciudad', 'estado', 'codigo_postal']
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

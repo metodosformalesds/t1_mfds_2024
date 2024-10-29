@@ -1,49 +1,55 @@
 {% extends "base.html" %}
 {% load tailwind_filters %}
 {% block content %}
-    <div class="group/design-root relative flex size-full min-h-screen flex-col overflow-x-hidden bg-slate-50" style='--checkbox-tick-svg: url(&apos;data:image/svg+xml,%3csvg viewBox=%270 0 16 16%27 fill=%27rgb(248,250,252)%27 xmlns=%27http://www.w3.org/2000/svg%27%3e%3cpath d=%27M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2-2a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z%27/%3e%3c/svg%3e&apos;); font-family: "Public Sans", "Noto Sans", sans-serif;'>
-        <div class="layout-container flex h-full grow flex-col">
-          <div class="flex flex-1 justify-center px-40 py-5">
-            <div class="layout-content-container flex w-[512px] max-w-[512px] flex-1 flex-col py-5">
-              <h2 class="tracking-light px-4 pb-3 pt-5 text-left text-[28px] font-bold leading-tight text-[#0e141b]">Crea tu cuenta</h2>
-              <form method="post" class="px-4">
-                {% csrf_token %}
-                {{ wizard.management_form }}
-    
-                <div class="flex max-w-[480px] flex-wrap items-end gap-4 py-3">
-                  <label class="flex min-w-40 flex-1 flex-col">
-                    <p class="pb-2 text-base font-medium leading-normal text-[#0e141b]">Nombre de Usuario</p>
-                    {{ wizard.form.username|as_crispy_field }}
-                  </label>
-                </div>
-    
-                <div class="flex max-w-[480px] flex-wrap items-end gap-4 py-3">
-                  <label class="flex min-w-40 flex-1 flex-col">
-                    <p class="pb-2 text-base font-medium leading-normal text-[#0e141b]">Correo Electrónico</p>
-                    {{ wizard.form.email|as_crispy_field }}
-                  </label>
-                </div>
-    
-                <div class="flex max-w-[480px] flex-wrap items-end gap-4 py-3">
-                  <label class="flex min-w-40 flex-1 flex-col">
-                    <p class="pb-2 text-base font-medium leading-normal text-[#0e141b]">Contraseña</p>
-                    {{ wizard.form.password1|as_crispy_field }}
-                  </label>
-                </div>
-    
-                <div class="flex max-w-[480px] flex-wrap items-end gap-4 py-3">
-                  <label class="flex min-w-40 flex-1 flex-col">
-                    <p class="pb-2 text-base font-medium leading-normal text-[#0e141b]">Confirmar Contraseña</p>
-                    {{ wizard.form.password2|as_crispy_field }}
-                  </label>
-                </div>
+<div class="flex min-h-screen justify-center items-center bg-slate-50">
+    <!-- Contenedor del formulario con estilo de cuadro -->
+    <div class="bg-white p-8 rounded shadow-md w-full max-w-md">
+        
+        <!-- Enlace de "Regresar" con ícono de flecha SVG -->
+        <a href="{% url 'login' %}" class="flex items-center text-black pb-4">
+            <svg class="mr-2" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M10.854 4.146a.5.5 0 0 1 0 .708L7.707 8l3.147 3.146a.5.5 0 0 1-.708.708l-3.5-3.5a.5.5 0 0 1 0-.708l3.5-3.5a.5.5 0 0 1 .708 0z"/>
+            </svg>
+            Regresar
+        </a>
 
-                <button class="flex h-12 min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl bg-[#1980e6] px-5 text-base font-bold leading-normal tracking-[0.015em] text-slate-50">
-                  Continuar
-                </button>
-              </form>
+        <!-- Título del formulario -->
+        <h2 class="text-2xl font-bold mb-6 text-center">Crea tu cuenta</h2>
+
+        <!-- Inicio del formulario de creación de cuenta -->
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ wizard.management_form }}
+
+            <!-- Campo de nombre de usuario -->
+            <div class="mb-4">
+                <label class="block text-gray-700 font-medium">Nombre de Usuario</label>
+                {{ wizard.form.username|as_crispy_field }}
             </div>
-          </div>
-        </div>
+
+            <!-- Campo de correo electrónico -->
+            <div class="mb-4">
+                <label class="block text-gray-700 font-medium">Correo Electrónico</label>
+                {{ wizard.form.email|as_crispy_field }}
+            </div>
+
+            <!-- Campo de contraseña -->
+            <div class="mb-4">
+                <label class="block text-gray-700 font-medium">Contraseña</label>
+                {{ wizard.form.password1|as_crispy_field }}
+            </div>
+
+            <!-- Campo de confirmación de contraseña -->
+            <div class="mb-4">
+                <label class="block text-gray-700 font-medium">Confirmar Contraseña</label>
+                {{ wizard.form.password2|as_crispy_field }}
+            </div>
+
+            <!-- Botón de envío del formulario -->
+            <button class="bg-blue-500 text-white py-2 rounded w-full hover:bg-blue-600 focus:outline-none" type="submit">
+                Continuar
+            </button>
+        </form>
     </div>
+</div>
 {% endblock %}

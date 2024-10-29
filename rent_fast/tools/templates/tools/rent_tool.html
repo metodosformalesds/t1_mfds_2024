@@ -1,0 +1,12 @@
+<!-- templates/tools/rent_tool.html -->
+
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Selecciona las fechas para rentar la herramienta: {{ tool.nombre }}</h2>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Añadir al Carrito</button>
+</form>
+{% endblock %}
