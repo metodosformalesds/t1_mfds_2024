@@ -94,3 +94,19 @@ def add_tool_view(request):
         form = ToolForm()
 
     return render(request, 'arrendadores/add_tool.html', {'form': form})
+
+@login_required
+def seleccionar_fechas_view(request, tool_id):
+    herramienta = get_object_or_404(Tool, id=tool_id)
+    
+    if request.method == 'POST':
+        form = RentaForm(request.POST)
+        if form.is_valid():
+            # Guardamos las fechas en la sesión para usarlas en el carrito
+            request.session['fecha_inicio'] = str(form.cleaned_data['fecha_inicio'])
+            request.session['fecha_fin'] = str(form.cleaned_data['fecha_fin'])
+            return redirect('agregar_al_carrito', tool_id=tool_id)
+    else:
+        form = RentaForm()
+    
+    return render(request, 'tools/seleccionar_fechas.html', {'form': form, 'tool': herramienta})
