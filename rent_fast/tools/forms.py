@@ -1,5 +1,6 @@
 from django import forms
-from .models import Tool, Renta, Carrito
+from .models import Tool, Carrito
+from rentas.models import Renta
 
 class ToolForm(forms.ModelForm):
     class Meta:

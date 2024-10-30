@@ -1,13 +1,15 @@
 from django.views import generic
 from .forms import ToolForm, RentaForm, CarritoForm
 from users.models import Arrendador, Arrendatario
-from .models import Tool, Renta, Carrito
+from .models import Tool, Carrito
+from rentas.models import Renta
 from django.urls import reverse_lazy, reverse
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import DetailView
 from datetime import datetime
+from django.contrib import messages
 
 @login_required
 def home_view(request):
@@ -197,3 +199,33 @@ def resumen_view(request):
         'carrito_items': carrito_items,
         'monto_total': monto_total,
     })
+
+@login_required
+def confirmar_renta_view(request):
+    arrendatario = getattr(request.user, 'arrendatario', None)
+    if not arrendatario:
+        return render(request, 'tools/no_role.html', {'error': "Necesitas un perfil de arrendatario para confirmar la renta."})
+
+    # Obtener los elementos del carrito
+    carrito_items = Carrito.objects.filter(arrendatario=arrendatario)
+
+    if not carrito_items:
+        messages.error(request, "No tienes herramientas en el carrito.")
+        return redirect('carrito')
+
+    # Crear una renta para cada herramienta en el carrito
+    for item in carrito_items:
+        Renta.objects.create(
+            herramienta=item.herramienta,
+            arrendatario=arrendatario,
+            fecha_inicio=item.fecha_inicio,
+            fecha_fin=item.fecha_fin,
+            costo_total=item.costo_total,
+            estado="Activa"
+        )
+
+    # Limpiar el carrito después de confirmar la renta
+    carrito_items.delete()
+
+    messages.success(request, "¡La renta se ha confirmado correctamente!")
+    return redirect('arrendatario_home')  # Redirige a la página del arrendatario

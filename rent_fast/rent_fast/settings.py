@@ -64,6 +64,7 @@ INSTALLED_APPS = [
     "requests",
     "users",
     "tools",
+    'rentas',
 #allauth appss
     'allauth',
     'allauth.account',
