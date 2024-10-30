@@ -52,6 +52,7 @@ Rent Fast es una plataforma innovadora para la renta de herramientas.
 
 Run server:
 source .envs/rent_fast/Scripts/activate
+source rentfast/bin/activate
 
 cd rent_fast
 

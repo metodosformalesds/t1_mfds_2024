@@ -32,12 +32,6 @@ class Arrendador(models.Model):
         blank=True, 
         verbose_name="INE"
     )  # Guardar la imagen de INE
-    profile_picture = models.ImageField(
-        upload_to="profile_pictures", 
-        null=True, 
-        blank=True, 
-        verbose_name="Foto de perfil"
-    )  # Nueva imagen de perfil
 
     def __str__(self):
         return f"{self.nombre} {self.apellidos} (Arrendador)"
@@ -61,12 +55,6 @@ class Arrendatario(models.Model):
         blank=True, 
         verbose_name="INE"
     )  # Guardar la imagen de INE
-    profile_picture = models.ImageField(
-        upload_to="profile_pictures", 
-        null=True, 
-        blank=True, 
-        verbose_name="Foto de perfil"
-    )  # Nueva imagen de perfil
 
     def __str__(self):
         return f"{self.nombre} {self.apellidos} (Arrendatario)"

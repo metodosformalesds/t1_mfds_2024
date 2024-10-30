@@ -180,3 +180,20 @@ def rent_tool_view(request, tool_id):
     else:
         form = RentaForm()
     return render(request, 'tools/rent_tool.html', {'form': form, 'tool': tool})
+
+@login_required
+def resumen_view(request):
+    arrendatario = getattr(request.user, 'arrendatario', None)
+    if not arrendatario:
+        return render(request, 'tools/no_role.html', {'error': "Necesitas un perfil de arrendatario para ver el resumen."})
+    
+    # Obtener los elementos del carrito para este usuario
+    carrito_items = Carrito.objects.filter(arrendatario=arrendatario)
+    
+    # Calcular el monto total
+    monto_total = sum(item.costo_total for item in carrito_items)
+    
+    return render(request, 'tools/resumen.html', {
+        'carrito_items': carrito_items,
+        'monto_total': monto_total,
+    })
