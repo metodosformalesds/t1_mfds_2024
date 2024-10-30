@@ -15,6 +15,9 @@ from pathlib import Path
 import os
 
 import environ
+PAYPAL_CLIENT_ID = "AbuWXT83G4O4wSbBHtRSTf5aThMIaKEnUvvFZxrUue5BNQPtqwvtuvgDi4dMYRjwa_zbn7CYcr-gw0qh"
+PAYPAL_CLIENT_SECRET = "EJSxFjhKKUX1PssUUju1ppZSs6JtPzcmV0MAPRlvS06BOAM6CpN92p9TdpEQqop_Wr4UeIcsZGkm05mC"
+PAYPAL_MODE = "sandbox"  # Cambia a "live" en producción
 
 # Define BASE_DIR para obtener la ruta base del proyecto
 BASE_DIR = Path(__file__).resolve().parent.parent
