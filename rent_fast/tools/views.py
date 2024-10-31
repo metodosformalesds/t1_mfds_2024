@@ -10,6 +10,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import DetailView
 from datetime import datetime
 from django.contrib import messages
+from django.db.models import Sum, F, ExpressionWrapper, fields
+
 
 @login_required
 def home_view(request):
@@ -36,9 +38,17 @@ def arrendador_home(request):
     """
     arrendador = Arrendador.objects.get(usuario=request.user)
     tools = Tool.objects.filter(arrendador=arrendador)
+    
+    # Obtener las rentas asociadas a las herramientas del arrendador
+    rentas = Renta.objects.filter(herramienta__in=tools)
+
+    # Calcular los días de renta en Python
+    for renta in rentas:
+        renta.dias_renta = (renta.fecha_fin - renta.fecha_inicio).days + 1
 
     return render(request, "arrendadores/arrendador_home.html", {
         'tools': tools,
+        'rentas': rentas,
     })
 
 
