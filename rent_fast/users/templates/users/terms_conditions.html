@@ -54,17 +54,10 @@
                 <li>9.1. Al ofrecer su herramienta para alquiler en la plataforma, el arrendador confirma que ha leído, comprendido y acepta estos términos y condiciones en su totalidad.</li>
             </ul>
         </div>
-        <button onclick="acceptTerms()" class="w-full p-4 bg-blue-500 text-white rounded-lg font-bold hover:bg-blue-600 transition">Aceptar</button>
+        <a href="{% url 'register_personal' %}" class="w-full block text-center p-4 bg-blue-500 text-white rounded-lg font-bold hover:bg-blue-600 transition">
+            Aceptar
+        </a>
     </div>
-    
-    <script>
-        function acceptTerms() {
-            alert("Has aceptado los términos y condiciones.");
-        }
-    </script>
-    
-    </div>
-
 {% endblock content %}
 
 

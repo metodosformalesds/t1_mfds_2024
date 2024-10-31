@@ -177,3 +177,26 @@ class RegisterAddres(LoginRequiredMixin, View):
             direccion.save()
             return redirect('some_success_page')  # Redirige a la página de éxito después de guardar la dirección
         return render(request, self.template_name, {'form': form})
+
+class TerminosCondiciones(TemplateView):
+    """
+    Vista para mostrar la página de Términos y Condiciones.
+    """
+    template_name = "users/terms_conditions.html"
+
+class RegisterPersonal(View):
+    """
+    Vista para manejar el formulario de información personal y conservar datos al regresar.
+    """
+    template_name = "users/register_personal.html"
+
+    def get(self, request):
+        # Obtiene los datos del formulario almacenados en la sesión, si existen
+        form_data = request.session.get('form_data', {})
+        return render(request, self.template_name, {'form_data': form_data})
+
+    def post(self, request):
+        # Guarda los datos del formulario en la sesión
+        form_data = request.POST.dict()
+        request.session['form_data'] = form_data
+        return render(request, self.template_name, {'form_data': form_data})

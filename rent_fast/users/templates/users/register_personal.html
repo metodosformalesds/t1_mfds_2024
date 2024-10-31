@@ -69,6 +69,16 @@
                 {{ wizard.form.ine_image|as_crispy_field }}
             </div>
 
+            <!-- Casilla de verificación de términos y condiciones -->
+            <div class="mb-6">
+                <label class="flex items-center text-gray-700 text-sm">
+                    <input type="checkbox" name="accept_terms" required class="mr-2">
+                    Confirmo que la información que proporcioné es verdadera y precisa, y doy mi consentimiento a los términos de servicio y la política de privacidad.
+                </label>
+                <p class="text-sm text-blue-500 underline mt-2">
+                    <a href="{% url 'terminos' %}">Leer los términos y condiciones</a>
+                </p>
+            </div>
             <!-- Botón de envío -->
             <button class="bg-blue-500 text-white py-2 rounded w-full hover:bg-blue-600 focus:outline-none" type="submit">
                 Continuar
