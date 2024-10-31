@@ -8,7 +8,7 @@ class Tool(models.Model):
     nombre = models.CharField(max_length=255)
     descripcion = models.TextField()
     costo_dia = models.DecimalField(max_digits=10, decimal_places=2)
-    estado = models.CharField(max_length=100)  # Ej: "Disponible", "No disponible", etc.
+    estado = models.CharField(max_length=20, choices=[('Pendiente', 'Pendiente'), ('Disponible', 'Disponible'), ('Rechazado', 'Rechazado')], default='Pendiente')
     imagenes = models.ImageField(upload_to='tools/', null=True, blank=True)
 
     def __str__(self):

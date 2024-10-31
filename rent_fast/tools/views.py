@@ -11,24 +11,25 @@ from django.views.generic import DetailView
 from datetime import datetime
 from django.contrib import messages
 from django.db.models import Sum, F, ExpressionWrapper, fields
-
+from django.contrib.admin.views.decorators import staff_member_required
+from django.views.decorators.http import require_POST
 
 @login_required
 def home_view(request):
     """
-    Vista que redirige al home correspondiente según el rol del usuario.
+    Vista principal que redirige a diferentes páginas de inicio según el rol del usuario.
     """
     try:
-        if Arrendador.objects.filter(usuario=request.user).exists():
+        if request.user.is_staff:  # Verifica si el usuario es administrador
+            return redirect('admin_home')
+        elif Arrendador.objects.filter(usuario=request.user).exists():
             return redirect('arrendador_home')
         elif Arrendatario.objects.filter(usuario=request.user).exists():
             return redirect('arrendatario_home')
         else:
-            # Si el usuario no tiene un perfil de arrendador o arrendatario
-            return render(request, "tools/no_role.html")  
-    except:
-        return render(request, "tools/error.html")  
-
+            return render(request, "tools/no_role.html")  # Página para usuarios sin rol específico
+    except Exception as e:
+        return render(request, "tools/error.html", {'error': str(e)})
 
 
 @login_required
@@ -51,20 +52,18 @@ def arrendador_home(request):
         'rentas': rentas,
     })
 
-
 @login_required
 def arrendatario_home(request):
     """
     Vista para el home del Arrendatario.
     """
-    search_query = request.GET.get('search', '')  # Recogemos el valor de búsqueda (si existe)
+    search_query = request.GET.get('search', '')  # Recoge el valor de búsqueda (si existe)
     
-    if search_query:
-        # Si hay búsqueda, filtramos por el nombre de la herramienta
-        tools = Tool.objects.filter(nombre__icontains=search_query, estado="Disponible")
-    else:
-        # Si no hay búsqueda, obtenemos todas las herramientas disponibles
-        tools = Tool.objects.filter(estado="Disponible")
+    # Filtrar las herramientas con estado "Disponible" y aplicar el filtro de búsqueda si está presente
+    tools = Tool.objects.filter(
+        estado="Disponible",
+        nombre__icontains=search_query  # Aplica el filtro de búsqueda por nombre
+    )
     
     return render(request, "arrendatarios/arrendatario_home_new.html", {
         'tools': tools,
@@ -257,3 +256,35 @@ def confirmar_renta_view(request):
 
     messages.success(request, "¡La renta se ha confirmado correctamente!")
     return redirect('arrendatario_home')  # Redirige a la página del arrendatario
+
+@staff_member_required
+def admin_home(request):
+    """
+    Vista del administrador para ver herramientas pendientes y decidir su aprobación o rechazo.
+    """
+    pending_tools = Tool.objects.filter(estado='Pendiente')  # Obtener solo las herramientas en estado "Pendiente"
+    return render(request, 'admin/admin_home.html', {'pending_tools': pending_tools})
+
+@staff_member_required
+@require_POST
+def approve_tool(request, tool_id):
+    tool = get_object_or_404(Tool, id=tool_id)
+    tool.estado = 'Disponible'
+    tool.save()
+    return redirect('admin_home')  # Redirige al home del administrador después de aprobar
+
+@staff_member_required
+@require_POST
+def reject_tool(request, tool_id):
+    tool = get_object_or_404(Tool, id=tool_id)
+    tool.estado = 'Rechazado'
+    tool.save()
+    return redirect('admin_home')  # Redirige al home del administrador después de rechazar
+@staff_member_required
+def admin_pending_tools(request):
+    """
+    Vista para que el administrador vea todas las herramientas pendientes.
+    """
+    pending_tools = Tool.objects.filter(estado='Pendiente')
+    return render(request, 'admin/admin_pending_tools.html', {'pending_tools': pending_tools})
+    

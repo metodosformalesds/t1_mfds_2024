@@ -1,0 +1,40 @@
+<!-- templates/admin/admin_home.html -->
+
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mx-auto py-8">
+    <h2 class="text-2xl font-bold mb-6">Panel de Administración - Herramientas Pendientes</h2>
+
+    {% if pending_tools %}
+        <div class="space-y-4">
+            {% for tool in pending_tools %}
+            <div class="flex justify-between p-4 border border-gray-300 rounded-lg bg-white">
+                <div>
+                    <p class="text-lg font-semibold text-gray-800">Nombre: {{ tool.nombre }}</p>
+                    <p class="text-sm text-gray-600">Descripción: {{ tool.descripcion }}</p>
+                    <p class="text-sm text-gray-600">Costo por Día: ${{ tool.costo_dia }}</p>
+                    <p class="text-sm text-gray-600">Estado: {{ tool.estado }}</p>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <form action="{% url 'approve_tool' tool.id %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
+                            Aprobar
+                        </button>
+                    </form>
+                    <form action="{% url 'reject_tool' tool.id %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
+                            Rechazar
+                        </button>
+                    </form>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="text-gray-600">No hay herramientas pendientes de aprobación.</p>
+    {% endif %}
+</div>
+{% endblock %}
