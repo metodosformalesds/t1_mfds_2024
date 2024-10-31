@@ -45,7 +45,7 @@ SECRET_KEY = 'django-insecure--s+12dn1clpyqk_w5l@3seh72h012vipmuv)bxrh@!)9vt#^+5
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["127.0.0.1", "localhost", "00lar.pythonanywhere.com", "https://8000-idx-t1mfds2024git-1729092128078.cluster-3ch54x2epbcnetrm6ivbqqebjk.cloudworkstations.dev"]
+ALLOWED_HOSTS = ["127.0.0.1","35.162.85.24", "localhost", "00lar.pythonanywhere.com", "https://8000-idx-t1mfds2024git-1729092128078.cluster-3ch54x2epbcnetrm6ivbqqebjk.cloudworkstations.dev"]
 CSRF_TRUSTED_ORIGINS = ['https://8000-idx-t1mfds2024git-1729092128078.cluster-3ch54x2epbcnetrm6ivbqqebjk.cloudworkstations.dev']
 
 
@@ -64,6 +64,7 @@ INSTALLED_APPS = [
     "requests",
     "users",
     "tools",
+    'rentas',
 #allauth appss
     'allauth',
     'allauth.account',

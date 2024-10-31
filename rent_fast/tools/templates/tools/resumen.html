@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="layout-container flex h-full grow flex-col">
+    <div class="flex flex-1 justify-center px-40 py-5">
+        <div class="layout-content-container flex w-[512px] max-w-[512px] max-w-[960px] flex-1 flex-col py-5">
+            <h2 class="px-4 pb-3 pt-5 text-[22px] font-bold leading-tight tracking-[-0.015em] text-[#111517]">Revisión y Confirmación</h2>
+            
+            <!-- Lista de productos en el resumen -->
+            {% for item in carrito_items %}
+            <div class="flex justify-between gap-4 bg-white px-4 py-3">
+                <div class="flex items-start gap-4">
+                    <div class="aspect-square size-[70px] rounded-lg bg-cover bg-center bg-no-repeat" style='background-image: url("");'></div>
+                    <div class="flex flex-1 flex-col justify-center">
+                        <p class="text-base font-medium leading-normal text-[#111517]">{{ item.herramienta.nombre }}</p>
+                        <p class="text-sm font-normal leading-normal text-[#647987]">Total: ${{ item.costo_total }}</p>
+                        <p class="text-sm font-normal leading-normal text-[#647987]">{{ item.fecha_inicio }} - {{ item.fecha_fin }}</p>
+                    </div>
+                </div>
+                <div class="shrink-0">
+                    <p class="text-base font-normal leading-normal text-[#111517]">${{ item.costo_total }}</p>
+                </div>
+            </div>
+            {% endfor %}
+            
+            <!-- Método de envío -->
+            <h3 class="px-4 pb-2 pt-4 text-lg font-bold leading-tight tracking-[-0.015em] text-[#111517]">Selecciona el método de envío</h3>
+            <div class="flex flex-col gap-3 p-4">
+                <label class="flex items-center gap-4 rounded-xl border border-solid border-[#dce1e5] p-[15px]">
+                    <input type="radio" name="shipping" class="h-5 w-5" checked /> Acordar con el vendedor
+                </label>
+            </div>
+            
+            <!-- Método de pago -->
+            <h3 class="px-4 pb-2 pt-4 text-lg font-bold leading-tight tracking-[-0.015em] text-[#111517]">Método de pago</h3>
+            <div class="flex flex-col gap-3 p-4">
+                <label class="flex items-center gap-4 rounded-xl border border-solid border-[#dce1e5] p-[15px]">
+                    <input type="radio" name="payment_method" class="h-5 w-5" checked /> PayPal
+                </label>
+            </div>
+
+            <!-- Total y botón para confirmar -->
+            <div class="flex justify-between px-4 py-3">
+                <h2 class="font-bold text-lg">Monto Total</h2>
+                <p class="text-2xl font-bold text-gray-800">${{ monto_total }}</p>
+            </div>
+            <div class="flex px-4 py-3">
+                <button class="w-full h-10 bg-blue-600 text-white font-bold rounded-xl" onclick="window.location.href='{% url 'confirmar_renta' %}'">
+                    Confirmar y Pagar
+                </button>
+                            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
