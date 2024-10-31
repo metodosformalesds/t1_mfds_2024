@@ -87,16 +87,34 @@ class ToolDetailView(DetailView):
 
 @login_required
 def add_tool_view(request):
-    arrendador = Arrendador.objects.get(usuario=request.user)  # Obtenemos el arrendador
+    try:
+        arrendador = Arrendador.objects.get(usuario=request.user)
+    except Arrendador.DoesNotExist:
+        messages.error(request, "No tienes un perfil de arrendador.")
+        return redirect('no_role')
+    
     if request.method == 'POST':
         form = ToolForm(request.POST, request.FILES)
         if form.is_valid():
-            form.save(arrendador=arrendador)  # Guardar la herramienta asociada al arrendador
-            return redirect('arrendador_home')  # Redirige a la página del arrendador después de crear la herramienta
+            try:
+                # Intentamos guardar el formulario y asociarlo con el arrendador
+                tool = form.save(arrendador=arrendador)
+                messages.success(request, f"Herramienta '{tool.nombre}' agregada exitosamente.")
+                return redirect('arrendador_home')
+            except Exception as e:
+                # Captura cualquier error de guardado
+                messages.error(request, f"Error al guardar la herramienta: {e}")
+        else:
+            # Muestra errores específicos del formulario en la consola
+            print("Errores en el formulario:", form.errors)
+            messages.error(request, "Hay errores en el formulario. Por favor revísalo y corrígelos.")
+
     else:
         form = ToolForm()
-
+    
     return render(request, 'arrendadores/add_tool.html', {'form': form})
+
+
     
 @login_required
 def carrito_view(request):

@@ -3,7 +3,7 @@ from .models import Tool, Renta
 
 class ToolAdmin(admin.ModelAdmin):
     model = Tool
-    list_display = ["nombre", "costo_hora", "costo_dia", "estado"]
+    list_display = ["nombre", "costo_dia", "estado"]
     search_fields = ["nombre", "descripcion"]
 
 class RentaAdmin(admin.ModelAdmin):
