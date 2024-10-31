@@ -68,9 +68,19 @@ pip install -r requirements.txt
  credenciales:
 
 (arrendador):
-usuario:arrendador
-password:rentfast
+usuario:
+arrendador
+password:
+rentfast
 
 (arrendatario):
-usuario:arrendatario
-password:rentfast
+usuario:
+arrendatario
+password:
+rentfast
+
+(Admin):
+usuario:
+admin
+password:
+123456789
