@@ -77,7 +77,34 @@ INSTALLED_APPS = [
 
 ]
 
-SITE_ID =1
+SITE_ID = 1
+ 
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'SCOPE': {
+            'profile',
+            'email'},
+        'OAUTH_PARAMS': {'access_type': 'online'},
+        'AUTH_PKCE_ENABLED': True,
+        'METHOD': 'oauth2',
+        'VERIFIED_EMAIL': True,
+        'CLIENT_ID': '1081665465762-0a9ippsar614nr1758utua7luc3ojnuk.apps.googleusercontent.com',  
+        'SECRET': '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',  
+    }
+}
+
+SOCIALACCOUNT_AUTO_SIGNUP = False
+SOCIALACCOUNT_LOGIN_ON_GET = True
+ACCOUNT_EMAIL_VERIFICATION = "none"
+ACCOUNT_EMAIL_REQUIRED = False
+ACCOUNT_USERNAME_REQUIRED = False
+LOGIN_REDIRECT_URL = '/registro/'  
+ACCOUNT_LOGOUT_REDIRECT_URL = '/'
+ 
+ 
+LOGIN_REDIRECT_URL = '/registro/'
+ACCOUNT_LOGOUT_REDIRECT_URL = 'login'
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
