@@ -1,3 +1,5 @@
+# views.py
+
 import requests
 import base64
 from django.core.files.storage import FileSystemStorage
@@ -13,7 +15,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from .forms import UserForm, PersonalInfoForm, AddressForm
 from .models import Arrendador, Arrendatario, Direccion
 
-# Configura el almacenamiento de archivos
+# Configura el almacenamiento de archivos temporales
 file_storage = FileSystemStorage(location='media/tmp')
 
 # Definición de formularios y plantillas para el asistente de registro
@@ -30,103 +32,111 @@ TEMPLATES = {
 }
 
 class RegisterWizard(SessionWizardView):
-    """
-    Asistente de registro en varios pasos que permite a los usuarios crear una cuenta y verificar
-    su identidad con INE, además de subir una foto de perfil.
-    """
     form_list = FORMS
     template_name = 'users/register_wizard.html'
     file_storage = file_storage
 
     def get_template_names(self):
-        """
-        Retorna la plantilla correspondiente al paso actual del asistente.
-        """
         return [TEMPLATES[self.steps.current]]
 
-    def get(self, *args, **kwargs):
-        """
-        Redirige al paso 'personal' si el usuario ya está autenticado pero no tiene perfil completo.
-        """
-        if self.request.user.is_authenticated and not self.request.user.has_perm('app.perfil_completo'):
-            return redirect('register_personal')
-        return super().get(*args, **kwargs)
-
     def post(self, *args, **kwargs):
-        """
-        Manejo especial para la verificación de INE en el paso 'personal' y guarda de la foto de perfil.
-        """
-        step = self.steps.current
-        if step == 'personal':
+        print("Paso actual del asistente:", self.steps.current)  # Debug del paso actual
+
+        # Llamar a la lógica de post de `SessionWizardView`
+        response = super().post(*args, **kwargs)
+
+        # Si estamos en el paso 'personal', realizar la verificación de INE
+        if self.steps.current == 'personal':
             form = self.get_form(data=self.request.POST, files=self.request.FILES)
             if form.is_valid():
-                # Verificación de INE
                 ine_image = form.cleaned_data.get('ine_image')
-                ine_verification_status = self.verify_ine(ine_image)
-                if not ine_verification_status:
-                    messages.error(self.request, "La verificación del documento INE falló. Inténtalo nuevamente.")
-                    return self.render_to_response(self.get_context_data(form=form))
-                messages.success(self.request, "¡El documento INE fue verificado con éxito!")
                 
-                # Foto de perfil
+                # Realizar verificación de INE solo si se ha proporcionado la imagen
+                if ine_image:
+                    ine_verification_status = self.verify_ine(ine_image)
+                    if not ine_verification_status:
+                        messages.error(self.request, "La verificación del documento INE falló. Inténtalo nuevamente.")
+                        print("Error en verificación de INE.")
+                        return self.render_to_response(self.get_context_data(form=form))
+                    else:
+                        messages.success(self.request, "¡El documento INE fue verificado con éxito!")
+                        print("INE verificado correctamente.")
+
+                # Si existe una foto de perfil, guardarla en `extra_data`
                 profile_picture = form.cleaned_data.get('profile_picture')
                 if profile_picture:
-                    # Guardamos la foto de perfil si se ha subido
                     self.storage.extra_data['profile_picture'] = profile_picture
 
-                return self.render_next_step(form)
-        return super().post(*args, **kwargs)
+        return response
 
     def done(self, form_list, **kwargs):
-        """
-        Procesa los datos al completar el asistente de registro.
-        Crea el usuario, dirección, datos personales y guarda la foto de perfil si está presente.
-        """
-        form_data = [form.cleaned_data for form in form_list]
+        print("Entrando en el método done()")  # Confirmar que hemos llegado a done()
 
-        # Crea el usuario si no está autenticado (nuevo registro)
-        if not self.request.user.is_authenticated:
-            user_data = form_data[0]
-            user = User.objects.create_user(
-                username=user_data['username'],
-                email=user_data['email'],
-                password=user_data['password1'],
-            )
-        else:
-            user = self.request.user  # Usuario autenticado previamente
+        # Obtener los datos de cada formulario en `form_list`
+        user_data = form_list[0].cleaned_data
+        personal_data = form_list[1].cleaned_data
+        address_data = form_list[2].cleaned_data
 
-        # Procesa y guarda la dirección
-        address_data = form_list[2]
+        # Crear el usuario
+        user = User.objects.create_user(
+            username=user_data['username'],
+            email=user_data['email'],
+            password=user_data['password1'],
+        )
+        print("Usuario creado:", user.username)
+
+        # Crear la dirección
         direccion = Direccion.objects.create(
             calle=address_data['calle'],
             ciudad=address_data['ciudad'],
             estado=address_data['estado'],
             codigo_postal=address_data['codigo_postal'],
         )
+        print("Dirección creada:", direccion)
 
-        # Guarda información personal vinculada al usuario y dirección, incluyendo foto de perfil
-        personal_form = form_list[1]
-        profile_picture = self.storage.extra_data.get('profile_picture')  # Obtener foto de perfil guardada en extra_data
-        personal_form.save(user=user, direccion=direccion, profile_picture=profile_picture)
+        # Crear el perfil (Arrendador o Arrendatario)
+        profile_picture = self.storage.extra_data.get('profile_picture')
+        role = personal_data['role']
+        
+        if role == 'arrendador':
+            Arrendador.objects.create(
+                usuario=user,
+                nombre=personal_data['nombre'],
+                apellidos=personal_data['apellidos'],
+                telefono=personal_data['telefono'],
+                ine_image=personal_data['ine_image'],
+                direccion=direccion,
+                profile_picture=profile_picture
+            )
+            print("Perfil de Arrendador creado.")
+        else:
+            Arrendatario.objects.create(
+                usuario=user,
+                nombre=personal_data['nombre'],
+                apellidos=personal_data['apellidos'],
+                telefono=personal_data['telefono'],
+                ine_image=personal_data['ine_image'],
+                direccion=direccion,
+                profile_picture=profile_picture
+            )
+            print("Perfil de Arrendatario creado.")
 
+        messages.success(self.request, "Registro completado con éxito.")
+        print("Registro completado. Redirigiendo al login.")
         return redirect('login')
 
     def verify_ine(self, ine_image):
         """
         Verifica el documento INE utilizando la API de IDAnalyzer.
-        Convierte la imagen en Base64 y realiza una solicitud POST a la API.
         """
         api_key = settings.IDANALYZER_API_KEY  
         api_url = 'https://api2.idanalyzer.com/quickscan'
         
-        # Convierte el archivo de imagen INE a Base64
-        ine_image_file = ine_image.read()
-        ine_image_base64 = base64.b64encode(ine_image_file).decode('utf-8')
-
-        # Define los datos y encabezados para la solicitud
+        # Convertir a Base64
+        ine_image_base64 = base64.b64encode(ine_image.read()).decode('utf-8')
         data = {
             'document': ine_image_base64,
-            'ocr_extraction': 'true',  # Extraer datos adicionales del documento
+            'ocr_extraction': 'true',
         }
         headers = {
             'accept': 'application/json',
@@ -135,10 +145,8 @@ class RegisterWizard(SessionWizardView):
         }
 
         try:
-            # Realiza la solicitud a la API
             response = requests.post(api_url, json=data, headers=headers)
-            print("Código de estado de la API:", response.status_code)
-            print("Respuesta de la API:", response.text)
+            print("Respuesta de la API de verificación de INE:", response.text)
 
             if response.status_code == 200:
                 result = response.json()
@@ -150,6 +158,7 @@ class RegisterWizard(SessionWizardView):
         except requests.exceptions.RequestException as e:
             print(f"Error en la conexión o solicitud a la API: {e}")
             return False
+
 
 class Landing(TemplateView):
     """
@@ -168,12 +177,27 @@ class RegisterAddres(LoginRequiredMixin, View):
         form = AddressForm()
         return render(request, self.template_name, {'form': form})
 
-    def post(self, request):
-        # Procesa los datos del formulario enviados a través de POST
-        form = AddressForm(request.POST)
-        if form.is_valid():
-            direccion = form.save(commit=False)
-            direccion.user = request.user  # Asocia la dirección con el usuario autenticado
-            direccion.save()
-            return redirect('some_success_page')  # Redirige a la página de éxito después de guardar la dirección
-        return render(request, self.template_name, {'form': form})
+def post(self, *args, **kwargs):
+        print("Paso actual:", self.steps.current)  # Imprime el paso actual del asistente
+        
+        step = self.steps.current
+        if step == 'personal':
+            form = self.get_form(data=self.request.POST, files=self.request.FILES)
+            if form.is_valid():
+                ine_image = form.cleaned_data.get('ine_image')
+                ine_verification_status = self.verify_ine(ine_image)
+                if not ine_verification_status:
+                    messages.error(self.request, "La verificación del documento INE falló. Inténtalo nuevamente.")
+                    return self.render_to_response(self.get_context_data(form=form))
+                messages.success(self.request, "¡El documento INE fue verificado con éxito!")
+                
+                profile_picture = form.cleaned_data.get('profile_picture')
+                if profile_picture:
+                    self.storage.extra_data['profile_picture'] = profile_picture
+
+                print("INE verificado, avanzando al siguiente paso.")
+                return self.render_next_step(form)
+            else:
+                print("Formulario 'personal' no válido.")
+        
+        return super().post(*args, **kwargs)
