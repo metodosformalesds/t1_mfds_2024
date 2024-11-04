@@ -6,6 +6,7 @@ from rentas.models import Renta
 from django.urls import reverse_lazy, reverse
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import DetailView
 from datetime import datetime
@@ -13,6 +14,110 @@ from django.contrib import messages
 from django.db.models import Sum, F, ExpressionWrapper, fields
 from django.contrib.admin.views.decorators import staff_member_required
 from django.views.decorators.http import require_POST
+from geopy.geocoders import Nominatim
+from django.conf import settings
+import requests
+
+def cotizar_envio_view(request, tool_id):
+    # Verificar si tenemos un access_token en la sesión
+    access_token = request.session.get("uber_access_token")
+    
+    if not access_token:
+        # Redirigir al flujo de autenticación si el token no está disponible
+        return redirect("uber_login")
+
+    # Obtener la herramienta y las direcciones de arrendador y arrendatario
+    herramienta = get_object_or_404(Tool, id=tool_id)
+    arrendador = herramienta.arrendador
+    arrendatario = request.user.arrendatario
+
+    # Crear direcciones basadas en el modelo `Direccion`
+    origen_direccion = f"{arrendador.direccion.calle}, {arrendador.direccion.ciudad}, {arrendador.direccion.estado}, {arrendador.direccion.codigo_postal}"
+    destino_direccion = f"{arrendatario.direccion.calle}, {arrendatario.direccion.ciudad}, {arrendatario.direccion.estado}, {arrendatario.direccion.codigo_postal}"
+
+    # Utilizar geopy para obtener las coordenadas de las direcciones
+    geolocator = Nominatim(user_agent="tool_rental")
+    origen_location = geolocator.geocode(origen_direccion)
+    destino_location = geolocator.geocode(destino_direccion)
+
+    # Verificar que se obtuvieron coordenadas
+    if not origen_location or not destino_location:
+        return render(request, "tools/error.html", {"error": "No se pudo obtener la ubicación de una o ambas direcciones."})
+
+    # Asignar coordenadas
+    origen_coords = {"lat": origen_location.latitude, "lng": origen_location.longitude}
+    destino_coords = {"lat": destino_location.latitude, "lng": destino_location.longitude}
+
+    # Configurar encabezados y parámetros de solicitud
+    headers = {
+        "Authorization": f"Bearer {access_token}",
+        "Content-Type": "application/json"
+    }
+    data = {
+        "start_latitude": origen_coords['lat'],
+        "start_longitude": origen_coords['lng'],
+        "end_latitude": destino_coords['lat'],
+        "end_longitude": destino_coords['lng']
+    }
+
+    # Solicitar la cotización
+    url = "https://api.uber.com/v1.2/estimates/price"
+    response = requests.get(url, headers=headers, params=data)
+
+    if response.status_code == 200:
+        precios = response.json().get('prices', [])
+        return render(request, "tools/cotizacion_envio.html", {
+            "precios": precios,
+            "origen": origen_direccion,
+            "destino": destino_direccion
+        })
+    else:
+        return JsonResponse({"error": "Error en la solicitud de cotización a Uber."})
+
+
+def uber_login_view(request):
+    auth_url = "https://auth.uber.com/oauth/v2/authorize"
+    client_id = settings.UBER_CLIENT_ID
+    redirect_uri = "https://8000-idx-t1mfds2024git-1729092128078.cluster-3ch54x2epbcnetrm6ivbqqebjk.cloudworkstations.dev/herramientas/uber/callback/"
+    scope = "request estimate"  # Reemplaza con los permisos necesarios para tu aplicación (debe ser válido)
+    response_type = "code"  # Asegúrate de que `response_type` sea "code"
+
+    # Construir la URL de autenticación
+    authorization_url = (
+        f"{auth_url}?client_id={client_id}&redirect_uri={redirect_uri}&scope={scope}&response_type={response_type}"
+    )
+
+    return redirect(authorization_url)
+
+
+def uber_callback_view(request):
+    code = request.GET.get("code")
+
+    if not code:
+        return JsonResponse({"error": "No se recibió un código de autorización.", "details": request.GET.dict()})
+
+    token_url = "https://auth.uber.com/oauth/v2/token"
+    data = {
+        "client_id": settings.UBER_CLIENT_ID,
+        "client_secret": settings.UBER_CLIENT_SECRET,
+        "grant_type": "authorization_code",
+        "redirect_uri": "https://8000-idx-t1mfds2024git-1729092128078.cluster-3ch54x2epbcnetrm6ivbqqebjk.cloudworkstations.dev/herramientas/uber/callback/",
+        "code": code,
+    }
+
+    response = requests.post(token_url, data=data)
+
+    if response.status_code == 200:
+        tokens = response.json()
+        access_token = tokens.get("access_token")
+        request.session['uber_access_token'] = access_token
+
+        return redirect("cotizacion_envio")
+    else:
+        # Agrega información de depuración
+        error_details = response.json()  # Extrae el mensaje de error de la respuesta
+        return JsonResponse({"error": "No se pudo obtener el token de acceso de Uber.", "details": error_details})
+
 
 @login_required
 def home_view(request):
@@ -270,3 +375,31 @@ def admin_pending_tools(request):
     pending_tools = Tool.objects.filter(estado='Pendiente')
     return render(request, 'admin/admin_pending_tools.html', {'pending_tools': pending_tools})
     
+def pagar_sin_paypal_view(request):
+    arrendatario = getattr(request.user, 'arrendatario', None)
+    if not arrendatario:
+        messages.error(request, "No se encontró un perfil de arrendatario.")
+        return redirect("carrito")
+
+    carrito_items = Carrito.objects.filter(arrendatario=arrendatario)
+    if not carrito_items:
+        messages.error(request, "No tienes herramientas en el carrito.")
+        return redirect("carrito")
+
+    # Crear una instancia de Renta para cada elemento en el carrito
+    for item in carrito_items:
+        Renta.objects.create(
+            herramienta=item.herramienta,
+            arrendatario=arrendatario,
+            fecha_inicio=item.fecha_inicio,
+            fecha_fin=item.fecha_fin,
+            costo_total=item.costo_total,
+            estado="Activa"
+        )
+
+    # Vaciar el carrito
+    carrito_items.delete()
+
+    # Mensaje de éxito y redirección
+    messages.success(request, "Renta completada exitosamente sin necesidad de PayPal.")
+    return redirect("arrendatario_home")

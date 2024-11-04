@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Cotización de Envío</h2>
+<p><strong>Origen:</strong> {{ origen }}</p>
+<p><strong>Destino:</strong> {{ destino }}</p>
+
+{% if precios %}
+    <table>
+        <thead>
+            <tr>
+                <th>Tipo de Servicio</th>
+                <th>Precio Estimado</th>
+                <th>Duración Estimada</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for precio in precios %}
+            <tr>
+                <td>{{ precio.display_name }}</td>
+                <td>${{ precio.estimate }}</td>
+                <td>{{ precio.duration }} segundos</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p>No se encontraron precios para el envío.</p>
+{% endif %}
+{% endblock %}

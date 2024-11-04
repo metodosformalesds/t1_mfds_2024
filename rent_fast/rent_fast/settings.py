@@ -36,6 +36,8 @@ env = environ.Env()
 environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
 IDANALYZER_API_KEY = env('IDANALYZER_API_KEY')
+UBER_CLIENT_ID = '6QWax6cLboC1f6TdJ7eYkr3GBxvSHLTc'
+UBER_CLIENT_SECRET = 'D6Hb2hWO93NEIejQmjOyhkX3ZKF_-bYU46w8DxV2'  # Copia aquí tu Client Secret de Uber
 
 
 
