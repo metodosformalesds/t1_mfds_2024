@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mx-auto py-4">
+    <h1 class="text-2xl font-bold mb-4">Mis Chats</h1>
+    <div class="space-y-4">
+        {% for chat in chats %}
+        <a href="{% url 'ver_chat' chat.id %}" class="block p-4 border rounded-lg hover:bg-gray-100">
+            <p class="font-semibold text-gray-800">{{ chat.herramienta.nombre }}</p>
+            <p class="text-sm text-gray-600">
+                Con: 
+                {% if chat.arrendatario.usuario == request.user %}
+                    {{ chat.arrendador.usuario.get_full_name }}
+                {% else %}
+                    {{ chat.arrendatario.usuario.get_full_name }}
+                {% endif %}
+            </p>
+        </a>
+        {% empty %}
+        <p class="text-gray-600">No tienes chats activos.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

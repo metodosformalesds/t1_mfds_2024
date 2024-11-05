@@ -1,0 +1,25 @@
+<!-- chat/ver_chat.html -->
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mx-auto py-4">
+    <h1 class="text-2xl font-bold mb-4">Chat</h1>
+    <div class="border p-4 rounded-lg">
+        {% for mensaje in mensajes %}
+            <div class="mb-2">
+                <strong>{{ mensaje.remitente.get_full_name }}:</strong>
+                <p>{{ mensaje.contenido }}</p>
+                <span class="text-xs text-gray-500">{{ mensaje.enviado }}</span>
+            </div>
+        {% empty %}
+            <p class="text-gray-600">No hay mensajes en este chat.</p>
+        {% endfor %}
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Enviar</button>
+    </form>
+</div>
+{% endblock %}

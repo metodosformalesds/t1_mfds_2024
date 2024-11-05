@@ -1,13 +1,16 @@
 # rentas/views.py
 from django.conf import settings
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect, render, get_object_or_404
 from django.urls import reverse
 from django.contrib import messages
 from paypalrestsdk import Payment
-from .models import Renta
+from .models import Renta, Chat, Mensaje
+from django.contrib.auth.decorators import login_required
 from tools.models import Carrito
 from .paypal import paypalrestsdk
 from django.http import HttpResponse
+from .forms import MensajeForm
+
 
 def iniciar_pago_view(request):
     # Obtén el usuario y el total del carrito
@@ -69,3 +72,39 @@ def pago_exitoso_view(request):
 def pago_cancelado_view(request):
     messages.info(request, "El pago fue cancelado.")
     return redirect("carrito")
+
+@login_required
+def ver_chat_view(request, chat_id):
+    chat = get_object_or_404(Chat, id=chat_id)
+
+    # Verificar si el usuario es parte del chat
+    if not (request.user == chat.arrendador.usuario or request.user == chat.arrendatario.usuario):
+        return redirect('home')  # Redirige si el usuario no es parte del chat
+
+    if request.method == 'POST':
+        form = MensajeForm(request.POST)
+        if form.is_valid():
+            mensaje = form.save(commit=False)
+            mensaje.chat = chat
+            mensaje.remitente = request.user
+            mensaje.save()
+            return redirect('ver_chat', chat_id=chat.id)
+    else:
+        form = MensajeForm()
+
+    return render(request, 'ver_chat.html', {
+        'chat': chat,
+        'form': form,
+        'mensajes': chat.mensajes.all().order_by('enviado')  # Usar el related_name para acceder a los mensajes
+    })
+
+@login_required
+def listar_chats_view(request):
+    # Obtener los chats donde el usuario sea arrendador o arrendatario
+    chats = Chat.objects.filter(
+        arrendador__usuario=request.user
+    ) | Chat.objects.filter(
+        arrendatario__usuario=request.user
+    )
+
+    return render(request, 'rentas/listar_chats.html', {'chats': chats})

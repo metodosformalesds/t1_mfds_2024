@@ -4,7 +4,7 @@ from rentas.models import Renta
 from datetime import timedelta  
 
 class Tool(models.Model):
-    arrendador = models.ForeignKey(Arrendador, on_delete=models.CASCADE)  # Relación con Arrendador
+    arrendador = models.ForeignKey(Arrendador, on_delete=models.CASCADE)
     nombre = models.CharField(max_length=255)
     descripcion = models.TextField()
     costo_dia = models.DecimalField(max_digits=10, decimal_places=2)
@@ -16,7 +16,6 @@ class Tool(models.Model):
 
     @property
     def direccion(self):
-        # Devolver la dirección del arrendador asociado
         return self.arrendador.direccion
         
 class Carrito(models.Model):
