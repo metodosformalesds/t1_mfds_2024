@@ -270,3 +270,53 @@ def admin_pending_tools(request):
     pending_tools = Tool.objects.filter(estado='Pendiente')
     return render(request, 'admin/admin_pending_tools.html', {'pending_tools': pending_tools})
     
+# views.py
+from django.conf import settings
+import requests
+from django.http import JsonResponse
+
+def uber_auth(request):
+    auth_url = (
+        "https://login.uber.com/oauth/v2/authorize"
+        f"?client_id={settings.UBER_CLIENT_ID}"
+        f"&response_type=code"
+        f"&redirect_uri={settings.UBER_REDIRECT_URI}"
+        "&scope=delivery"  # Ajusta el scope si es necesario
+    )
+    return redirect(auth_url)
+
+def uber_callback(request):
+    code = request.GET.get('code')
+    token_url = 'https://login.uber.com/oauth/v2/token'
+    data = {
+        'client_id': settings.UBER_CLIENT_ID,
+        'client_secret': settings.UBER_CLIENT_SECRET,
+        'grant_type': 'authorization_code',
+        'redirect_uri': settings.UBER_REDIRECT_URI,
+        'code': code,
+    }
+    response = requests.post(token_url, data=data)
+    access_token = response.json().get('access_token')
+
+    # Guarda el access_token en la sesión para usarlo después
+    request.session['uber_access_token'] = access_token
+
+    # Devuelve el token para pruebas
+    return JsonResponse({'access_token': access_token})
+def obtener_cotizacion(request):
+    access_token = request.session.get('uber_access_token')
+    if not access_token:
+        return JsonResponse({'error': 'No se ha autenticado con Uber.'}, status=401)
+
+    url = f"https://api.uber.com/v1/customers/{settings.UBER_CUSTOMER_ID}/delivery_quotes"
+    headers = {
+        'Authorization': f'Bearer {access_token}',
+        'Content-Type': 'application/json',
+    }
+    data = {
+        'pickup_address': '123 Calle Falsa, Ciudad',  # Cambia estos datos según sea necesario
+        'dropoff_address': '456 Avenida Verdadera, Ciudad',
+    }
+    response = requests.post(url, headers=headers, json=data)
+
+    return JsonResponse(response.json())

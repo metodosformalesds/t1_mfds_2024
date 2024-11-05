@@ -55,7 +55,10 @@ class="flex h-12  py-2 flex-1 cursor-pointer items-center justify-center overflo
 onclick="window.location.href='{% url 'seleccionar_fechas' tool.id %}'">
 <span class="truncate">Alquilar ahora</span>
 </button>
-      <button class="bg-[#1980e6] text-white px-6 py-2 rounded-md font-bold flex justify-center items-center gap-2" onclick="window.location.href='/cotizar-envio'">Cotizar precio de envío<img src="https://cdn-icons-png.flaticon.com/256/732/732135.png" alt="Uber icon" class="w-5 h-5"/></button>
+      <button class="bg-[#1980e6] text-white px-6 py-2 rounded-md font-bold flex justify-center items-center gap-2" onclick="window.location.href='{% url 'uber_auth' %}'">
+         Cotizar precio de envío
+         <img src="https://cdn-icons-png.flaticon.com/256/732/732135.png" alt="Uber icon" class="w-5 h-5"/>
+      </button>
       <button class="bg-blue-200 text-blue-700 px-6 py-2 rounded-md font-bold" onclick="window.location.href='/leer-contratos'">Leer contratos</button>
     </div>
 

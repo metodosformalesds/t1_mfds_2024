@@ -203,3 +203,18 @@ CRISPY_TEMPLATE_PACK = "tailwind"
 LOGIN_REDIRECT_URL = '/herramientas/'
 
 LOGOUT_REDIRECT_URL = "login"
+
+# Credenciales de Uber Direct API
+UBER_CLIENT_ID = 'HP1ZTn6E9__cvhOov8B_aWaQwqoPzl_f'
+UBER_CLIENT_SECRET = 'suwS-YLA_xGousd4dOoj55gqQeli'
+UBER_REDIRECT_URI = 'http://127.0.0.1:8000/herramientas/uber/callback/'
+
+# settings.py
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'rentfast64@gmail.com'  # Cambia a tu dirección de Gmail
+EMAIL_HOST_PASSWORD = 'kwrzmaebrnxfllvf'  # Cambia a tu contraseña de Gmail o, preferiblemente, a una contraseña de aplicación
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER

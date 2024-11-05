@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import home_view, arrendador_home, arrendatario_home, ToolFormView, ToolListView, ToolDetailView, add_tool_view, rent_tool_view, agregar_al_carrito_view, carrito_view, seleccionar_fechas_view, resumen_view, confirmar_renta_view, admin_home, approve_tool, reject_tool
+from .views import home_view, arrendador_home, arrendatario_home, ToolFormView, ToolListView, ToolDetailView, add_tool_view, rent_tool_view, agregar_al_carrito_view, carrito_view, seleccionar_fechas_view, resumen_view, confirmar_renta_view, admin_home, approve_tool, reject_tool, uber_auth, uber_callback, obtener_cotizacion
 
 urlpatterns = [
     path('', home_view, name='home'),
@@ -17,4 +17,7 @@ urlpatterns = [
     path('admin_home/', admin_home, name='admin_home'),  # Ruta para el home del administrador
     path('admin/approve_tool/<int:tool_id>/', approve_tool, name='approve_tool'),
     path('admin/reject_tool/<int:tool_id>/', reject_tool, name='reject_tool'),
+    path('uber/auth/', uber_auth, name='uber_auth'),
+    path('uber/callback/', uber_callback, name='uber_callback'),
+    path('uber/cotizacion/', obtener_cotizacion, name='obtener_cotizacion'),
 ]

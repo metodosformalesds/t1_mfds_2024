@@ -80,10 +80,10 @@ class RegisterWizard(SessionWizardView):
         # Crear el usuario
         user = User.objects.create_user(
             username=user_data['username'],
-            email=user_data['email'],
+            email=user_data['email'],  # Asegúrate de que este campo proviene del formulario correctamente
             password=user_data['password1'],
         )
-        print("Usuario creado:", user.username)
+        print("Usuario creado con correo:", user.email)  # Línea de depuración para verificar el correo
 
         # Crear la dirección
         direccion = Direccion.objects.create(
@@ -104,26 +104,29 @@ class RegisterWizard(SessionWizardView):
                 nombre=personal_data['nombre'],
                 apellidos=personal_data['apellidos'],
                 telefono=personal_data['telefono'],
+                correo=user.email,  # Asegúrate de que estamos guardando el correo en el perfil
                 ine_image=personal_data['ine_image'],
                 direccion=direccion,
                 profile_picture=profile_picture
             )
-            print("Perfil de Arrendador creado.")
+            print("Perfil de Arrendador creado con correo:", user.email)
         else:
             Arrendatario.objects.create(
                 usuario=user,
                 nombre=personal_data['nombre'],
                 apellidos=personal_data['apellidos'],
                 telefono=personal_data['telefono'],
+                correo=user.email,  # Asegúrate de que estamos guardando el correo en el perfil
                 ine_image=personal_data['ine_image'],
                 direccion=direccion,
                 profile_picture=profile_picture
             )
-            print("Perfil de Arrendatario creado.")
+            print("Perfil de Arrendatario creado con correo:", user.email)
 
         messages.success(self.request, "Registro completado con éxito.")
         print("Registro completado. Redirigiendo al login.")
         return redirect('login')
+
 
     def verify_ine(self, ine_image):
         """
@@ -178,29 +181,29 @@ class RegisterAddres(LoginRequiredMixin, View):
         return render(request, self.template_name, {'form': form})
 
 def post(self, *args, **kwargs):
-        print("Paso actual:", self.steps.current)  # Imprime el paso actual del asistente
-        
-        step = self.steps.current
-        if step == 'personal':
-            form = self.get_form(data=self.request.POST, files=self.request.FILES)
-            if form.is_valid():
-                ine_image = form.cleaned_data.get('ine_image')
-                ine_verification_status = self.verify_ine(ine_image)
-                if not ine_verification_status:
-                    messages.error(self.request, "La verificación del documento INE falló. Inténtalo nuevamente.")
-                    return self.render_to_response(self.get_context_data(form=form))
-                messages.success(self.request, "¡El documento INE fue verificado con éxito!")
-                
-                profile_picture = form.cleaned_data.get('profile_picture')
-                if profile_picture:
-                    self.storage.extra_data['profile_picture'] = profile_picture
+    print("Paso actual:", self.steps.current)  # Imprime el paso actual del asistente
+    
+    step = self.steps.current
+    if step == 'personal':
+        form = self.get_form(data=self.request.POST, files=self.request.FILES)
+        if form.is_valid():
+            ine_image = form.cleaned_data.get('ine_image')
+            ine_verification_status = self.verify_ine(ine_image)
+            if not ine_verification_status:
+                messages.error(self.request, "La verificación del documento INE falló. Inténtalo nuevamente.")
+                return self.render_to_response(self.get_context_data(form=form))
+            messages.success(self.request, "¡El documento INE fue verificado con éxito!")
+            
+            profile_picture = form.cleaned_data.get('profile_picture')
+            if profile_picture:
+                self.storage.extra_data['profile_picture'] = profile_picture
 
-                print("INE verificado, avanzando al siguiente paso.")
-                return self.render_next_step(form)
-            else:
-                print("Formulario 'personal' no válido.")
-        
-        return super().post(*args, **kwargs)
+            print("INE verificado, avanzando al siguiente paso.")
+            return self.render_next_step(form)
+        else:
+            print("Formulario 'personal' no válido.")
+    
+    return super().post(*args, **kwargs)
 
 class TerminosCondiciones(TemplateView):
     """
@@ -224,3 +227,132 @@ class RegisterPersonal(View):
         form_data = request.POST.dict()
         request.session['form_data'] = form_data
         return render(request, self.template_name, {'form_data': form_data})
+    
+from django.shortcuts import render, redirect
+from django.utils.crypto import get_random_string
+from django.utils import timezone
+from django.contrib import messages
+from django.core.mail import send_mail
+from django.core.exceptions import ValidationError
+from datetime import timedelta
+import re
+from .models import Arrendador, Arrendatario  # Importa tus modelos correctos
+
+# Función para validar la fortaleza de la contraseña
+def validate_password_strength(password):
+    errors = []
+    if len(password) < 8:
+        errors.append("La contraseña debe tener al menos 8 caracteres.")
+    if not re.search(r"[A-Z]", password):
+        errors.append("La contraseña debe contener al menos una letra mayúscula.")
+    if not re.search(r"[a-z]", password):
+        errors.append("La contraseña debe contener al menos una letra minúscula.")
+    if not re.search(r"\d", password):
+        errors.append("La contraseña debe contener al menos un número.")
+    if not re.search(r"[!@#$%^&*(),.?\":{}|<>]", password):
+        errors.append("La contraseña debe contener al menos un carácter especial.")
+    
+    if errors:
+        raise ValidationError(errors)
+
+# Vista para solicitar el restablecimiento de contraseña
+def password_reset_request(request):
+    if request.method == 'POST':
+        email = request.POST.get('email')
+
+        # Intenta buscar el usuario en Arrendador o Arrendatario
+        try:
+            user = Arrendador.objects.get(correo=email)
+            user_type = 'Arrendador'
+        except Arrendador.DoesNotExist:
+            try:
+                user = Arrendatario.objects.get(correo=email)
+                user_type = 'Arrendatario'
+            except Arrendatario.DoesNotExist:
+                messages.error(request, 'No se encontró ningún usuario con ese correo.')
+                return redirect('password_reset')
+
+        # Generar el código de verificación
+        reset_code = get_random_string(6, allowed_chars='0123456789')
+        expiration_time = timezone.now() + timedelta(minutes=30)
+
+        # Guardar el código en la sesión en lugar de un modelo (simplificación)
+        request.session['reset_email'] = email
+        request.session['reset_code'] = reset_code
+        request.session['user_type'] = user_type
+
+        # Enviar el código de verificación usando send_mail
+        subject = 'Código de restablecimiento de contraseña'
+        message = f'Tu código para restablecer la contraseña es: {reset_code}'
+        email_from = 'rentfast64@gmail.com'  # Puedes usar DEFAULT_FROM_EMAIL directamente
+        recipient_list = [email]
+
+        try:
+            send_mail(subject, message, email_from, recipient_list)
+            messages.success(request, 'Se envió un código a tu correo, favor de verificarlo.')
+            return redirect('verify_reset_code')
+        except Exception as e:
+            messages.error(request, f'Hubo un problema al enviar el correo: {e}')
+
+    return render(request, 'users/reset_password_combined.html', {'stage': 'reset_request'})
+
+# Vista para verificar el código de restablecimiento
+def verify_reset_code(request):
+    email = request.session.get('reset_email')
+    stored_code = request.session.get('reset_code')
+
+    if request.method == 'POST':
+        reset_code = request.POST.get('reset_code')
+
+        if reset_code == stored_code:
+            return redirect('set_new_password')
+        else:
+            messages.error(request, 'Código inválido o expirado.')
+            return redirect('verify_reset_code')
+
+    return render(request, 'users/reset_password_combined.html', {'stage': 'verify_code', 'email': email})
+
+# Vista para establecer una nueva contraseña
+def set_new_password(request):
+    email = request.session.get('reset_email')
+    user_type = request.session.get('user_type')
+
+    if request.method == 'POST':
+        new_password = request.POST.get('new_password')
+
+        try:
+            # Validar la fortaleza de la contraseña
+            validate_password_strength(new_password)
+
+            # Buscar y actualizar el usuario
+            if user_type == 'Arrendador':
+                user = Arrendador.objects.get(correo=email)
+            elif user_type == 'Arrendatario':
+                user = Arrendatario.objects.get(correo=email)
+            else:
+                messages.error(request, 'No se encontró ningún usuario. Inténtalo de nuevo.')
+                return redirect('password_reset')
+
+            # Cambiar la contraseña del usuario relacionado (en el modelo User)
+            user.usuario.set_password(new_password)
+            user.usuario.save()
+
+            # Limpiar la sesión
+            del request.session['reset_email']
+            del request.session['reset_code']
+            del request.session['user_type']
+
+            messages.success(request, 'Tu contraseña se ha cambiado correctamente.')
+            return redirect('login')  # Ajusta el nombre de la URL de inicio de sesión
+
+        except ValidationError as e:
+            # Mostrar cada mensaje de error individualmente
+            for error in e.messages:
+                messages.error(request, error)
+
+        except (Arrendador.DoesNotExist, Arrendatario.DoesNotExist):
+            messages.error(request, 'Error al restablecer la contraseña. Inténtalo de nuevo.')
+            return redirect('password_reset')
+
+    return render(request, 'users/set_new_password.html', {'email': email})
+
