@@ -7,6 +7,7 @@ from django.urls import reverse_lazy, reverse
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
+from rentas.models import Chat
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import DetailView
 from datetime import datetime
@@ -386,9 +387,11 @@ def pagar_sin_paypal_view(request):
         messages.error(request, "No tienes herramientas en el carrito.")
         return redirect("carrito")
 
-    # Crear una instancia de Renta para cada elemento en el carrito
+    ultimo_chat_id = None  # Variable para guardar el ID del último chat creado
+
+    # Crear una instancia de Renta y Chat para cada elemento en el carrito
     for item in carrito_items:
-        Renta.objects.create(
+        renta = Renta.objects.create(
             herramienta=item.herramienta,
             arrendatario=arrendatario,
             fecha_inicio=item.fecha_inicio,
@@ -396,10 +399,27 @@ def pagar_sin_paypal_view(request):
             costo_total=item.costo_total,
             estado="Activa"
         )
+        
+        # Crear el chat entre el arrendatario y el arrendador de la herramienta
+        chat = Chat.objects.create(
+            arrendador=item.herramienta.arrendador,
+            arrendatario=arrendatario,
+            herramienta=item.herramienta,
+            renta=renta
+        )
+
+        # Guardar el ID del último chat creado
+        ultimo_chat_id = chat.id
 
     # Vaciar el carrito
     carrito_items.delete()
 
-    # Mensaje de éxito y redirección
-    messages.success(request, "Renta completada exitosamente sin necesidad de PayPal.")
+    # Redirigir al chat recién creado
+    if ultimo_chat_id:
+        messages.success(request, "Renta completada exitosamente y chat creado.")
+        return redirect(reverse("ver_chat", args=[ultimo_chat_id]))
+
+    # Si no se creó ningún chat, redirigir al home del arrendatario
+    messages.error(request, "No se pudo crear el chat. Redirigiendo al inicio.")
     return redirect("arrendatario_home")
+    
