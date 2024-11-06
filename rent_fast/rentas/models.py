@@ -25,7 +25,9 @@ class Chat(models.Model):
     arrendador = models.ForeignKey('users.Arrendador', on_delete=models.CASCADE)
     arrendatario = models.ForeignKey('users.Arrendatario', on_delete=models.CASCADE)
     herramienta = models.ForeignKey('tools.Tool', on_delete=models.CASCADE)
+    renta = models.ForeignKey(Renta, on_delete=models.CASCADE)  # Add this line to link Chat with Renta
     creado = models.DateTimeField(auto_now_add=True)
+
 
 class Mensaje(models.Model):
     chat = models.ForeignKey(Chat, related_name='mensajes', on_delete=models.CASCADE)
