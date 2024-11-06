@@ -19,8 +19,14 @@ PAYPAL_CLIENT_ID = "AbuWXT83G4O4wSbBHtRSTf5aThMIaKEnUvvFZxrUue5BNQPtqwvtuvgDi4dM
 PAYPAL_CLIENT_SECRET = "EJSxFjhKKUX1PssUUju1ppZSs6JtPzcmV0MAPRlvS06BOAM6CpN92p9TdpEQqop_Wr4UeIcsZGkm05mC"
 PAYPAL_MODE = "sandbox"  # Cambia a "live" en producción
 
+
+SECURE_SSL_REDIRECT = True
+
+
 # Define BASE_DIR para obtener la ruta base del proyecto
+SESSION_COOKIE_SECURE = True
 BASE_DIR = Path(__file__).resolve().parent.parent
+CSRF_COOKIE_SECURE = True
 
 # Ahora puedes usar BASE_DIR para definir rutas
 MEDIA_URL = '/media/'
@@ -36,6 +42,13 @@ env = environ.Env()
 environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
 IDANALYZER_API_KEY = env('IDANALYZER_API_KEY')
+UBER_CLIENT_ID = '6QWax6cLboC1f6TdJ7eYkr3GBxvSHLTc'
+UBER_CLIENT_SECRET = 'D6Hb2hWO93NEIejQmjOyhkX3ZKF_-bYU46w8DxV2'  # Copia aquí tu Client Secret de Uber
+
+
+# Azure Face API settings
+AZURE_FACE_API_KEY = "4R2GHd5yKi9csgHDhZbSCSASDpd8383zvQd1111VnAaxL1tfc6wOJQQJ99AKACYeBjFXJ3w3AAAKACOG27Qb"
+AZURE_FACE_ENDPOINT = "https://rentfast12.cognitiveservices.azure.com/"
 
 
 
@@ -48,8 +61,8 @@ SECRET_KEY = 'django-insecure--s+12dn1clpyqk_w5l@3seh72h012vipmuv)bxrh@!)9vt#^+5
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["127.0.0.1","35.162.85.24", "localhost", "00lar.pythonanywhere.com", "https://8000-idx-t1mfds2024git-1729092128078.cluster-3ch54x2epbcnetrm6ivbqqebjk.cloudworkstations.dev"]
-CSRF_TRUSTED_ORIGINS = ['https://8000-idx-t1mfds2024git-1729092128078.cluster-3ch54x2epbcnetrm6ivbqqebjk.cloudworkstations.dev']
+ALLOWED_HOSTS = ["127.0.0.1","35.162.85.24", "localhost", "00lar.pythonanywhere.com", "https://8000-idx-t1mfds2024git-1729092128078.cluster-3ch54x2epbcnetrm6ivbqqebjk.cloudworkstations.dev",'rentfast.live', 'www.rentfast.live']
+CSRF_TRUSTED_ORIGINS = ['https://8000-idx-t1mfds2024git-1729092128078.cluster-3ch54x2epbcnetrm6ivbqqebjk.cloudworkstations.dev','https://rentfast.live', 'https://www.rentfast.live']
 
 
 # Application definition

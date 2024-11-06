@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load tailwind_filters %}
+{% load crispy_forms_tags %}
 {% block content %}
 <div class="flex min-h-screen justify-center items-center bg-slate-50">
     <div class="bg-white p-8 rounded shadow-md w-full max-w-md">
@@ -37,6 +37,17 @@
                     <img id="profile-preview" src="" alt="Foto de perfil" class="w-full h-full object-cover hidden">
                 </div>
                 <input type="file" name="profile_picture" id="profile-picture" accept="image/*" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-gray-400 file:text-white hover:file:bg-gray-500 cursor-pointer" onchange="previewImage(event)">
+            </div>
+
+            <!-- Captura de foto en vivo -->
+            <div class="mb-6">
+                <label class="block text-gray-700 font-medium">Captura una foto en vivo</label>
+                <div id="camera" class="flex items-center justify-center flex-col mb-4">
+                    <video id="video" autoplay class="w-32 h-32 border rounded"></video>
+                    <canvas id="canvas" style="display: none;"></canvas>
+                    <button type="button" onclick="capturePhoto()" class="mt-4 px-4 py-2 bg-blue-500 text-white rounded">Capturar</button>
+                    <input type="hidden" name="captured_image" id="captured_image">
+                </div>
             </div>
 
             <!-- Campo de nombre -->
@@ -79,8 +90,9 @@
                     <a href="{% url 'terminos' %}">Leer los términos y condiciones</a>
                 </p>
             </div>
+
             <!-- Botón de envío -->
-            <button class="bg-blue-500 text-white py-2 rounded w-full hover:bg-blue-600 focus:outline-none" type="submit">
+            <button type="submit" class="bg-blue-500 text-white py-2 rounded w-full hover:bg-blue-600 focus:outline-none">
                 Continuar
             </button>
         </form>
@@ -93,6 +105,28 @@
         const image = document.getElementById('profile-preview');
         image.src = URL.createObjectURL(event.target.files[0]);
         image.classList.remove('hidden');
+    }
+
+    // Configuración para capturar la imagen en vivo
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('canvas');
+    const capturedImage = document.getElementById('captured_image');
+
+    navigator.mediaDevices.getUserMedia({ video: true })
+        .then(stream => {
+            video.srcObject = stream;
+        })
+        .catch(error => {
+            console.error("Error al acceder a la cámara:", error);
+        });
+
+    function capturePhoto() {
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        canvas.getContext('2d').drawImage(video, 0, 0);
+        const dataURL = canvas.toDataURL('image/png');
+        capturedImage.value = dataURL;  // Guardar en el campo oculto para enviar
+        alert("Foto capturada correctamente");
     }
 </script>
 {% endblock %}
