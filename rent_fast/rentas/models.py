@@ -3,6 +3,7 @@ from django.db import models
 from users.models import Arrendador, Arrendatario
 from django.contrib.auth.models import User
 
+
 class Renta(models.Model):
     herramienta = models.ForeignKey('tools.Tool', on_delete=models.CASCADE)  # Referencia como cadena
     arrendatario = models.ForeignKey(Arrendatario, on_delete=models.CASCADE)
@@ -34,3 +35,25 @@ class Mensaje(models.Model):
     remitente = models.ForeignKey(User, on_delete=models.CASCADE)
     contenido = models.TextField()
     enviado = models.DateTimeField(auto_now_add=True)
+
+class Pregunta(models.Model):
+    herramienta = models.ForeignKey('tools.Tool', on_delete=models.CASCADE, related_name="preguntas")
+    arrendatario = models.ForeignKey(Arrendatario, on_delete=models.CASCADE)
+    pregunta_texto = models.TextField()
+    fecha_creacion = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Pregunta sobre {self.herramienta.nombre} - {self.pregunta_texto[:30]}..."
+
+    @property
+    def tiene_respuesta(self):
+        return hasattr(self, 'respuesta')  # Devuelve True si tiene una respuesta asociada
+
+class Respuesta(models.Model):
+    pregunta = models.OneToOneField(Pregunta, on_delete=models.CASCADE, related_name="respuesta")
+    arrendador = models.ForeignKey(Arrendador, on_delete=models.CASCADE)
+    respuesta_texto = models.TextField()
+    fecha_creacion = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Respuesta a pregunta sobre {self.pregunta.herramienta.nombre}"
