@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Preguntas sin Responder</h1>
+<form method="post" action="{% url 'preguntas_sin_responder' %}">
+    {% csrf_token %}
+    {% for pregunta in preguntas %}
+        <div class="pregunta">
+            <p><strong>Herramienta:</strong> {{ pregunta.herramienta.nombre }}</p>
+            <p><strong>Pregunta:</strong> {{ pregunta.pregunta_texto }}</p>
+            <label for="respuesta_{{ pregunta.id }}">Responder:</label>
+            <input type="text" name="respuesta_texto" id="respuesta_{{ pregunta.id }}">
+            <input type="hidden" name="pregunta_id" value="{{ pregunta.id }}">
+            <button type="submit">Enviar Respuesta</button>
+        </div>
+    {% endfor %}
+</form>
+{% endblock %}

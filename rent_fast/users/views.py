@@ -1,4 +1,5 @@
 # views.py
+from django.views.decorators.csrf import csrf_exempt
 
 import requests
 import base64
@@ -11,7 +12,8 @@ from django.conf import settings
 from django.views.generic import TemplateView
 from django.views import View
 from django.contrib.auth.mixins import LoginRequiredMixin
-
+import json
+from base64 import b64decode
 from .forms import UserForm, PersonalInfoForm, AddressForm
 from .models import Arrendador, Arrendatario, Direccion
 
@@ -30,6 +32,54 @@ TEMPLATES = {
     'personal': 'users/register_personal.html',
     'address': 'users/register_address.html',
 }
+
+
+@csrf_exempt
+def verify_identity(request):
+    if request.method == 'POST':
+        # Obtener imagen capturada y comparar con el INE del formulario
+        captured_image = request.POST.get('captured_image')
+        ine_image = request.FILES.get('ine_image')  # Obtener imagen INE del formulario
+
+        if not (captured_image and ine_image):
+            return JsonResponse({"success": False, "error": "Se requieren ambas imágenes."})
+
+        # Convertir imágenes a base64
+        captured_image_base64 = base64.b64encode(captured_image.read()).decode('utf-8')
+        ine_image_base64 = base64.b64encode(ine_image.read()).decode('utf-8')
+
+        # Enviar imágenes a la API de Azure Face
+        headers = {
+            "Ocp-Apim-Subscription-Key": settings.AZURE_FACE_API_KEY,
+            "Content-Type": "application/octet-stream"
+        }
+        # URL de la API de Azure para la detección y verificación
+        detect_url = settings.AZURE_FACE_API_ENDPOINT + "/detect"
+        verify_url = settings.AZURE_FACE_API_ENDPOINT + "/verify"
+
+        # Enviar solicitudes de detección y verificación de rostros
+        try:
+            # Detección de rostro en la imagen capturada
+            detect_response = requests.post(detect_url, headers=headers, data=captured_image_base64)
+            detect_response.raise_for_status()
+            face_id_captured = detect_response.json()[0]['faceId']
+
+            # Detección de rostro en la imagen INE
+            detect_response_ine = requests.post(detect_url, headers=headers, data=ine_image_base64)
+            detect_response_ine.raise_for_status()
+            face_id_ine = detect_response_ine.json()[0]['faceId']
+
+            # Verificación de coincidencia entre los rostros detectados
+            verify_data = {"faceId1": face_id_captured, "faceId2": face_id_ine}
+            verify_response = requests.post(verify_url, headers=headers, json=verify_data)
+            verify_response.raise_for_status()
+
+            is_identical = verify_response.json().get("isIdentical", False)
+            return JsonResponse({"success": is_identical})
+        except requests.RequestException as e:
+            return JsonResponse({"success": False, "error": str(e)})
+
+    return JsonResponse({"success": False, "error": "Método no permitido."})
 
 class RegisterWizard(SessionWizardView):
     form_list = FORMS
