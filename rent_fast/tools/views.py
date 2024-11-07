@@ -18,6 +18,9 @@ from django.views.decorators.http import require_POST
 from geopy.geocoders import Nominatim
 from django.conf import settings
 import requests
+from rentas.forms import PreguntaForm
+from rentas.models import Pregunta
+
 
 def cotizar_envio_view(request, tool_id):
     # Verificar si tenemos un access_token en la sesión
@@ -199,6 +202,29 @@ class ToolDetailView(DetailView):
     model = Tool
     template_name = "tools/tool_details.html"
     context_object_name = 'tool'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['form'] = PreguntaForm()  # Añadimos el formulario de pregunta al contexto
+        return context
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        form = PreguntaForm(request.POST)
+        arrendatario = getattr(request.user, 'arrendatario', None)
+
+        if not arrendatario:
+            # Redirecciona si el usuario no es un arrendatario
+            return redirect('login')
+
+        if form.is_valid():
+            pregunta = form.save(commit=False)
+            pregunta.herramienta = self.object  # Asocia la pregunta con la herramienta actual
+            pregunta.arrendatario = arrendatario
+            pregunta.save()
+            return redirect('tool_detail', pk=self.object.pk)  # Redirige a la misma página para actualizar el contenido
+
+        return self.get(request, *args, **kwargs)
 
 @login_required
 def add_tool_view(request):
