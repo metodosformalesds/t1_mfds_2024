@@ -19,14 +19,20 @@ PAYPAL_CLIENT_ID = "AbuWXT83G4O4wSbBHtRSTf5aThMIaKEnUvvFZxrUue5BNQPtqwvtuvgDi4dM
 PAYPAL_CLIENT_SECRET = "EJSxFjhKKUX1PssUUju1ppZSs6JtPzcmV0MAPRlvS06BOAM6CpN92p9TdpEQqop_Wr4UeIcsZGkm05mC"
 PAYPAL_MODE = "sandbox"  # Cambia a "live" en producción
 
-
-SECURE_SSL_REDIRECT = True
-
+# Configuración para entornos de desarrollo y producción
+if os.environ.get('DJANGO_ENV') == 'production':
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+else:
+    SECURE_SSL_REDIRECT = False
+    SESSION_COOKIE_SECURE = False
+    CSRF_COOKIE_SECURE = False
 
 # Define BASE_DIR para obtener la ruta base del proyecto
-SESSION_COOKIE_SECURE = True
+
 BASE_DIR = Path(__file__).resolve().parent.parent
-CSRF_COOKIE_SECURE = True
+
 
 # Ahora puedes usar BASE_DIR para definir rutas
 MEDIA_URL = '/media/'

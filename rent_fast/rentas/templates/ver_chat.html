@@ -1,25 +1,48 @@
-<!-- chat/ver_chat.html -->
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container mx-auto py-4">
-    <h1 class="text-2xl font-bold mb-4">Chat</h1>
-    <div class="border p-4 rounded-lg">
+<div class="container mx-auto py-8 px-4 sm:px-6 lg:px-8">
+    <!-- Título del chat -->
+    <h1 class="text-3xl font-bold text-gray-800 mb-6 text-center">Chat</h1>
+
+    <!-- Contenedor de mensajes -->
+    <div class="bg-white border rounded-lg shadow-md p-6 max-h-96 overflow-y-auto space-y-4">
         {% for mensaje in mensajes %}
-            <div class="mb-2">
-                <strong>{{ mensaje.remitente.get_full_name }}:</strong>
-                <p>{{ mensaje.contenido }}</p>
-                <span class="text-xs text-gray-500">{{ mensaje.enviado }}</span>
+            <!-- Mensaje individual -->
+            <div class="p-3 rounded-lg {% if mensaje.remitente == request.user %} bg-blue-50 text-right {% else %} bg-gray-100 text-left {% endif %}">
+                <p class="text-sm font-medium text-gray-800">
+                    {{ mensaje.remitente.get_full_name }}
+                </p>
+                <p class="text-base text-gray-700">{{ mensaje.contenido }}</p>
+                <span class="text-xs text-gray-500 block mt-1">{{ mensaje.enviado }}</span>
             </div>
         {% empty %}
-            <p class="text-gray-600">No hay mensajes en este chat.</p>
+        <!-- Mensaje si no hay mensajes -->
+        <div class="text-center py-4">
+            <p class="text-gray-600 text-lg">No hay mensajes en este chat.</p>
+        </div>
         {% endfor %}
     </div>
 
-    <form method="post">
+    <!-- Formulario para enviar un nuevo mensaje -->
+    <form method="post" class="mt-6">
         {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Enviar</button>
+        <div class="flex items-center space-x-3">
+            <input type="text" name="contenido" class="flex-1 border rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Escribe tu mensaje..." required>
+            <!-- Botón con ícono de adjuntar archivos (SVG) -->
+            <button type="button" class="p-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 002.828 2.828l6.586-6.586a4 4 0 00-5.656-5.656l-6.586 6.586a6 6 0 008.486 8.486l6.586-6.586" />
+                </svg>
+            </button>
+            <!-- Botón con ícono de camión (SVG) -->
+            <button type="button" class="p-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l1.38-4.607A2 2 0 0016.5 7h-9a2 2 0 00-1.933 1.524L3 13zm0 0v6a1 1 0 001 1h1a1 1 0 001-1v-1h8v1a1 1 0 001 1h1a1 1 0 001-1v-6M5 21h.01M19 21h.01" />
+                </svg>
+            </button>
+            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition duration-150">Enviar</button>
+        </div>
     </form>
 </div>
 {% endblock %}

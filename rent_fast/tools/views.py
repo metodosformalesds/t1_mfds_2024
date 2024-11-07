@@ -422,6 +422,8 @@ def pagar_sin_paypal_view(request):
     # Si no se creó ningún chat, redirigir al home del arrendatario
     messages.error(request, "No se pudo crear el chat. Redirigiendo al inicio.")
     return redirect("arrendatario_home")
+    
+    
     # views.py
 from django.conf import settings
 import requests
@@ -455,6 +457,7 @@ def uber_callback(request):
 
     # Devuelve el token para pruebas
     return JsonResponse({'access_token': access_token})
+
 def obtener_cotizacion(request):
     access_token = request.session.get('uber_access_token')
     if not access_token:
