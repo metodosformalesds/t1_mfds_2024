@@ -411,6 +411,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .forms import UserForm, PersonalInfoForm, AddressForm
 from .models import Arrendador, Arrendatario, Direccion
+from django.urls import reverse  # Importa para generar las URLs
 
 @login_required
 def actualizar_datos_view(request):
@@ -424,11 +425,25 @@ def actualizar_datos_view(request):
 
     direccion = perfil.direccion
 
+    # Determina la URL de redirección
+    if es_arrendador:
+        redireccion_url = reverse('arrendador_home')
+    else:
+        redireccion_url = reverse('arrendatario_home')
+
     # Inicializa los formularios con los datos existentes
     if request.method == 'POST':
         user_form = UserForm(request.POST, instance=request.user)
         personal_form = PersonalInfoForm(request.POST, request.FILES)
         address_form = AddressForm(request.POST, instance=direccion)
+
+        # Eliminar campos de contraseña de la presentación y validación
+        user_form.fields.pop('password1', None)
+        user_form.fields.pop('password2', None)
+
+        # Hacer que los campos 'role' y 'ine_image' no sean obligatorios y eliminarlos de la presentación
+        personal_form.fields.pop('role', None)
+        personal_form.fields.pop('ine_image', None)
 
         if user_form.is_valid() and personal_form.is_valid() and address_form.is_valid():
             # Actualiza el usuario
@@ -438,7 +453,6 @@ def actualizar_datos_view(request):
             perfil.nombre = personal_form.cleaned_data['nombre']
             perfil.apellidos = personal_form.cleaned_data['apellidos']
             perfil.telefono = personal_form.cleaned_data['telefono']
-            perfil.ine_image = personal_form.cleaned_data['ine_image']
             perfil.profile_picture = personal_form.cleaned_data.get('profile_picture')
             perfil.save()
 
@@ -455,18 +469,28 @@ def actualizar_datos_view(request):
             'nombre': perfil.nombre,
             'apellidos': perfil.apellidos,
             'telefono': perfil.telefono,
-            'role': 'arrendador' if es_arrendador else 'arrendatario',  # Pre-carga el rol
-            'ine_image': perfil.ine_image,
             'profile_picture': perfil.profile_picture
         })
         address_form = AddressForm(instance=direccion)
+
+        # Eliminar campos de contraseña de la presentación
+        user_form.fields.pop('password1', None)
+        user_form.fields.pop('password2', None)
+
+        # Eliminar campos 'role' y 'ine_image' de la presentación
+        personal_form.fields.pop('role', None)
+        personal_form.fields.pop('ine_image', None)
 
     context = {
         'user_form': user_form,
         'personal_form': personal_form,
         'address_form': address_form,
-        'es_arrendador': es_arrendador
+        'es_arrendador': es_arrendador,
+        'redireccion_url': redireccion_url  # Pasa la URL de redirección al contexto
     }
     return render(request, 'users/update_dates.html', context)
+
+
+
 
 
