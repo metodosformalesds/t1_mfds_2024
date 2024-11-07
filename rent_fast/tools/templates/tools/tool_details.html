@@ -76,44 +76,42 @@ onclick="window.location.href='{% url 'seleccionar_fechas' tool.id %}'">
     <h2 class="px-4 pb-3 pt-5 text-[22px] font-bold leading-tight tracking-[-0.015em] text-[#0e141b]">Descripción</h2>
     <p class="px-4 pb-3 pt-1 text-base font-normal leading-normal text-[#0e141b]">{{ tool.descripcion }}</p>
 
-    <!-- Preguntas Frecuentes -->
-    <h2 class="px-4 pb-3 pt-5 text-[22px] font-bold leading-tight tracking-[-0.015em] text-[#0e141b]">Preguntas Frecuentes</h2>
+    <h2 class="px-4 pb-3 pt-5 text-[22px] font-bold leading-tight tracking-[-0.015em] text-[#0e141b]">Preguntas y Respuestas</h2>
     <div class="flex flex-col gap-3 p-4">
-      <details class="group flex flex-col rounded-xl border border-[#d0dbe7] bg-slate-50 px-[15px] py-[7px]" open="">
-        <summary class="flex cursor-pointer items-center justify-between gap-6 py-2">
-          <p class="text-sm font-medium leading-normal text-[#0e141b]">¿Puedo extender mi alquiler?</p>
-          <div class="text-[#0e141b] group-open:rotate-180" data-icon="CaretDown" data-size="20px" data-weight="regular">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
-              <path d="M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80A8,8,0,0,1,53.66,90.34L128,164.69l74.34-74.35a8,8,0,0,1,11.32,11.32Z"></path>
-            </svg>
-          </div>
-        </summary>
-        <p class="pb-2 text-sm font-normal leading-normal text-[#4e7397]">¡Sí! Si necesitas mantener la herramienta más tiempo del esperado, puedes extender fácilmente tu alquiler a través de la app ToolShare. Solo avisa al dueño con anticipación.</p>
-      </details>
-      <details class="group flex flex-col rounded-xl border border-[#d0dbe7] bg-slate-50 px-[15px] py-[7px]">
-        <summary class="flex cursor-pointer items-center justify-between gap-6 py-2">
-          <p class="text-sm font-medium leading-normal text-[#0e141b]">¿Cómo funciona la entrega?</p>
-          <div class="text-[#0e141b] group-open:rotate-180" data-icon="CaretDown" data-size="20px" data-weight="regular">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
-              <path d="M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80A8,8,0,0,1,53.66,90.34L128,164.69l74.34-74.35a8,8,0,0,1,11.32,11.32Z"></path>
-            </svg>
-          </div>
-        </summary>
-        <p class="pb-2 text-sm font-normal leading-normal text-[#4e7397]">Sí, si necesitas mantener la herramienta más tiempo del esperado, puedes extender fácilmente tu alquiler a través de la app ToolShare. Solo avisa al dueño con anticipación.</p>
-      </details>
-      <details class="group flex flex-col rounded-xl border border-[#d0dbe7] bg-slate-50 px-[15px] py-[7px]">
-        <summary class="flex cursor-pointer items-center justify-between gap-6 py-2">
-          <p class="text-sm font-medium leading-normal text-[#0e141b]">¿Qué pasa si daño la herramienta?</p>
-          <div class="text-[#0e141b] group-open:rotate-180" data-icon="CaretDown" data-size="20px" data-weight="regular">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
-              <path d="M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80A8,8,0,0,1,53.66,90.34L128,164.69l74.34-74.35a8,8,0,0,1,11.32,11.32Z"></path>
-            </svg>
-          </div>
-        </summary>
-        <p class="pb-2 text-sm font-normal leading-normal text-[#4e7397]">Si llegas a dañar la herramienta, debes comunicarte con el dueño lo antes posible para resolver la situación.</p>
-      </details>
+        {% for pregunta in tool.preguntas.all %}
+            <details class="group flex flex-col rounded-xl border border-[#d0dbe7] bg-slate-50 px-[15px] py-[7px]" open="">
+                <summary class="flex cursor-pointer items-center justify-between gap-6 py-2">
+                    <!-- Mostrar la pregunta -->
+                    <p class="text-sm font-medium leading-normal text-[#0e141b]">{{ pregunta.pregunta_texto }}</p>
+                    <div class="text-[#0e141b] group-open:rotate-180" data-icon="CaretDown" data-size="20px" data-weight="regular">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
+                            <path d="M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80A8,8,0,0,1,53.66,90.34L128,164.69l74.34-74.35a8,8,0,0,1,11.32,11.32Z"></path>
+                        </svg>
+                    </div>
+                </summary>
+
+                <!-- Mostrar la respuesta si existe -->
+                {% if pregunta.tiene_respuesta %}
+                    <p class="pb-2 text-sm font-normal leading-normal text-[#4e7397]">{{ pregunta.respuesta.respuesta_texto }}</p>
+                {% else %}
+                    <p class="pb-2 text-sm font-normal leading-normal text-[#4e7397]"><em>Sin respuesta aún.</em></p>
+                {% endif %}
+            </details>
+        {% endfor %}
     </div>
 
+    <!-- Formulario para hacer una pregunta -->
+    {% if user.is_authenticated and user.arrendatario %}
+        <h2 class="px-4 pb-3 pt-5 text-[22px] font-bold leading-tight tracking-[-0.015em] text-[#0e141b]">Haz una Pregunta</h2>
+        <form method="post" action="{% url 'tool_detail' tool.id %}" class="p-4 border rounded-lg bg-gray-100">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Enviar Pregunta</button>
+        </form>
+    {% else %}
+        <p class="text-red-500">Debes ser un arrendatario registrado para hacer preguntas.</p>
+    {% endif %}
+</div>
     <!-- Botón para alquilar ahora -->
     <div class="flex px-4 py-3">
       <button class="flex h-12 min-w-[84px] max-w-[480px] flex-1 cursor-pointer items-center justify-center overflow-hidden rounded-xl bg-[#1980e6] px-5 text-base font-bold leading-normal tracking-[0.015em] text-slate-50" onclick="window.location.href='/alquilar-ahora'">
