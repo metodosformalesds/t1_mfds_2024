@@ -11,6 +11,8 @@ from .paypal import paypalrestsdk
 from django.http import HttpResponse
 from .forms import MensajeForm
 from users.models import Arrendatario, Arrendador
+from .forms import RespuestaForm, PreguntaForm
+from .models import Pregunta
 
 
 
@@ -145,3 +147,25 @@ def rentas_arrendatario_view(request):
         "estado_filtro": estado_filtro,
         "estados": Renta._meta.get_field("estado").choices,
     })
+
+@login_required
+def preguntas_sin_responder_view(request):
+    arrendador = Arrendador.objects.get(usuario=request.user)
+    preguntas = Pregunta.objects.filter(herramienta__arrendador=arrendador, respuesta=None)
+
+    if request.method == 'POST':
+        form = RespuestaForm(request.POST)
+        if form.is_valid():
+            pregunta_id = request.POST.get('pregunta_id')
+            pregunta = get_object_or_404(Pregunta, id=pregunta_id)
+            respuesta = form.save(commit=False)
+            respuesta.pregunta = pregunta
+            respuesta.arrendador = arrendador
+            respuesta.save()
+            messages.success(request, "Respuesta enviada correctamente.")
+            return redirect('preguntas_sin_responder')
+
+    else:
+        form = RespuestaForm()
+
+    return render(request, 'rentas/preguntas_sin_responder.html', {'preguntas': preguntas, 'form': form})
