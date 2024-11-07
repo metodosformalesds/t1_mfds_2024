@@ -10,6 +10,8 @@ from tools.models import Carrito
 from .paypal import paypalrestsdk
 from django.http import HttpResponse
 from .forms import MensajeForm
+from users.models import Arrendatario, Arrendador
+
 
 
 def iniciar_pago_view(request):
@@ -108,3 +110,38 @@ def listar_chats_view(request):
     )
 
     return render(request, 'rentas/listar_chats.html', {'chats': chats})
+
+@login_required
+def rentas_arrendador_view(request):
+    # Verificamos que el usuario sea un arrendador
+    arrendador = Arrendador.objects.filter(usuario=request.user).first()
+    if not arrendador:
+        return render(request, "tools/no_role.html", {'error': "Solo los arrendadores pueden ver esta página."})
+
+    # Obtenemos las rentas de las herramientas del arrendador, filtradas por estado si se solicita
+    estado_filtro = request.GET.get("estado", "Activa")  # Por defecto, muestra las rentas activas
+    rentas = Renta.objects.filter(herramienta__arrendador=arrendador, estado=estado_filtro)
+
+    return render(request, "rentas/rentas_arrendador.html", {
+        "rentas": rentas,
+        "estado_filtro": estado_filtro,
+        "estados": Renta._meta.get_field("estado").choices,  # Opciones de estado para el filtro
+    })
+
+
+@login_required
+def rentas_arrendatario_view(request):
+    # Verificamos que el usuario sea un arrendatario
+    arrendatario = Arrendatario.objects.filter(usuario=request.user).first()
+    if not arrendatario:
+        return render(request, "tools/no_role.html", {'error': "Solo los arrendatarios pueden ver esta página."})
+
+    # Obtenemos las rentas del arrendatario, con opción de filtro por estado
+    estado_filtro = request.GET.get("estado", "Activa")  # Muestra rentas activas por defecto
+    rentas = Renta.objects.filter(arrendatario=arrendatario, estado=estado_filtro)
+
+    return render(request, "rentas/rentas_arrendatario.html", {
+        "rentas": rentas,
+        "estado_filtro": estado_filtro,
+        "estados": Renta._meta.get_field("estado").choices,
+    })

@@ -11,7 +11,11 @@
             <p class="tracking-light min-w-72 text-[32px] font-bold leading-tight text-[#0e141b]">Mis herramientas</p>
             <!-- arrendador_home.html -->
           <a href="{% url 'listar_chats' %}" class="text-indigo-600 hover:underline">Mis Chats</a>
-
+          <div class="flex justify-end mt-4">
+            <a href="{% url 'rentas_arrendador' %}" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                Ver Mis Rentas
+            </a>
+        </div>
             <a href="{% url 'add_tool' %}" class="text-indigo-600 hover:underline">Agregar herramienta</a>
           </div>
 
