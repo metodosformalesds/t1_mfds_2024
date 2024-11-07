@@ -356,3 +356,67 @@ def set_new_password(request):
 
     return render(request, 'users/set_new_password.html', {'email': email})
 
+from django.shortcuts import render, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from .forms import UserForm, PersonalInfoForm, AddressForm
+from .models import Arrendador, Arrendatario, Direccion
+
+@login_required
+def actualizar_datos_view(request):
+    # Determina si el usuario es Arrendador o Arrendatario
+    try:
+        perfil = Arrendador.objects.get(usuario=request.user)
+        es_arrendador = True
+    except Arrendador.DoesNotExist:
+        perfil = Arrendatario.objects.get(usuario=request.user)
+        es_arrendador = False
+
+    direccion = perfil.direccion
+
+    # Inicializa los formularios con los datos existentes
+    if request.method == 'POST':
+        user_form = UserForm(request.POST, instance=request.user)
+        personal_form = PersonalInfoForm(request.POST, request.FILES)
+        address_form = AddressForm(request.POST, instance=direccion)
+
+        if user_form.is_valid() and personal_form.is_valid() and address_form.is_valid():
+            # Actualiza el usuario
+            user_form.save()
+
+            # Actualiza manualmente los datos personales
+            perfil.nombre = personal_form.cleaned_data['nombre']
+            perfil.apellidos = personal_form.cleaned_data['apellidos']
+            perfil.telefono = personal_form.cleaned_data['telefono']
+            perfil.ine_image = personal_form.cleaned_data['ine_image']
+            perfil.profile_picture = personal_form.cleaned_data.get('profile_picture')
+            perfil.save()
+
+            # Actualiza la dirección
+            address_form.save()
+
+            messages.success(request, 'Tu información ha sido actualizada con éxito.')
+        else:
+            messages.error(request, 'Por favor, corrige los errores en el formulario.')
+    else:
+        # Pre-carga los datos en los formularios
+        user_form = UserForm(instance=request.user)
+        personal_form = PersonalInfoForm(initial={
+            'nombre': perfil.nombre,
+            'apellidos': perfil.apellidos,
+            'telefono': perfil.telefono,
+            'role': 'arrendador' if es_arrendador else 'arrendatario',  # Pre-carga el rol
+            'ine_image': perfil.ine_image,
+            'profile_picture': perfil.profile_picture
+        })
+        address_form = AddressForm(instance=direccion)
+
+    context = {
+        'user_form': user_form,
+        'personal_form': personal_form,
+        'address_form': address_form,
+        'es_arrendador': es_arrendador
+    }
+    return render(request, 'users/update_dates.html', context)
+
+
