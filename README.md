@@ -44,6 +44,7 @@ Rent Fast es una plataforma innovadora para la renta de herramientas.
 | 🔗 **Caso de Uso**             | Caso de uso                   | [World](https://docs.google.com/document/d/1A6KYdG0eG6XtxhBEghS4FSh59YGc_fzoYsPU8UY18Gs/edit?usp=sharing)                   |
 | 🔗 **LOP**             | LOP Rentfast                   | [Excel](https://docs.google.com/spreadsheets/d/10TVIGTao-HNS1O8hR-kylg5nKtoe0EEAW4MW8teMSTc/edit?usp=sharing)                   |
 | 📊 **ClickUp**         | Programing task Gantt              | [Equipo](https://app.clickup.com/9011548244/v/li/901106282701)                     |
+| 📋 **Dominio**   | Documentación del dominio            | [Documenacion](https://docs.google.com/document/d/1Vl7ueZ5hsXziPJTrkL4wLrr6eUPZtXWD/edit)               |
 ---
 
 > **Diseñado con pasión por el equipo de Rent Fast.**  
