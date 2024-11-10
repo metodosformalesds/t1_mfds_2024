@@ -38,15 +38,6 @@
             <!-- Formulario de Dirección -->
             {{ address_form|crispy }}
 
-            <!-- Campo de foto de perfil -->
-            <div class="flex flex-col items-center mb-6">
-                <label class="text-gray-700 font-medium mb-2">Foto de perfil</label>
-                <div class="w-24 h-24 bg-gray-300 rounded-full flex items-center justify-center overflow-hidden mb-2">
-                    <img id="profile-preview" src="{{ user.profile_picture.url }}" alt="Foto de perfil" class="w-full h-full object-cover">
-                </div>
-                <input type="file" name="profile_picture" id="profile-picture" accept="image/*" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-gray-400 file:text-white hover:file:bg-gray-500 cursor-pointer" onchange="previewImage(event)">
-            </div>
-
             <!-- Botón para guardar los cambios -->
             <button type="submit" class="bg-blue-500 text-white py-2 rounded w-full hover:bg-blue-600 focus:outline-none">
                 Guardar Cambios
@@ -54,13 +45,4 @@
         </form>
     </div>
 </div>
-
-<script>
-    // Función para previsualizar la imagen de perfil seleccionada
-    function previewImage(event) {
-        const image = document.getElementById('profile-preview');
-        image.src = URL.createObjectURL(event.target.files[0]);
-        image.classList.remove('hidden');
-    }
-</script>
 {% endblock %}

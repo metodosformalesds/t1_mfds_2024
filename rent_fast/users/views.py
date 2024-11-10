@@ -13,6 +13,7 @@ from django.views.generic import TemplateView
 from django.views import View
 from django.contrib.auth.mixins import LoginRequiredMixin
 import json
+from django.http import JsonResponse
 from base64 import b64decode
 from .forms import UserForm, PersonalInfoForm, AddressForm
 from .models import Arrendador, Arrendatario, Direccion
@@ -411,7 +412,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .forms import UserForm, PersonalInfoForm, AddressForm
 from .models import Arrendador, Arrendatario, Direccion
-from django.urls import reverse  # Importa para generar las URLs
+from django.urls import reverse
 
 @login_required
 def actualizar_datos_view(request):
@@ -426,44 +427,40 @@ def actualizar_datos_view(request):
     direccion = perfil.direccion
 
     # Determina la URL de redirección
-    if es_arrendador:
-        redireccion_url = reverse('arrendador_home')
-    else:
-        redireccion_url = reverse('arrendatario_home')
+    redireccion_url = reverse('arrendador_home') if es_arrendador else reverse('arrendatario_home')
 
-    # Inicializa los formularios con los datos existentes
     if request.method == 'POST':
         user_form = UserForm(request.POST, instance=request.user)
         personal_form = PersonalInfoForm(request.POST, request.FILES)
         address_form = AddressForm(request.POST, instance=direccion)
 
-        # Eliminar campos de contraseña de la presentación y validación
+        # Remover campos de contraseña y otros no necesarios del formulario de usuario
         user_form.fields.pop('password1', None)
         user_form.fields.pop('password2', None)
-
-        # Hacer que los campos 'role' y 'ine_image' no sean obligatorios y eliminarlos de la presentación
         personal_form.fields.pop('role', None)
         personal_form.fields.pop('ine_image', None)
 
         if user_form.is_valid() and personal_form.is_valid() and address_form.is_valid():
-            # Actualiza el usuario
+            # Guardar los cambios en el usuario
             user_form.save()
 
-            # Actualiza manualmente los datos personales
+            # Actualizar manualmente los datos personales
             perfil.nombre = personal_form.cleaned_data['nombre']
             perfil.apellidos = personal_form.cleaned_data['apellidos']
             perfil.telefono = personal_form.cleaned_data['telefono']
-            perfil.profile_picture = personal_form.cleaned_data.get('profile_picture')
-            perfil.save()
 
-            # Actualiza la dirección
+            # Verifica y actualiza la imagen de perfil solo si se ha proporcionado un nuevo archivo
+            if 'profile_picture' in request.FILES:
+                perfil.profile_picture = personal_form.cleaned_data.get('profile_picture')
+
+            perfil.save()
             address_form.save()
 
             messages.success(request, 'Tu información ha sido actualizada con éxito.')
         else:
             messages.error(request, 'Por favor, corrige los errores en el formulario.')
     else:
-        # Pre-carga los datos en los formularios
+        # Inicializar los formularios con los datos existentes
         user_form = UserForm(instance=request.user)
         personal_form = PersonalInfoForm(initial={
             'nombre': perfil.nombre,
@@ -473,11 +470,8 @@ def actualizar_datos_view(request):
         })
         address_form = AddressForm(instance=direccion)
 
-        # Eliminar campos de contraseña de la presentación
         user_form.fields.pop('password1', None)
         user_form.fields.pop('password2', None)
-
-        # Eliminar campos 'role' y 'ine_image' de la presentación
         personal_form.fields.pop('role', None)
         personal_form.fields.pop('ine_image', None)
 
@@ -486,9 +480,10 @@ def actualizar_datos_view(request):
         'personal_form': personal_form,
         'address_form': address_form,
         'es_arrendador': es_arrendador,
-        'redireccion_url': redireccion_url  # Pasa la URL de redirección al contexto
+        'redireccion_url': redireccion_url
     }
     return render(request, 'users/update_dates.html', context)
+
 
 
 

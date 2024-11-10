@@ -39,6 +39,15 @@
                 {{ wizard.form.ine_image|as_crispy_field }}
             </div>
 
+            <!-- Nuevo Campo: Foto de Perfil con Vista Previa -->
+            <div class="mb-6">
+                <label class="block text-gray-700 font-medium">Foto de perfil</label>
+                <input type="file" name="{{ wizard.form.profile_picture.name }}" id="id_profile_picture" onchange="previewImage(event)" class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none">
+                <div class="mt-4">
+                    <img id="profile-preview" class="w-32 h-32 rounded-full object-cover border hidden" src="" alt="Vista previa de la foto">
+                </div>
+            </div>
+
             <!-- Botón de Verificación -->
             <button type="button" onclick="openVerificationDialog()" class="w-full bg-gray-500 text-white py-2 rounded mt-4">
                 Verificar Identidad
@@ -63,46 +72,53 @@
 </div>
 
 <script>
-// Abre el diálogo de verificación
-function openVerificationDialog() {
-    document.getElementById("verification-dialog").classList.remove("hidden");
-    navigator.mediaDevices.getUserMedia({ video: true })
-        .then(stream => { document.getElementById("live-video").srcObject = stream; });
-}
+    // Función para previsualizar la imagen de perfil seleccionada
+    function previewImage(event) {
+        const image = document.getElementById('profile-preview');
+        image.src = URL.createObjectURL(event.target.files[0]);
+        image.classList.remove('hidden');
+    }
 
-// Cierra el diálogo de verificación
-function closeVerificationDialog() {
-    document.getElementById("verification-dialog").classList.add("hidden");
-    const stream = document.getElementById("live-video").srcObject;
-    if (stream) { stream.getTracks().forEach(track => track.stop()); }
-}
+    // Abre el diálogo de verificación
+    function openVerificationDialog() {
+        document.getElementById("verification-dialog").classList.remove("hidden");
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then(stream => { document.getElementById("live-video").srcObject = stream; });
+    }
 
-// Captura la foto y verifica con el backend
-function captureAndVerify() {
-    const video = document.getElementById("live-video");
-    const canvas = document.createElement("canvas");
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    canvas.getContext("2d").drawImage(video, 0, 0);
-    const imageData = canvas.toDataURL("image/png");
+    // Cierra el diálogo de verificación
+    function closeVerificationDialog() {
+        document.getElementById("verification-dialog").classList.add("hidden");
+        const stream = document.getElementById("live-video").srcObject;
+        if (stream) { stream.getTracks().forEach(track => track.stop()); }
+    }
 
-    // Envía la imagen capturada al backend
-    fetch("{% url 'verify_identity' %}", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "X-CSRFToken": "{{ csrf_token }}" },
-        body: JSON.stringify({ live_image: imageData })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            alert("Identidad verificada correctamente.");
-            document.getElementById("continue-btn").disabled = false;  // Habilita el botón de continuar
-            closeVerificationDialog();
-        } else {
-            alert("La verificación de identidad falló. Inténtalo nuevamente.");
-        }
-    })
-    .catch(error => console.error("Error:", error));
-}
+    // Captura la foto y verifica con el backend
+    function captureAndVerify() {
+        const video = document.getElementById("live-video");
+        const canvas = document.createElement("canvas");
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        canvas.getContext("2d").drawImage(video, 0, 0);
+        const imageData = canvas.toDataURL("image/png");
+
+        // Envía la imagen capturada al backend
+        fetch("{% url 'verify_identity' %}", {
+            method: "POST",
+            headers: { "Content-Type": "application/json", "X-CSRFToken": "{{ csrf_token }}" },
+            body: JSON.stringify({ live_image: imageData })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert("Identidad verificada correctamente.");
+                document.getElementById("continue-btn").disabled = false;  // Habilita el botón de continuar
+                closeVerificationDialog();
+            } else {
+                alert("La verificación de identidad falló. Inténtalo nuevamente.");
+            }
+        })
+        .catch(error => console.error("Error:", error));
+    }
 </script>
 {% endblock %}

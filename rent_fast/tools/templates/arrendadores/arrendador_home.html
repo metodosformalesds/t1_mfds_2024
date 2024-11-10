@@ -4,74 +4,62 @@
 <div class="group/design-root relative flex size-full min-h-screen flex-col overflow-x-hidden bg-slate-50" style='font-family: "Work Sans", "Noto Sans", sans-serif;'>
     <div class="layout-container flex h-full grow flex-col">
 
-      <!-- Título de Mis Herramientas y Botón de Agregar Herramienta -->
-      <div class="flex justify-center px-40 py-5">
-        <div class="layout-content-container flex max-w-[960px] flex-1 flex-col">
-          <div class="flex flex-wrap justify-between gap-3 p-4">
-            <p class="tracking-light min-w-72 text-[32px] font-bold leading-tight text-[#0e141b]">Mis herramientas</p>
-            <!-- arrendador_home.html -->
-          <a href="{% url 'listar_chats' %}" class="text-indigo-600 hover:underline">Mis Chats</a>
-          <div class="flex justify-end mt-4">
-            <a href="{% url 'rentas_arrendador' %}" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-                Ver Mis Rentas
-            </a>
-        </div>
-          <!-- Nuevo botón para actualizar datos -->
-          <div>
-          <a href="{% url 'update_dates' %}" class="inline-block mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-150">
-            Actualizar Datos
-          </a>
-        </div>
-        <a href="{% url 'preguntas_sin_responder' %}" class="btn btn-primary">Ver Preguntas Sin Responder</a>
+        <!-- Título de Mis Herramientas y Botón de Agregar Herramienta -->
+        <div class="flex justify-center px-40 py-5">
+            <div class="layout-content-container flex max-w-[960px] flex-1 flex-col">
+                <div class="flex flex-wrap justify-between gap-3 p-4">
+                    <p class="tracking-light min-w-72 text-[32px] font-bold leading-tight text-[#0e141b]">Mis herramientas</p>
 
+                    <!-- Mostrar herramientas -->
+                    {% for tool in tools %}
+                    <div class="p-4">
+                        <div class="flex items-stretch justify-between gap-4 rounded-xl">
+                            <div class="flex flex-[2_2_0px] flex-col gap-4">
+                                <div class="flex flex-col gap-1">
+                                    <p class="text-sm font-normal leading-normal text-[#4e7397]">{{ tool.estado }}</p>
+                                    <p class="text-base font-bold leading-tight text-[#0e141b]">{{ tool.nombre }}</p>
+                                    <p class="text-sm font-normal leading-normal text-[#4e7397]">${{ tool.costo_dia }}</p>
+                                </div>
+                                <a href="#" class="flex h-8 w-fit min-w-[84px] max-w-[480px] items-center justify-center overflow-hidden rounded-xl bg-[#e7edf3] px-4 text-sm font-medium leading-normal text-[#0e141b]">
+                                    Editar
+                                </a>
+                            </div>
 
-            <a href="{% url 'add_tool' %}" class="text-indigo-600 hover:underline">Agregar herramienta</a>
-          </div>
+                            <!-- Mostrar imagen de la herramienta con tamaño ajustado -->
+                            <img src="{% if tool.imagenes %}{{ tool.imagenes.url }}{% else %}https://cdn.usegalileo.ai/sdxl10/84ed65ba-6d8e-4158-b97a-6d36dabc415d.png{% endif %}" alt="{{ tool.nombre }}" class="w-48 h-32 rounded-xl object-cover">
 
-          <!-- Mostrar herramientas -->
-          {% for tool in tools %}
-          <div class="p-4">
-            <div class="flex items-stretch justify-between gap-4 rounded-xl">
-              <div class="flex flex-[2_2_0px] flex-col gap-4">
-                <div class="flex flex-col gap-1">
-                  <p class="text-sm font-normal leading-normal text-[#4e7397]">{{ tool.estado }}</p>
-                  <p class="text-base font-bold leading-tight text-[#0e141b]">{{ tool.nombre }}</p>
-                  <p class="text-sm font-normal leading-normal text-[#4e7397]">${{ tool.costo_dia }}</p>
+                            <!-- Mostrar la URL de la imagen para depuración -->
+                            <p class="text-xs text-red-500 mt-2">URL de la imagen: {% if tool.imagenes %}{{ tool.imagenes.url }}{% else %}No hay imagen disponible{% endif %}</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+
+                    <!-- Título de Mis Rentas -->
+                    <div class="p-4 mt-8">
+                        <p class="tracking-light min-w-72 text-[32px] font-bold leading-tight text-[#0e141b]">Mis rentas</p>
+                    </div>
+
+                    <!-- Mostrar rentas -->
+                    <div class="space-y-4">
+                        {% for renta in rentas %}
+                        <div class="flex justify-between p-4 border border-gray-300 rounded-lg bg-white">
+                            <div>
+                                <p class="text-lg font-semibold text-gray-800">Herramienta: {{ renta.herramienta.nombre }}</p>
+                                <p class="text-sm text-gray-600">Días de renta: {{ renta.dias_renta }}</p>
+                                <p class="text-sm text-gray-600">Fecha de inicio: {{ renta.fecha_inicio }}</p>
+                                <p class="text-sm text-gray-600">Fecha de fin: {{ renta.fecha_fin }}</p>
+                                <p class="text-sm text-gray-600">Costo total: ${{ renta.costo_total }}</p>
+                            </div>
+                            <p class="text-sm font-semibold text-gray-700">{{ renta.estado }}</p>
+                        </div>
+                        {% empty %}
+                        <p class="text-center text-gray-600">No tienes rentas registradas.</p>
+                        {% endfor %}
+                    </div>
+
                 </div>
-                <a href="#" class="flex h-8 w-fit min-w-[84px] max-w-[480px] items-center justify-center overflow-hidden rounded-xl bg-[#e7edf3] px-4 text-sm font-medium leading-normal text-[#0e141b]">
-                  Editar
-                </a>
-              </div>
-              <div class="aspect-video w-full flex-1 rounded-xl bg-cover bg-center bg-no-repeat" style='background-image: url("{% if tool.imagenes %}{{ tool.imagenes.url }}{% else %}https://cdn.usegalileo.ai/sdxl10/84ed65ba-6d8e-4158-b97a-6d36dabc415d.png{% endif %}");'></div>
             </div>
-          </div>
-          {% endfor %}
-
-          <!-- Título de Mis Rentas -->
-          <div class="p-4 mt-8">
-            <p class="tracking-light min-w-72 text-[32px] font-bold leading-tight text-[#0e141b]">Mis rentas</p>
-          </div>
-
-          <!-- Mostrar rentas -->
-          <div class="space-y-4">
-            {% for renta in rentas %}
-            <div class="flex justify-between p-4 border border-gray-300 rounded-lg bg-white">
-              <div>
-                <p class="text-lg font-semibold text-gray-800">Herramienta: {{ renta.herramienta.nombre }}</p>
-                <p class="text-sm text-gray-600">Días de renta: {{ renta.dias_renta }}</p>
-                <p class="text-sm text-gray-600">Fecha de inicio: {{ renta.fecha_inicio }}</p>
-                <p class="text-sm text-gray-600">Fecha de fin: {{ renta.fecha_fin }}</p>
-                <p class="text-sm text-gray-600">Costo total: ${{ renta.costo_total }}</p>
-              </div>
-              <p class="text-sm font-semibold text-gray-700">{{ renta.estado }}</p>
-            </div>
-            {% empty %}
-            <p class="text-center text-gray-600">No tienes rentas registradas.</p>
-            {% endfor %}
-          </div>
-
         </div>
-      </div>
     </div>
 </div>
 {% endblock %}
