@@ -4,63 +4,80 @@
 <div class="relative flex size-full min-h-screen flex-col bg-slate-50 group/design-root overflow-x-hidden" style='font-family: "Public Sans", "Noto Sans", sans-serif;'>
     <div class="layout-container flex h-full grow flex-col">
 
+        <!-- Encabezado del formulario -->
+        <div class="px-40 flex flex-1 justify-center py-5">
+            <div class="layout-content-container flex flex-col w-full max-w-[512px] py-5">
+                <div class="flex flex-col gap-3 p-4">
+                  <a href="{% url 'arrendador_home' %}" class="flex items-center text-black pb-4">
+                    <svg class="mr-2" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M10.854 4.146a.5.5 0 0 1 0 .708L7.707 8l3.147 3.146a.5.5 0 0 1-.708.708l-3.5-3.5a.5.5 0 0 1 0-.708l3.5-3.5a.5.5 0 0 1 .708 0z"/>
+                    </svg>
+                    Regresar
+                </a>
+                    <p class="text-[#0e141b] tracking-light text-[32px] font-bold leading-tight">Rentar nueva herramienta</p>
+                    <p class="text-[#4e7397] text-sm font-normal leading-normal">Genera dinero rentando herramientas a otras personas.</p>
+                </div>
 
-      <!-- Contenido del formulario -->
-      <div class="px-40 flex flex-1 justify-center py-5">
-        <div class="layout-content-container flex flex-col w-[512px] max-w-[512px] py-5 max-w-[960px] flex-1">
-          <div class="flex flex-wrap justify-between gap-3 p-4">
-            <div class="flex min-w-72 flex-col gap-3">
-              <p class="text-[#0e141b] tracking-light text-[32px] font-bold leading-tight">Rentar nueva herramienta</p>
-              <p class="text-[#4e7397] text-sm font-normal leading-normal">Generar dinero rentando herramientas a otras personas.</p>
-            </div>
-          </div>
+                <!-- Formulario de Django -->
+                <form method="POST" enctype="multipart/form-data" class="space-y-6">
+                    {% csrf_token %}
+                    <div class="flex flex-col gap-4 px-4">
+                        <label class="flex flex-col">
+                            <span class="text-[#0e141b] text-base font-medium leading-normal pb-2">Nombre de la herramienta</span>
+                            {{ form.nombre }}
+                        </label>
 
-          <!-- Formulario de Django -->
-          <form method="POST" enctype="multipart/form-data">
-            {% csrf_token %}
-            <div class="flex max-w-[480px] flex-wrap items-end gap-4 px-4 py-3">
-              <label class="flex flex-col min-w-40 flex-1">
-                <p class="text-[#0e141b] text-base font-medium leading-normal pb-2">Nombre de la herramienta</p>
-                {{ form.nombre }}
-              </label>
-            </div>
+                        <label class="flex flex-col">
+                            <span class="text-[#0e141b] text-base font-medium leading-normal pb-2">Describe tu herramienta</span>
+                            {{ form.descripcion }}
+                        </label>
 
-            <div class="flex max-w-[480px] flex-wrap items-end gap-4 px-4 py-3">
-              <label class="flex flex-col min-w-40 flex-1">
-                <p class="text-[#0e141b] text-base font-medium leading-normal pb-2">Describe tu herramienta</p>
-                {{ form.descripcion }}
-              </label>
-            </div>
+                        <label class="flex flex-col">
+                            <span class="text-[#0e141b] text-base font-medium leading-normal pb-2">Costo de alquiler por día</span>
+                            {{ form.costo_dia }}
+                        </label>
 
-            <div class="flex max-w-[480px] flex-wrap items-end gap-4 px-4 py-3">
-              <label class="flex flex-col min-w-40 flex-1">
-                <p class="text-[#0e141b] text-base font-medium leading-normal pb-2">Costo de alquiler por día</p>
-                {{ form.costo_dia }}
-              </label>
-            </div>
+                        <label class="flex flex-col">
+                            <span class="text-[#0e141b] text-base font-medium leading-normal pb-2">Estado</span>
+                            {{ form.estado }}
+                        </label>
 
-            <div class="flex max-w-[480px] flex-wrap items-end gap-4 px-4 py-3">
-              <label class="flex flex-col min-w-40 flex-1">
-                <p class="text-[#0e141b] text-base font-medium leading-normal pb-2">Estado</p>
-                {{ form.estado }}
-              </label>
-            </div>
+                        <label class="flex flex-col">
+                            <span class="text-[#0e141b] text-base font-medium leading-normal pb-2">Imágenes</span>
+                            {{ form.imagenes }}
+                            <!-- Contenedor para la vista previa de la imagen -->
+                            <img id="imagePreview" class="mt-4 w-full h-48 object-cover rounded-lg hidden" alt="Vista previa de la imagen" />
+                        </label>
+                    </div>
 
-            <div class="flex max-w-[480px] flex-wrap items-end gap-4 px-4 py-3">
-              <label class="flex flex-col min-w-40 flex-1">
-                <p class="text-[#0e141b] text-base font-medium leading-normal pb-2">Imágenes</p>
-                {{ form.imagenes }}
-              </label>
+                    <div class="flex justify-center px-4">
+                        <button type="submit" class="flex w-full max-w-[480px] items-center justify-center rounded-xl h-12 px-6 bg-[#1980e6] text-white text-base font-bold">
+                            Crear publicación
+                        </button>
+                    </div>
+                </form>
             </div>
-
-            <div class="flex justify-center px-4 py-3">
-              <button type="submit" class="flex w-full max-w-[480px] items-center justify-center rounded-xl h-12 px-6 bg-[#1980e6] text-white text-base font-bold">
-                Crear publicación
-              </button>
-            </div>
-          </form>
         </div>
-      </div>
     </div>
-  </div>
+</div>
+
+<!-- Script de JavaScript para previsualizar la imagen -->
+<script>
+    document.querySelector('input[type="file"]').addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        const preview = document.getElementById('imagePreview');
+        
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                preview.src = e.target.result;
+                preview.classList.remove('hidden');
+            };
+            reader.readAsDataURL(file);
+        } else {
+            preview.src = '';
+            preview.classList.add('hidden');
+        }
+    });
+</script>
 {% endblock %}

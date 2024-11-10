@@ -33,30 +33,6 @@
                         </div>
                     </div>
                     {% endfor %}
-
-                    <!-- Título de Mis Rentas -->
-                    <div class="p-4 mt-8">
-                        <p class="tracking-light min-w-72 text-[32px] font-bold leading-tight text-[#0e141b]">Mis rentas</p>
-                    </div>
-
-                    <!-- Mostrar rentas -->
-                    <div class="space-y-4">
-                        {% for renta in rentas %}
-                        <div class="flex justify-between p-4 border border-gray-300 rounded-lg bg-white">
-                            <div>
-                                <p class="text-lg font-semibold text-gray-800">Herramienta: {{ renta.herramienta.nombre }}</p>
-                                <p class="text-sm text-gray-600">Días de renta: {{ renta.dias_renta }}</p>
-                                <p class="text-sm text-gray-600">Fecha de inicio: {{ renta.fecha_inicio }}</p>
-                                <p class="text-sm text-gray-600">Fecha de fin: {{ renta.fecha_fin }}</p>
-                                <p class="text-sm text-gray-600">Costo total: ${{ renta.costo_total }}</p>
-                            </div>
-                            <p class="text-sm font-semibold text-gray-700">{{ renta.estado }}</p>
-                        </div>
-                        {% empty %}
-                        <p class="text-center text-gray-600">No tienes rentas registradas.</p>
-                        {% endfor %}
-                    </div>
-
                 </div>
             </div>
         </div>
