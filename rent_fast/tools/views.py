@@ -1,7 +1,7 @@
 from django.views import generic
 from .forms import ToolForm, RentaForm, CarritoForm
 from users.models import Arrendador, Arrendatario
-from .models import Tool, Carrito
+from .models import Tool, Carrito, Categoria
 from rentas.models import Renta
 from django.urls import reverse_lazy, reverse
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -163,20 +163,22 @@ def arrendador_home(request):
 
 @login_required
 def arrendatario_home(request):
-    """
-    Vista para el home del Arrendatario.
-    """
     search_query = request.GET.get('search', '')  # Recoge el valor de búsqueda (si existe)
-    
-    # Filtrar las herramientas con estado "Disponible" y aplicar el filtro de búsqueda si está presente
-    tools = Tool.objects.filter(
-        estado="Disponible",
-        nombre__icontains=search_query  # Aplica el filtro de búsqueda por nombre
-    )
-    
-    return render(request, "arrendatarios/arrendatario_home_new.html", {
-        'tools': tools,
-        'search_query': search_query
+
+    # Obtener herramientas disponibles agrupadas por categoría
+    categorias = Categoria.objects.all()
+    herramientas_por_categoria = {
+        categoria.nombre: Tool.objects.filter(categoria=categoria, estado="Disponible", nombre__icontains=search_query)[:5]
+        for categoria in categorias
+    }
+
+    # Herramientas sin categoría (para la sección "Cerca de ti")
+    herramientas_sin_categoria = Tool.objects.filter(categoria__isnull=True, estado="Disponible", nombre__icontains=search_query)
+
+    return render(request, 'arrendatarios/arrendatario_home_new.html', {
+        'herramientas_sin_categoria': herramientas_sin_categoria,
+        'herramientas_por_categoria': herramientas_por_categoria,
+        'search_query': search_query,
     })
 
 class ToolFormView(LoginRequiredMixin, generic.FormView):
