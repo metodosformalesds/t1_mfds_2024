@@ -19,43 +19,46 @@
                 </div>
 
                 <!-- Formulario de Django -->
-                <form method="POST" enctype="multipart/form-data" class="space-y-6">
-                    {% csrf_token %}
-                    <div class="flex flex-col gap-4 px-4">
-                        <label class="flex flex-col">
-                            <span class="text-[#0e141b] text-base font-medium leading-normal pb-2">Nombre de la herramienta</span>
-                            {{ form.nombre }}
-                        </label>
+            <!-- Formulario de Django -->
+            <form method="POST" enctype="multipart/form-data" class="space-y-6">
+                {% csrf_token %}
+                <div class="flex flex-col gap-4 px-4">
+                    
+                    <label class="flex flex-col">
+                        <span class="text-[#0e141b] text-base font-medium leading-normal pb-2">Nombre de la herramienta</span>
+                        {{ form.nombre }}
+                    </label>
 
-                        <label class="flex flex-col">
-                            <span class="text-[#0e141b] text-base font-medium leading-normal pb-2">Describe tu herramienta</span>
-                            {{ form.descripcion }}
-                        </label>
+                    <label class="flex flex-col">
+                        <span class="text-[#0e141b] text-base font-medium leading-normal pb-2">Describe tu herramienta</span>
+                        {{ form.descripcion }}
+                    </label>
 
-                        <label class="flex flex-col">
-                            <span class="text-[#0e141b] text-base font-medium leading-normal pb-2">Costo de alquiler por día</span>
-                            {{ form.costo_dia }}
-                        </label>
+                    <label class="flex flex-col">
+                        <span class="text-[#0e141b] text-base font-medium leading-normal pb-2">Costo de alquiler por día</span>
+                        {{ form.costo_dia }}
+                    </label>
 
-                        <label class="flex flex-col">
-                            <span class="text-[#0e141b] text-base font-medium leading-normal pb-2">Estado</span>
-                            {{ form.estado }}
-                        </label>
+                    <label class="flex flex-col">
+                        <span class="text-[#0e141b] text-base font-medium leading-normal pb-2">Categoría</span>
+                        {{ form.categoria }}
+                    </label>
 
-                        <label class="flex flex-col">
-                            <span class="text-[#0e141b] text-base font-medium leading-normal pb-2">Imágenes</span>
-                            {{ form.imagenes }}
-                            <!-- Contenedor para la vista previa de la imagen -->
-                            <img id="imagePreview" class="mt-4 w-full h-48 object-cover rounded-lg hidden" alt="Vista previa de la imagen" />
-                        </label>
-                    </div>
+                    <label class="flex flex-col">
+                        <span class="text-[#0e141b] text-base font-medium leading-normal pb-2">Imágenes</span>
+                        {{ form.imagenes }}
+                        <!-- Contenedor para la vista previa de la imagen -->
+                        <img id="imagePreview" class="mt-4 w-full h-48 object-cover rounded-lg hidden" alt="Vista previa de la imagen" />
+                    </label>
+                </div>
 
-                    <div class="flex justify-center px-4">
-                        <button type="submit" class="flex w-full max-w-[480px] items-center justify-center rounded-xl h-12 px-6 bg-[#1980e6] text-white text-base font-bold">
-                            Crear publicación
-                        </button>
-                    </div>
-                </form>
+                <div class="flex justify-center px-4">
+                    <button type="submit" class="flex w-full max-w-[480px] items-center justify-center rounded-xl h-12 px-6 bg-[#1980e6] text-white text-base font-bold">
+                        Crear publicación
+                    </button>
+                </div>
+            </form>
+
             </div>
         </div>
     </div>

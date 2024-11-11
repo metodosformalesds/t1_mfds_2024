@@ -3,6 +3,12 @@ from users.models import Arrendador, Arrendatario
 from rentas.models import Renta
 from datetime import timedelta  
 
+class Categoria(models.Model):
+    nombre = models.CharField(max_length=100, unique=True)
+
+    def __str__(self):
+        return self.nombre
+        
 class Tool(models.Model):
     arrendador = models.ForeignKey(Arrendador, on_delete=models.CASCADE)
     nombre = models.CharField(max_length=255)
@@ -10,13 +16,11 @@ class Tool(models.Model):
     costo_dia = models.DecimalField(max_digits=10, decimal_places=2)
     estado = models.CharField(max_length=20, choices=[('Pendiente', 'Pendiente'), ('Disponible', 'Disponible'), ('Rechazado', 'Rechazado')], default='Pendiente')
     imagenes = models.ImageField(upload_to='tools/', null=True, blank=True)
+    categoria = models.ForeignKey(Categoria, on_delete=models.SET_NULL, null=True, blank=True)  # Nueva relación
 
     def __str__(self):
         return self.nombre
 
-    @property
-    def direccion(self):
-        return self.arrendador.direccion
         
 class Carrito(models.Model):
     arrendatario = models.ForeignKey(Arrendatario, on_delete=models.CASCADE)

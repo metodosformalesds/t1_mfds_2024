@@ -1,16 +1,17 @@
 from django import forms
-from .models import Tool, Carrito
+from .models import Tool, Carrito, Categoria
 from rentas.models import Renta
 
 class ToolForm(forms.ModelForm):
     class Meta:
         model = Tool
-        fields = ['nombre', 'descripcion', 'costo_dia', 'imagenes']  # Excluimos el campo 'estado'
+        fields = ['nombre', 'descripcion', 'costo_dia', 'imagenes', 'categoria']  # Incluimos el campo `categoria`
         labels = {
             'nombre': 'Nombre de la Herramienta',
             'descripcion': 'Descripción',
             'costo_dia': 'Costo por Día',
             'imagenes': 'Imágenes',
+            'categoria': 'Categoría'
         }
 
     def save(self, arrendador, *args, **kwargs):
