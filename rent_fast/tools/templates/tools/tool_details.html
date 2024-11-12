@@ -18,13 +18,7 @@
       <div class="flex flex-col gap-3">
         <div class="aspect-square w-full rounded-xl bg-cover bg-center bg-no-repeat" style='background-image: url("{% if tool.imagenes %}{{ tool.imagenes.url }}{% else %}https://cdn.usegalileo.ai/sdxl10/84ed65ba-6d8e-4158-b97a-6d36dabc415d.png{% endif %}");'></div>
       </div>
-      <!-- Puedes agregar más divs estáticos si hay más imágenes -->
-      <div class="flex flex-col gap-3">
-        <div class="aspect-square w-full rounded-xl bg-cover bg-center bg-no-repeat" style='background-image: url("https://cdn.usegalileo.ai/sdxl10/9136de18-1ed4-4d02-bf7c-f99b773d6664.png");'></div>
-      </div>
-      <div class="flex flex-col gap-3">
-        <div class="aspect-square w-full rounded-xl bg-cover bg-center bg-no-repeat" style='background-image: url("https://cdn.usegalileo.ai/sdxl10/48bf204f-b9d3-48ef-8050-40722c3ea8ca.png");'></div>
-      </div>
+      <!-- Más imágenes si las tienes -->
     </div>
 
     <!-- Sección de precios -->
@@ -33,90 +27,103 @@
         <p class="tracking-light text-2xl font-bold leading-tight text-[#0e141b]">${{ tool.costo_dia }}</p>
         <div class="flex items-center gap-2"><p class="text-sm font-normal leading-normal text-[#4e7397]">Por día</p></div>
       </div>
-      <div class="flex min-w-[111px] flex-1 basis-[fit-content] flex-col items-start gap-2 rounded-lg border border-[#d0dbe7] p-3">
-        <p class="tracking-light text-2xl font-bold leading-tight text-[#0e141b]">4.8</p>
-        <div class="flex items-center gap-2"><p class="text-sm font-normal leading-normal text-[#4e7397]">Calificación promedio</p></div>
-      </div>
-      <div class="flex min-w-[111px] flex-1 basis-[fit-content] flex-col items-start gap-2 rounded-lg border border-[#d0dbe7] p-3">
-        <p class="tracking-light text-2xl font-bold leading-tight text-[#0e141b]">3,000+</p>
-        <div class="flex items-center gap-2"><p class="text-sm font-normal leading-normal text-[#4e7397]">Usuarios totales</p></div>
-      </div>
+      <!-- Más estadísticas -->
     </div>
 
     <!-- Sección de botones -->
     <div class="flex flex-col space-y-3 px-4 py-5">
-<!-- Botón para alquilar ahora -->
-<div class="flex px-4 py-3">
-
-</div>
-
-<button 
-class="flex h-12  py-2 flex-1 cursor-pointer items-center justify-center overflow-hidden rounded-xl bg-[#1980e6] px-6 text-base font-bold leading-normal tracking-[0.015em] text-slate-50" 
-onclick="window.location.href='{% url 'seleccionar_fechas' tool.id %}'">
-<span class="truncate">Alquilar ahora</span>
-</button>
-      <button class="bg-[#1980e6] text-white px-6 py-2 rounded-md font-bold flex justify-center items-center gap-2" onclick="window.location.href='{% url 'uber_auth' %}'">
-         Cotizar precio de envío
-         <img src="https://cdn-icons-png.flaticon.com/256/732/732135.png" alt="Uber icon" class="w-5 h-5"/>
+      <button class="flex h-12 py-2 flex-1 cursor-pointer items-center justify-center rounded-xl bg-[#1980e6] px-6 text-base font-bold text-slate-50" onclick="window.location.href='{% url 'seleccionar_fechas' tool.id %}'">
+        Alquilar ahora
+      </button>
+      <button class="bg-[#1980e6] text-white px-6 py-2 rounded-md font-bold" onclick="window.location.href='{% url 'uber_auth' %}'">
+        Cotizar precio de envío
       </button>
       <button class="bg-blue-200 text-blue-700 px-6 py-2 rounded-md font-bold" onclick="window.location.href='/leer-contratos'">Leer contratos</button>
     </div>
 
-    <!-- Información del vendedor (arrendador) -->
+    <!-- Información del vendedor -->
     <div class="flex items-center px-4 py-4">
       <img class="w-12 h-12 rounded-full" src="https://randomuser.me/api/portraits/men/31.jpg" alt="Foto del vendedor"/>
       <p class="ml-4 text-[#0e141b] font-bold">Herramienta de: {{ tool.arrendador.nombre }} {{ tool.arrendador.apellidos }}</p>
     </div>
 
     <!-- Ubicación del vendedor -->
-    <h2 class="px-4 pb-3 pt-5 text-[22px] font-bold leading-tight tracking-[-0.015em] text-[#0e141b]">Ubicación</h2>
-    <p class="px-4 pb-3 pt-1 text-base font-normal leading-normal text-[#0e141b]">{{ tool.arrendador.direccion }}</p>
+    <h2 class="px-4 pb-3 pt-5 text-[22px] font-bold text-[#0e141b]">Ubicación</h2>
+    <p class="px-4 pb-3 pt-1 text-base font-normal text-[#0e141b]">{{ tool.arrendador.direccion }}</p>
 
     <!-- Descripción de la herramienta -->
-    <h2 class="px-4 pb-3 pt-5 text-[22px] font-bold leading-tight tracking-[-0.015em] text-[#0e141b]">Descripción</h2>
-    <p class="px-4 pb-3 pt-1 text-base font-normal leading-normal text-[#0e141b]">{{ tool.descripcion }}</p>
+    <h2 class="px-4 pb-3 pt-5 text-[22px] font-bold text-[#0e141b]">Descripción</h2>
+    <p class="px-4 pb-3 pt-1 text-base font-normal text-[#0e141b]">{{ tool.descripcion }}</p>
 
-    <h2 class="px-4 pb-3 pt-5 text-[22px] font-bold leading-tight tracking-[-0.015em] text-[#0e141b]">Preguntas y Respuestas</h2>
+    <!-- Sección de Reseñas -->
+    <h2 class="px-4 pb-3 pt-5 text-[22px] font-bold text-[#0e141b]">Reseñas</h2>
+
+    <!-- Promedio de calificación -->
+    {% if promedio_calificacion %}
+      <p class="px-4 text-sm font-bold text-gray-700">Promedio de calificación: {{ promedio_calificacion|floatformat:1 }} / 5</p>
+    {% endif %}
+
     <div class="flex flex-col gap-3 p-4">
-        {% for pregunta in tool.preguntas.all %}
-            <details class="group flex flex-col rounded-xl border border-[#d0dbe7] bg-slate-50 px-[15px] py-[7px]" open="">
-                <summary class="flex cursor-pointer items-center justify-between gap-6 py-2">
-                    <!-- Mostrar la pregunta -->
-                    <p class="text-sm font-medium leading-normal text-[#0e141b]">{{ pregunta.pregunta_texto }}</p>
-                    <div class="text-[#0e141b] group-open:rotate-180" data-icon="CaretDown" data-size="20px" data-weight="regular">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
-                            <path d="M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80A8,8,0,0,1,53.66,90.34L128,164.69l74.34-74.35a8,8,0,0,1,11.32,11.32Z"></path>
-                        </svg>
-                    </div>
-                </summary>
+      {% for resena in resenas %}
+        <div class="border rounded-lg p-4">
+          <p><strong>{{ resena.arrendatario.usuario.username }}:</strong> {{ resena.comentario }}</p>
+          <p>Calificación: {{ resena.calificacion }} / 5</p>
+        </div>
+      {% empty %}
+        <p class="text-gray-500">No hay reseñas para esta herramienta.</p>
+      {% endfor %}
+    </div>
 
-                <!-- Mostrar la respuesta si existe -->
-                {% if pregunta.tiene_respuesta %}
-                    <p class="pb-2 text-sm font-normal leading-normal text-[#4e7397]">{{ pregunta.respuesta.respuesta_texto }}</p>
-                {% else %}
-                    <p class="pb-2 text-sm font-normal leading-normal text-[#4e7397]"><em>Sin respuesta aún.</em></p>
-                {% endif %}
-            </details>
-        {% endfor %}
+    <!-- Formulario de Reseñas -->
+    {% if ha_alquilado_y_finalizado and not ha_dejado_resena %}
+      <h2 class="px-4 pb-3 pt-5 text-[22px] font-bold text-[#0e141b]">Deja una Reseña</h2>
+      <form method="post" class="space-y-4 px-4">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Enviar Reseña</button>
+      </form>
+    {% elif ha_dejado_resena %}
+      <p class="px-4 text-gray-500">Ya has dejado una reseña para esta herramienta.</p>
+    {% else %}
+      <p class="px-4 text-gray-500">Debes finalizar la renta de esta herramienta para dejar una reseña.</p>
+    {% endif %}
+
+    <!-- Preguntas y Respuestas -->
+    <h2 class="px-4 pb-3 pt-5 text-[22px] font-bold text-[#0e141b]">Preguntas y Respuestas</h2>
+    <div class="flex flex-col gap-3 p-4">
+      {% for pregunta in tool.preguntas.all %}
+        <details class="group flex flex-col rounded-xl border border-[#d0dbe7] bg-slate-50 px-[15px] py-[7px]">
+          <summary class="flex cursor-pointer items-center justify-between gap-6 py-2">
+            <p class="text-sm font-medium text-[#0e141b]">{{ pregunta.pregunta_texto }}</p>
+            <div class="text-[#0e141b] group-open:rotate-180">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256">
+                <path d="M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80A8,8,0,0,1,53.66,90.34L128,164.69l74.34-74.35a8,8,0,0,1,11.32,11.32Z"></path>
+              </svg>
+            </div>
+          </summary>
+          {% if pregunta.tiene_respuesta %}
+            <p class="pb-2 text-sm text-[#4e7397]">{{ pregunta.respuesta.respuesta_texto }}</p>
+          {% else %}
+            <p class="pb-2 text-sm text-[#4e7397]"><em>Sin respuesta aún.</em></p>
+          {% endif %}
+        </details>
+      {% endfor %}
     </div>
 
     <!-- Formulario para hacer una pregunta -->
     {% if user.is_authenticated and user.arrendatario %}
-        <h2 class="px-4 pb-3 pt-5 text-[22px] font-bold leading-tight tracking-[-0.015em] text-[#0e141b]">Haz una Pregunta</h2>
-        <form method="post" action="{% url 'tool_detail' tool.id %}" class="p-4 border rounded-lg bg-gray-100">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Enviar Pregunta</button>
-        </form>
+      <h2 class="px-4 pb-3 pt-5 text-[22px] font-bold text-[#0e141b]">Haz una Pregunta</h2>
+      <form method="post" action="{% url 'tool_detail' tool.id %}" class="p-4 border rounded-lg bg-gray-100">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Enviar Pregunta</button>
+      </form>
     {% else %}
-        <p class="text-red-500">Debes ser un arrendatario registrado para hacer preguntas.</p>
+      <p class="text-red-500">Debes ser un arrendatario registrado para hacer preguntas.</p>
     {% endif %}
+  </div>
 </div>
-    <!-- Botón para alquilar ahora -->
-    <div class="flex px-4 py-3">
-      <button class="flex h-12 min-w-[84px] max-w-[480px] flex-1 cursor-pointer items-center justify-center overflow-hidden rounded-xl bg-[#1980e6] px-5 text-base font-bold leading-normal tracking-[0.015em] text-slate-50" onclick="window.location.href='/alquilar-ahora'">
-        <span class="truncate">Alquilar ahora</span>
-      </button>
+{% endblock %}
     </div>
   </div>
 </div>
