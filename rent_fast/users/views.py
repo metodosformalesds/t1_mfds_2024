@@ -33,40 +33,37 @@ TEMPLATES = {
     'personal': 'users/register_personal.html',
     'address': 'users/register_address.html',
 }
-
-
 @csrf_exempt
 def verify_identity(request):
     if request.method == 'POST':
-        # Obtener imagen capturada y comparar con el INE del formulario
-        captured_image = request.POST.get('captured_image')
-        ine_image = request.FILES.get('ine_image')  # Obtener imagen INE del formulario
+        # Obtener imagen capturada en base64 y la imagen INE del formulario
+        captured_image_data = request.POST.get('captured_image')
+        ine_image = request.FILES.get('ine_image')
 
-        if not (captured_image and ine_image):
+        # Validar que ambas imágenes estén presentes
+        if not (captured_image_data and ine_image):
             return JsonResponse({"success": False, "error": "Se requieren ambas imágenes."})
 
-        # Convertir imágenes a base64
-        captured_image_base64 = base64.b64encode(captured_image.read()).decode('utf-8')
-        ine_image_base64 = base64.b64encode(ine_image.read()).decode('utf-8')
-
-        # Enviar imágenes a la API de Azure Face
-        headers = {
-            "Ocp-Apim-Subscription-Key": settings.AZURE_FACE_API_KEY,
-            "Content-Type": "application/octet-stream"
-        }
-        # URL de la API de Azure para la detección y verificación
-        detect_url = settings.AZURE_FACE_API_ENDPOINT + "/detect"
-        verify_url = settings.AZURE_FACE_API_ENDPOINT + "/verify"
-
-        # Enviar solicitudes de detección y verificación de rostros
         try:
-            # Detección de rostro en la imagen capturada
-            detect_response = requests.post(detect_url, headers=headers, data=captured_image_base64)
+            # Decodificar la imagen capturada en base64
+            captured_image = base64.b64decode(captured_image_data.split(',')[1])
+
+            # Preparar encabezados y URLs de la API de Azure Face
+            headers = {
+                "Ocp-Apim-Subscription-Key": settings.AZURE_FACE_API_KEY,
+                "Content-Type": "application/octet-stream"
+            }
+            detect_url = settings.AZURE_FACE_API_ENDPOINT + "/detect"
+            verify_url = settings.AZURE_FACE_API_ENDPOINT + "/verify"
+
+            # Enviar solicitud de detección de rostro para la imagen capturada
+            detect_response = requests.post(detect_url, headers=headers, data=captured_image)
             detect_response.raise_for_status()
             face_id_captured = detect_response.json()[0]['faceId']
 
-            # Detección de rostro en la imagen INE
-            detect_response_ine = requests.post(detect_url, headers=headers, data=ine_image_base64)
+            # Enviar solicitud de detección de rostro para la imagen INE
+            ine_image_data = ine_image.read()  # Leer archivo de la INE
+            detect_response_ine = requests.post(detect_url, headers=headers, data=ine_image_data)
             detect_response_ine.raise_for_status()
             face_id_ine = detect_response_ine.json()[0]['faceId']
 
@@ -75,10 +72,14 @@ def verify_identity(request):
             verify_response = requests.post(verify_url, headers=headers, json=verify_data)
             verify_response.raise_for_status()
 
+            # Procesar la respuesta de verificación de coincidencia
             is_identical = verify_response.json().get("isIdentical", False)
             return JsonResponse({"success": is_identical})
+        
         except requests.RequestException as e:
-            return JsonResponse({"success": False, "error": str(e)})
+            return JsonResponse({"success": False, "error": f"Error en la solicitud a la API: {str(e)}"})
+        except (KeyError, IndexError):
+            return JsonResponse({"success": False, "error": "No se detectó un rostro en una o ambas imágenes."})
 
     return JsonResponse({"success": False, "error": "Método no permitido."})
 

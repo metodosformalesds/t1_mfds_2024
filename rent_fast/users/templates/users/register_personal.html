@@ -3,7 +3,6 @@
 {% block content %}
 <div class="flex min-h-screen justify-center items-center bg-slate-50">
     <div class="bg-white p-8 rounded shadow-md w-full max-w-md">
-        <!-- Regresar -->
         <a href="{% url 'register' %}" class="flex items-center text-black pb-4">
             <svg class="mr-2" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
                 <path fill-rule="evenodd" d="M10.854 4.146a.5.5 0 0 1 0 .708L7.707 8l3.147 3.146a.5.5 0 0 1-.708.708l-3.5-3.5a.5.5 0 0 1 0-.708l3.5-3.5a.5.5 0 0 1 .708 0z"/>
@@ -48,8 +47,8 @@
                 </div>
             </div>
 
-            <!-- Botón de Verificación -->
-            <button type="button" onclick="openVerificationDialog()" class="w-full bg-gray-500 text-white py-2 rounded mt-4">
+            <!-- Botón de Verificación (Deshabilitado por defecto) -->
+            <button type="button" onclick="openVerificationDialog()" id="verify-btn" class="w-full bg-gray-500 text-white py-2 rounded mt-4 disabled:opacity-50" disabled>
                 Verificar Identidad
             </button>
 
@@ -79,6 +78,27 @@
         image.classList.remove('hidden');
     }
 
+    // Asegura que el campo `ine_image` tenga el ID correcto y añade el evento para habilitar el botón
+    document.addEventListener("DOMContentLoaded", function() {
+        const ineImageField = document.getElementById("id_ine_image");
+        const verifyButton = document.getElementById("verify-btn");
+
+        if (ineImageField) {
+            // Habilita el botón de Verificar Identidad cuando se sube una imagen INE
+            ineImageField.addEventListener('change', () => {
+                const ineImageFile = ineImageField.files[0];
+                if (ineImageFile) {
+                    console.log("Archivo de imagen INE seleccionado:", ineImageFile.name);
+                    verifyButton.disabled = false;
+                } else {
+                    verifyButton.disabled = true;
+                }
+            });
+        } else {
+            console.error("No se encontró el campo de imagen INE.");
+        }
+    });
+
     // Abre el diálogo de verificación
     function openVerificationDialog() {
         document.getElementById("verification-dialog").classList.remove("hidden");
@@ -100,19 +120,39 @@
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
         canvas.getContext("2d").drawImage(video, 0, 0);
-        const imageData = canvas.toDataURL("image/png");
 
-        // Envía la imagen capturada al backend
+        // Convertir la captura en vivo a base64
+        const liveImageData = canvas.toDataURL("image/png");
+        console.log("Imagen en vivo capturada:", liveImageData ? "Sí" : "No");
+
+        // Obtener el archivo de INE usando el ID forzado
+        const ineImageInput = document.getElementById("id_ine_image");
+        const ineImageFile = ineImageInput ? ineImageInput.files[0] : null;
+        console.log("Archivo de imagen INE cargado:", ineImageFile ? "Sí" : "No");
+
+        // Comprobar que ambas imágenes están presentes
+        if (!liveImageData || !ineImageFile) {
+            alert("Ambas imágenes son necesarias para la verificación.");
+            return;
+        }
+
+        // Crear un objeto FormData para enviar ambas imágenes
+        const formData = new FormData();
+        formData.append("captured_image", liveImageData);  // La imagen capturada en vivo
+        formData.append("ine_image", ineImageFile);        // La imagen INE cargada
+
+        // Realizar la solicitud de verificación de identidad
         fetch("{% url 'verify_identity' %}", {
             method: "POST",
-            headers: { "Content-Type": "application/json", "X-CSRFToken": "{{ csrf_token }}" },
-            body: JSON.stringify({ live_image: imageData })
+            headers: { "X-CSRFToken": "{{ csrf_token }}" },
+            body: formData
         })
         .then(response => response.json())
         .then(data => {
+            console.log("Response from server:", data);
             if (data.success) {
                 alert("Identidad verificada correctamente.");
-                document.getElementById("continue-btn").disabled = false;  // Habilita el botón de continuar
+                document.getElementById("continue-btn").disabled = false;
                 closeVerificationDialog();
             } else {
                 alert("La verificación de identidad falló. Inténtalo nuevamente.");

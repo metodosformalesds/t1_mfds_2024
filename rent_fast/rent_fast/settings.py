@@ -54,7 +54,7 @@ UBER_CLIENT_SECRET = 'D6Hb2hWO93NEIejQmjOyhkX3ZKF_-bYU46w8DxV2'  # Copia aquí t
 
 # Azure Face API settings
 AZURE_FACE_API_KEY = "4R2GHd5yKi9csgHDhZbSCSASDpd8383zvQd1111VnAaxL1tfc6wOJQQJ99AKACYeBjFXJ3w3AAAKACOG27Qb"
-AZURE_FACE_ENDPOINT = "https://rentfast12.cognitiveservices.azure.com/"
+AZURE_FACE_API_ENDPOINT = "https://rentfast12.cognitiveservices.azure.com/face/v1.0"
 
 
 

@@ -68,8 +68,9 @@ class PersonalInfoForm(forms.Form):
     apellidos = forms.CharField(max_length=100, label="Apellidos")
     telefono = forms.CharField(max_length=15, label="Teléfono")
     role = forms.ChoiceField(choices=ROLE_CHOICES, widget=forms.RadioSelect, label="¿Qué serás?")
-    ine_image = forms.ImageField(label="Subir INE Mexicano", required=True)
-    profile_picture = forms.ImageField(label="Foto de perfil", required=False)  # Nuevo campo de foto de perfil
+    # Asignamos un ID específico al campo ine_image
+    ine_image = forms.ImageField(label="Sube tu INE Mexicano", required=True, widget=forms.ClearableFileInput(attrs={'id': 'id_ine_image'}))
+    profile_picture = forms.ImageField(label="Foto de perfil", required=False)
 
     def clean_nombre(self):
         """
