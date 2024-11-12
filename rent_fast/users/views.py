@@ -16,7 +16,7 @@ import json
 from django.http import JsonResponse
 from base64 import b64decode
 from .forms import UserForm, PersonalInfoForm, AddressForm
-from .models import Arrendador, Arrendatario, Direccion
+from .models import Arrendador, Arrendatario, Direccion, Notificacion
 
 # Configura el almacenamiento de archivos temporales
 file_storage = FileSystemStorage(location='media/tmp')
@@ -526,8 +526,9 @@ def update_address(request):
 
 
 
-
-
-
-
-
+@login_required
+def ver_notificaciones(request):
+    # Obtener todas las notificaciones del usuario actual y marcarlas como leídas
+    notificaciones = Notificacion.objects.filter(usuario=request.user)
+    notificaciones.update(leido=True)
+    return render(request, 'users/notificaciones.html', {'notificaciones': notificaciones})
