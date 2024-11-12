@@ -1,10 +1,11 @@
-<!-- base.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rent Fast</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?display=swap&amp;family=Noto+Sans%3Awght%40400%3B500%3B700%3B900&amp;family=Public+Sans%3Awght%40400%3B500%3B700%3B900" />
+
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         function toggleDropdown() {
@@ -18,103 +19,104 @@
         }
     </script>
 </head>
-<body class="relative">
+<body class="relative "> <!-- Clase para el fondo azul -->
+
     <header>
-        <nav class="bg-slate-50 border-gray-200 px-4 lg:px-6 py-2.5 dark:bg-gray-800 relative z-50">
-            <div class="flex flex-wrap justify-between items-center mx-auto max-w-screen-xl">
-                <a href="{% url 'home' %}" class="flex items-center">
-                    <!-- SVG del logo -->
-                    <span class="self-center text-xl font-semibold whitespace-nowrap dark:text-white">Rent Fast</span>
-                </a>
-                <div class="flex items-center lg:order-2 space-x-4">
-                    {% if user.is_authenticated %}
-                        {% if user.arrendatario %}
-                            <!-- Botones exclusivos para arrendatarios -->
-                            <a href="{% url 'listar_chats' %}" class="text-white bg-indigo-700 hover:bg-indigo-800 focus:ring-4 focus:ring-indigo-300 font-medium rounded-lg text-sm px-4 lg:px-5 py-2 lg:py-2.5 dark:bg-indigo-600 dark:hover:bg-indigo-700 focus:outline-none dark:focus:ring-indigo-800">Mis Chats</a>
-                            <a href="{% url 'rentas_arrendatario' %}" class="text-white bg-indigo-700 hover:bg-indigo-800 focus:ring-4 focus:ring-indigo-300 font-medium rounded-lg text-sm px-4 lg:px-5 py-2 lg:py-2.5 dark:bg-indigo-600 dark:hover:bg-indigo-700 focus:outline-none dark:focus:ring-indigo-800">Ver Mis Rentas</a>
-
-                            <!-- Bot n del carrito de compras solo para arrendatarios -->
-                            <a href="{% url 'carrito' %}" class="text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-4 lg:px-5 py-2 lg:py-2.5 dark:bg-blue-500 dark:hover:bg-blue-600 focus:outline-none dark:focus:ring-blue-800">
-                                <!-- Icono de carrito -->
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-6 h-6 inline">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.344 2.175L7.503 15h9.992l2.169-9H5.654" />
-                                    <circle cx="10" cy="20.5" r="1.5" />
-                                    <circle cx="17" cy="20.5" r="1.5" />
-                                </svg>
-                                <span class="sr-only">Carrito</span>
-                            </a>
-                        {% endif %}
-                        {% if user.arrendador %}
-                            <!-- Botones exclusivos para arrendadores -->
-                            <a href="{% url 'listar_chats' %}" class="text-white bg-indigo-700 hover:bg-indigo-800 focus:ring-4 focus:ring-indigo-300 font-medium rounded-lg text-sm px-4 lg:px-5 py-2 lg:py-2.5 dark:bg-indigo-600 dark:hover:bg-indigo-700 focus:outline-none dark:focus:ring-indigo-800">Mis Chats</a>
-                            <a href="{% url 'rentas_arrendador' %}" class="text-white bg-indigo-700 hover:bg-indigo-800 focus:ring-4 focus:ring-indigo-300 font-medium rounded-lg text-sm px-4 lg:px-5 py-2 lg:py-2.5 dark:bg-indigo-600 dark:hover:bg-indigo-700 focus:outline-none dark:focus:ring-indigo-800">Ver Mis Rentas</a>
-                            <a href="{% url 'preguntas_sin_responder' %}" class="text-white bg-indigo-700 hover:bg-indigo-800 focus:ring-4 focus:ring-indigo-300 font-medium rounded-lg text-sm px-4 lg:px-5 py-2 lg:py-2.5 dark:bg-indigo-600 dark:hover:bg-indigo-700 focus:outline-none dark:focus:ring-indigo-800">Ver Preguntas Sin Responder</a>
-                            <a href="{% url 'add_tool' %}" class="text-white bg-indigo-700 hover:bg-indigo-800 focus:ring-4 focus:ring-indigo-300 font-medium rounded-lg text-sm px-4 lg:px-5 py-2 lg:py-2.5 dark:bg-indigo-600 dark:hover:bg-indigo-700 focus:outline-none dark:focus:ring-indigo-800">Agregar herramienta</a>
-                        {% endif %}
-
-                        <!-- Icono de notificaciones -->
-                        <div class="relative">
-                            <button onclick="toggleNotifications()" class="relative focus:outline-none">
-                                <svg class="w-6 h-6 text-gray-700" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14V11a6 6 0 10-12 0v3a2.032 2.032 0 01-.595 1.405L4 17h5m6 0v1a3 3 0 01-6 0v-1m6 0H9" />
-                                </svg>
-                                {% if unread_count > 0 %}
-                                    <span id="notification-count" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full text-xs px-2">{{ unread_count }}</span>
-                                {% endif %}
-                            </button>
-                            <!-- Dropdown de notificaciones -->
-                            <div id="notification-dropdown" class="absolute right-0 mt-2 w-64 bg-white border rounded-md shadow-lg hidden z-50">
-                                <ul>
-                                    {% for notificacion in user.notificacion_set.all %}
-                                        <li class="px-4 py-2 border-b hover:bg-gray-100">
-                                            {{ notificacion.mensaje }}
-                                        </li>
-                                    {% empty %}
-                                        <li class="px-4 py-2 text-center">No tienes notificaciones</li>
-                                    {% endfor %}
-                                </ul>
-                                <a href="{% url 'notificaciones' %}" class="block text-center py-2 text-blue-600 hover:bg-gray-100">Ver todas las notificaciones</a>
-                            </div>
-                        </div>
-
-                        <!-- Bot n de Cerrar Sesi n -->
-                        <form action="{% url 'logout' %}" method="post" class="inline">
-                            {% csrf_token %}
-                            <button type="submit" class="text-gray-800 dark:text-white hover:bg-gray-50 focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-4 lg:px-5 py-2 lg:py-2.5 dark:bg-gray-700 focus:outline-none dark:focus:ring-gray-800">
-                                Cerrar sesi n
-                            </button>
-                        </form>
-                    {% else %}
-                        <a href="{% url 'login' %}" class="text-white bg-indigo-700 hover:bg-indigo-800 focus:ring-4 focus:ring-indigo-300 font-medium rounded-lg text-sm px-4 lg:px-5 py-2 lg:py-2.5 dark:bg-indigo-600 dark:hover:bg-indigo-700 focus:outline-none dark:focus:ring-indigo-800">
-                            Login
-                        </a>
-                    {% endif %}
-                    <a href="{% url 'home' %}" class="text-white bg-indigo-700 hover:bg-indigo-800 focus:ring-4 focus:ring-indigo-300 font-medium rounded-lg text-sm px-4 lg:px-5 py-2 lg:py-2.5 dark:bg-indigo-600 dark:hover:bg-indigo-700 focus:outline-none dark:focus:ring-indigo-800">
-                        Explorar
-                    </a>
-
-                    <!-- Men  de perfil -->
-                    {% if user.arrendatario or user.arrendador %}
-                        <div class="relative">
-                            <button onclick="toggleDropdown()" class="flex items-center focus:outline-none">
-                                {% if user.arrendatario and user.arrendatario.profile_picture %}
-                                    <img src="{{ user.arrendatario.profile_picture.url }}" alt="Foto del Arrendatario" class="w-10 h-10 rounded-full">
-                                {% elif user.arrendador and user.arrendador.profile_picture %}
-                                    <img src="{{ user.arrendador.profile_picture.url }}" alt="Foto del Arrendador" class="w-10 h-10 rounded-full">
-                                {% else %}
-                                    <img src="/static/images/default-profile.png" alt="Foto de Perfil" class="w-10 h-10 rounded-full">
-                                {% endif %}
-                            </button>
-                            <div id="dropdown-menu" class="absolute right-0 mt-2 w-48 bg-white border rounded-md shadow-lg hidden z-50">
-                                <a href="{% url 'update_dates' %}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Actualizar Datos</a>
-                                <a href="{% url 'update_address' %}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Actualizar Direccion</a>
-                            </div>
-                        </div>
-                    {% endif %}
+        <nav class="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#e7edf3] px-10 py-3 bg-white">
+            <div class="flex items-center gap-4 text-[#0e141b]">
+                <!-- Logo SVG -->
+                <div class="size-4">
+                    <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <g clip-path="url(#clip0_6_535)">
+                            <path fill-rule="evenodd" clip-rule="evenodd" d="M47.2426 24L24 47.2426L0.757355 24L24 0.757355L47.2426 24ZM12.2426 21H35.7574L24 9.24264L12.2426 21Z" fill="currentColor"></path>
+                        </g>
+                        <defs>
+                            <clipPath id="clip0_6_535">
+                                <rect width="48" height="48" fill="white"></rect>
+                            </clipPath>
+                        </defs>
+                    </svg>
                 </div>
+                <h2 class="text-[#0e141b] text-lg font-bold leading-tight tracking-[-0.015em]">Rent Fast</h2>
+            </div>
+        
+            <div class="flex items-center gap-6">
+                {% if user.is_authenticated %}
+                    {% if user.arrendatario %}
+                        <a href="{% url 'listar_chats' %}" class="text-sm font-bold text-[#0e141b] hover:text-[#1980e6]">Mis Chats</a>
+                        <a href="{% url 'rentas_arrendatario' %}" class="text-sm font-bold text-[#0e141b] hover:text-[#1980e6]">Ver Mis Rentas</a>                    
+                        <a href="{% url 'home' %}" class="flex items-center justify-center rounded-xl h-10 px-4 bg-[#1980e6] text-white text-sm font-bold leading-normal">Explorar</a>
+                    {% elif user.arrendador %}
+                        <a href="{% url 'listar_chats' %}" class="text-sm font-bold text-[#0e141b] hover:text-[#1980e6]">Mis Chats</a>
+                        <a href="{% url 'rentas_arrendador' %}" class="text-sm font-bold text-[#0e141b] hover:text-[#1980e6]">Ver Mis Rentas</a>
+                        <a href="{% url 'preguntas_sin_responder' %}" class="text-sm font-bold text-[#0e141b] hover:text-[#1980e6]">Preguntas</a>                    
+                        <a href="{% url 'add_tool' %}" class="flex items-center justify-center rounded-xl h-10 px-4 bg-[#1980e6] text-white text-sm font-bold leading-normal">Publicar</a>
+                    {% endif %}
+
+                    <!-- Icono del carrito de compras -->
+                    <div class="relative">
+                        <a href="{% url 'carrito' %}" class="text-[#0e141b] hover:text-[#1980e6]">
+                            <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.344 2.175L7.503 15h9.992l2.169-9H5.654" />
+                                <circle cx="10" cy="20.5" r="1.5" />
+                                <circle cx="17" cy="20.5" r="1.5" />
+                            </svg>
+                            {% if cart_count > 0 %}
+                                <span class="absolute -top-2 -right-2 bg-green-500 text-white rounded-full text-xs px-2">{{ cart_count }}</span>
+                            {% endif %}
+                        </a>
+                    </div>
+
+                    <!-- Icono de notificaciones -->
+                    <div class="relative">
+                        <button onclick="toggleNotifications()" class="text-[#0e141b] hover:text-[#1980e6]">
+                            <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14V11a6 6 0 10-12 0v3a2.032 2.032 0 01-.595 1.405L4 17h5m2 5a2 2 0 11-4 0h4z"/>
+                            </svg>
+                            {% if unread_count > 0 %}
+                                <span class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full text-xs px-2">{{ unread_count }}</span>
+                            {% endif %}
+                        </button>
+                        <div id="notification-dropdown" class="absolute right-0 mt-2 w-64 bg-white border rounded-md shadow-lg hidden z-50">
+                            <ul>
+                                {% for notificacion in user.notificacion_set.all %}
+                                    <li class="px-4 py-2 border-b hover:bg-gray-100">{{ notificacion.mensaje }}</li>
+                                {% empty %}
+                                    <li class="px-4 py-2 text-center">No tienes notificaciones</li>
+                                {% endfor %}
+                            </ul>
+                            <a href="{% url 'notificaciones' %}" class="block text-center py-2 text-blue-600 hover:bg-gray-100">Ver todas las notificaciones</a>
+                        </div>
+                    </div>
+        
+                    <!-- Imagen de perfil con dropdown de opciones -->
+                    <div class="relative">
+                        <button onclick="toggleDropdown()" class="w-10 h-10 rounded-full overflow-hidden focus:outline-none">
+                            {% if user.arrendatario and user.arrendatario.profile_picture %}
+                                <img src="{{ user.arrendatario.profile_picture.url }}" alt="Foto del Arrendatario" class="w-full h-full object-cover">
+                            {% elif user.arrendador and user.arrendador.profile_picture %}
+                                <img src="{{ user.arrendador.profile_picture.url }}" alt="Foto del Arrendador" class="w-full h-full object-cover">
+                            {% else %}
+                                <img src="/static/images/default-profile.png" alt="Foto de Perfil" class="w-full h-full object-cover">
+                            {% endif %}
+                        </button>
+                        <div id="dropdown-menu" class="absolute right-0 mt-2 w-48 bg-white border rounded-md shadow-lg hidden z-50">
+                            <a href="{% url 'update_dates' %}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Actualizar Datos</a>
+                            <a href="{% url 'update_address' %}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Actualizar Dirección</a>
+                            <form action="{% url 'logout' %}" method="post" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">
+                                {% csrf_token %}
+                                <button type="submit" class="w-full text-left">Cerrar sesión</button>
+                            </form>
+                        </div>
+                    </div>
+
+                {% else %}
+                    <a href="{% url 'login' %}" class="text-sm font-bold text-[#0e141b] hover:text-[#1980e6]">Login</a>
+                {% endif %}
             </div>
         </nav>
     </header>
+    
     <div>
         {% block content %}
         {% endblock content %}
