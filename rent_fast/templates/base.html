@@ -11,6 +11,11 @@
             var menu = document.getElementById("dropdown-menu");
             menu.classList.toggle("hidden");
         }
+        
+        function toggleNotifications() {
+            var dropdown = document.getElementById("notification-dropdown");
+            dropdown.classList.toggle("hidden");
+        }
     </script>
 </head>
 <body class="relative">
@@ -18,7 +23,7 @@
         <nav class="bg-slate-50 border-gray-200 px-4 lg:px-6 py-2.5 dark:bg-gray-800 relative z-50">
             <div class="flex flex-wrap justify-between items-center mx-auto max-w-screen-xl">
                 <a href="{% url 'home' %}" class="flex items-center">
-                    <!-- Aquí va el SVG del logo que ya tienes -->
+                    <!-- SVG del logo -->
                     <span class="self-center text-xl font-semibold whitespace-nowrap dark:text-white">Rent Fast</span>
                 </a>
                 <div class="flex items-center lg:order-2 space-x-4">
@@ -27,7 +32,8 @@
                             <!-- Botones exclusivos para arrendatarios -->
                             <a href="{% url 'listar_chats' %}" class="text-white bg-indigo-700 hover:bg-indigo-800 focus:ring-4 focus:ring-indigo-300 font-medium rounded-lg text-sm px-4 lg:px-5 py-2 lg:py-2.5 dark:bg-indigo-600 dark:hover:bg-indigo-700 focus:outline-none dark:focus:ring-indigo-800">Mis Chats</a>
                             <a href="{% url 'rentas_arrendatario' %}" class="text-white bg-indigo-700 hover:bg-indigo-800 focus:ring-4 focus:ring-indigo-300 font-medium rounded-lg text-sm px-4 lg:px-5 py-2 lg:py-2.5 dark:bg-indigo-600 dark:hover:bg-indigo-700 focus:outline-none dark:focus:ring-indigo-800">Ver Mis Rentas</a>
-                            <!-- Botón del carrito de compras solo para arrendatarios -->
+
+                            <!-- Bot n del carrito de compras solo para arrendatarios -->
                             <a href="{% url 'carrito' %}" class="text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-4 lg:px-5 py-2 lg:py-2.5 dark:bg-blue-500 dark:hover:bg-blue-600 focus:outline-none dark:focus:ring-blue-800">
                                 <!-- Icono de carrito -->
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-6 h-6 inline">
@@ -45,11 +51,37 @@
                             <a href="{% url 'preguntas_sin_responder' %}" class="text-white bg-indigo-700 hover:bg-indigo-800 focus:ring-4 focus:ring-indigo-300 font-medium rounded-lg text-sm px-4 lg:px-5 py-2 lg:py-2.5 dark:bg-indigo-600 dark:hover:bg-indigo-700 focus:outline-none dark:focus:ring-indigo-800">Ver Preguntas Sin Responder</a>
                             <a href="{% url 'add_tool' %}" class="text-white bg-indigo-700 hover:bg-indigo-800 focus:ring-4 focus:ring-indigo-300 font-medium rounded-lg text-sm px-4 lg:px-5 py-2 lg:py-2.5 dark:bg-indigo-600 dark:hover:bg-indigo-700 focus:outline-none dark:focus:ring-indigo-800">Agregar herramienta</a>
                         {% endif %}
-                        <!-- Botón de Cerrar Sesión -->
+
+                        <!-- Icono de notificaciones -->
+                        <div class="relative">
+                            <button onclick="toggleNotifications()" class="relative focus:outline-none">
+                                <svg class="w-6 h-6 text-gray-700" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14V11a6 6 0 10-12 0v3a2.032 2.032 0 01-.595 1.405L4 17h5m6 0v1a3 3 0 01-6 0v-1m6 0H9" />
+                                </svg>
+                                {% if unread_count > 0 %}
+                                    <span id="notification-count" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full text-xs px-2">{{ unread_count }}</span>
+                                {% endif %}
+                            </button>
+                            <!-- Dropdown de notificaciones -->
+                            <div id="notification-dropdown" class="absolute right-0 mt-2 w-64 bg-white border rounded-md shadow-lg hidden z-50">
+                                <ul>
+                                    {% for notificacion in user.notificacion_set.all %}
+                                        <li class="px-4 py-2 border-b hover:bg-gray-100">
+                                            {{ notificacion.mensaje }}
+                                        </li>
+                                    {% empty %}
+                                        <li class="px-4 py-2 text-center">No tienes notificaciones</li>
+                                    {% endfor %}
+                                </ul>
+                                <a href="{% url 'notificaciones' %}" class="block text-center py-2 text-blue-600 hover:bg-gray-100">Ver todas las notificaciones</a>
+                            </div>
+                        </div>
+
+                        <!-- Bot n de Cerrar Sesi n -->
                         <form action="{% url 'logout' %}" method="post" class="inline">
                             {% csrf_token %}
                             <button type="submit" class="text-gray-800 dark:text-white hover:bg-gray-50 focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-4 lg:px-5 py-2 lg:py-2.5 dark:bg-gray-700 focus:outline-none dark:focus:ring-gray-800">
-                                Cerrar sesión
+                                Cerrar sesi n
                             </button>
                         </form>
                     {% else %}
@@ -60,7 +92,8 @@
                     <a href="{% url 'home' %}" class="text-white bg-indigo-700 hover:bg-indigo-800 focus:ring-4 focus:ring-indigo-300 font-medium rounded-lg text-sm px-4 lg:px-5 py-2 lg:py-2.5 dark:bg-indigo-600 dark:hover:bg-indigo-700 focus:outline-none dark:focus:ring-indigo-800">
                         Explorar
                     </a>
-                    <!-- Botón con imagen de perfil para ambos, arrendatario y arrendador -->
+
+                    <!-- Men  de perfil -->
                     {% if user.arrendatario or user.arrendador %}
                         <div class="relative">
                             <button onclick="toggleDropdown()" class="flex items-center focus:outline-none">
