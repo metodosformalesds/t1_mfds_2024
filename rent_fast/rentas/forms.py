@@ -32,6 +32,6 @@ class ResenaForm(forms.ModelForm):
         model = Resena
         fields = ['comentario', 'calificacion']
         widgets = {
-            'comentario': forms.Textarea(attrs={'class': 'form-input', 'placeholder': 'Escribe tu comentario aquí...'}),
+            'comentario': forms.Textarea(attrs={'class': 'form-input', 'placeholder': 'Escribe tu comentario aqu ...'}),
             'calificacion': forms.Select(attrs={'class': 'form-select'}),
         }
