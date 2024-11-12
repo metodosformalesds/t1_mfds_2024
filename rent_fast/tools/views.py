@@ -20,14 +20,15 @@ from django.conf import settings
 import requests
 from rentas.forms import PreguntaForm
 from rentas.models import Pregunta
+from users.models import Notificacion
 
 
 def cotizar_envio_view(request, tool_id):
-    # Verificar si tenemos un access_token en la sesión
+    # Verificar si tenemos un access_token en la sesi n
     access_token = request.session.get("uber_access_token")
     
     if not access_token:
-        # Redirigir al flujo de autenticación si el token no está disponible
+        # Redirigir al flujo de autenticaci n si el token no est  disponible
         return redirect("uber_login")
 
     # Obtener la herramienta y las direcciones de arrendador y arrendatario
@@ -46,13 +47,13 @@ def cotizar_envio_view(request, tool_id):
 
     # Verificar que se obtuvieron coordenadas
     if not origen_location or not destino_location:
-        return render(request, "tools/error.html", {"error": "No se pudo obtener la ubicación de una o ambas direcciones."})
+        return render(request, "tools/error.html", {"error": "No se pudo obtener la ubicaci n de una o ambas direcciones."})
 
     # Asignar coordenadas
     origen_coords = {"lat": origen_location.latitude, "lng": origen_location.longitude}
     destino_coords = {"lat": destino_location.latitude, "lng": destino_location.longitude}
 
-    # Configurar encabezados y parámetros de solicitud
+    # Configurar encabezados y par metros de solicitud
     headers = {
         "Authorization": f"Bearer {access_token}",
         "Content-Type": "application/json"
@@ -64,7 +65,7 @@ def cotizar_envio_view(request, tool_id):
         "end_longitude": destino_coords['lng']
     }
 
-    # Solicitar la cotización
+    # Solicitar la cotizaci n
     url = "https://api.uber.com/v1.2/estimates/price"
     response = requests.get(url, headers=headers, params=data)
 
@@ -76,17 +77,17 @@ def cotizar_envio_view(request, tool_id):
             "destino": destino_direccion
         })
     else:
-        return JsonResponse({"error": "Error en la solicitud de cotización a Uber."})
+        return JsonResponse({"error": "Error en la solicitud de cotizaci n a Uber."})
 
 
 def uber_login_view(request):
     auth_url = "https://auth.uber.com/oauth/v2/authorize"
     client_id = settings.UBER_CLIENT_ID
     redirect_uri = "https://8000-idx-t1mfds2024git-1729092128078.cluster-3ch54x2epbcnetrm6ivbqqebjk.cloudworkstations.dev/herramientas/uber/callback/"
-    scope = "request estimate"  # Reemplaza con los permisos necesarios para tu aplicación (debe ser válido)
-    response_type = "code"  # Asegúrate de que `response_type` sea "code"
+    scope = "request estimate"  # Reemplaza con los permisos necesarios para tu aplicaci n (debe ser v lido)
+    response_type = "code"  # Aseg rate de que `response_type` sea "code"
 
-    # Construir la URL de autenticación
+    # Construir la URL de autenticaci n
     authorization_url = (
         f"{auth_url}?client_id={client_id}&redirect_uri={redirect_uri}&scope={scope}&response_type={response_type}"
     )
@@ -98,7 +99,7 @@ def uber_callback_view(request):
     code = request.GET.get("code")
 
     if not code:
-        return JsonResponse({"error": "No se recibió un código de autorización.", "details": request.GET.dict()})
+        return JsonResponse({"error": "No se recibi  un c digo de autorizaci n.", "details": request.GET.dict()})
 
     token_url = "https://auth.uber.com/oauth/v2/token"
     data = {
@@ -118,7 +119,7 @@ def uber_callback_view(request):
 
         return redirect("cotizacion_envio")
     else:
-        # Agrega información de depuración
+        # Agrega informaci n de depuraci n
         error_details = response.json()  # Extrae el mensaje de error de la respuesta
         return JsonResponse({"error": "No se pudo obtener el token de acceso de Uber.", "details": error_details})
 
@@ -126,7 +127,7 @@ def uber_callback_view(request):
 @login_required
 def home_view(request):
     """
-    Vista principal que redirige a diferentes páginas de inicio según el rol del usuario.
+    Vista principal que redirige a diferentes p ginas de inicio seg n el rol del usuario.
     """
     try:
         if request.user.is_staff:  # Verifica si el usuario es administrador
@@ -136,7 +137,7 @@ def home_view(request):
         elif Arrendatario.objects.filter(usuario=request.user).exists():
             return redirect('arrendatario_home')
         else:
-            return render(request, "tools/no_role.html")  # Página para usuarios sin rol específico
+            return render(request, "tools/no_role.html")  # P gina para usuarios sin rol espec fico
     except Exception as e:
         return render(request, "tools/error.html", {'error': str(e)})
 
@@ -152,7 +153,7 @@ def arrendador_home(request):
     # Obtener las rentas asociadas a las herramientas del arrendador
     rentas = Renta.objects.filter(herramienta__in=tools)
 
-    # Calcular los días de renta en Python
+    # Calcular los d as de renta en Python
     for renta in rentas:
         renta.dias_renta = (renta.fecha_fin - renta.fecha_inicio).days + 1
 
@@ -163,16 +164,16 @@ def arrendador_home(request):
 
 @login_required
 def arrendatario_home(request):
-    search_query = request.GET.get('search', '')  # Recoge el valor de búsqueda (si existe)
+    search_query = request.GET.get('search', '')  # Recoge el valor de b squeda (si existe)
 
-    # Obtener herramientas disponibles agrupadas por categoría
+    # Obtener herramientas disponibles agrupadas por categor a
     categorias = Categoria.objects.all()
     herramientas_por_categoria = {
         categoria.nombre: Tool.objects.filter(categoria=categoria, estado="Disponible", nombre__icontains=search_query)[:5]
         for categoria in categorias
     }
 
-    # Herramientas sin categoría (para la sección "Cerca de ti")
+    # Herramientas sin categor a (para la secci n "Cerca de ti")
     herramientas_sin_categoria = Tool.objects.filter(categoria__isnull=True, estado="Disponible", nombre__icontains=search_query)
 
     return render(request, 'arrendatarios/arrendatario_home_new.html', {
@@ -192,7 +193,7 @@ class ToolFormView(LoginRequiredMixin, generic.FormView):
             arrendador = Arrendador.objects.get(usuario=self.request.user)
             form.save(arrendador=arrendador)  # Guardar la herramienta asociada al arrendador
         except Arrendador.DoesNotExist:
-            return redirect('no_role')  # Redirigir a una página de error si no es arrendador
+            return redirect('no_role')  # Redirigir a una p gina de error si no es arrendador
         return super().form_valid(form)
 
 class ToolListView(generic.ListView):
@@ -200,7 +201,7 @@ class ToolListView(generic.ListView):
     template_name = "tools/list_tool.html"
     context_object_name = "tools"
 
-# Importa el modelo y el formulario de Reseña
+# Importa el modelo y el formulario de Rese a
 from rentas.models import Resena
 from rentas.forms import ResenaForm
 
@@ -215,7 +216,7 @@ class ToolDetailView(DetailView):
         user = self.request.user
         arrendatario = getattr(user, 'arrendatario', None)
         
-        # Obtener las reseñas de la herramienta
+        # Obtener las rese as de la herramienta
         context['resenas'] = Resena.objects.filter(herramienta=tool)
         
         # Verificar si el usuario ha alquilado y finalizado la herramienta
@@ -227,7 +228,7 @@ class ToolDetailView(DetailView):
             ).exists()
         )
         
-        # Añadir el formulario de reseña al contexto
+        # A adir el formulario de rese a al contexto
         context['form'] = ResenaForm() if context['ha_alquilado_y_finalizado'] else None
         return context
 
@@ -245,7 +246,7 @@ class ToolDetailView(DetailView):
         )
 
         if not ha_alquilado_y_finalizado:
-            messages.error(request, "Debes finalizar la renta de esta herramienta para dejar una reseña.")
+            messages.error(request, "Debes finalizar la renta de esta herramienta para dejar una rese a.")
             return redirect('tool_detail', pk=self.object.pk)
 
         form = ResenaForm(request.POST)
@@ -254,10 +255,10 @@ class ToolDetailView(DetailView):
             resena.arrendatario = arrendatario
             resena.herramienta = self.object
             resena.save()
-            messages.success(request, "Tu reseña ha sido enviada con éxito.")
+            messages.success(request, "Tu rese a ha sido enviada con  xito.")
             return redirect('tool_detail', pk=self.object.pk)
         else:
-            messages.error(request, "Hubo un error con tu reseña. Inténtalo de nuevo.")
+            messages.error(request, "Hubo un error con tu rese a. Int ntalo de nuevo.")
             return self.get(request, *args, **kwargs)
 
 @login_required
@@ -267,7 +268,7 @@ def add_tool_view(request):
         form = ToolForm(request.POST, request.FILES)
         if form.is_valid():
             form.save(arrendador=arrendador)  # Guardar la herramienta con estado "Pendiente"
-            return redirect('arrendador_home')  # Redirige a la página del arrendador después de crear la herramienta
+            return redirect('arrendador_home')  # Redirige a la p gina del arrendador despu s de crear la herramienta
     else:
         form = ToolForm()
     return render(request, 'arrendadores/add_tool.html', {'form': form})
@@ -294,7 +295,7 @@ def seleccionar_fechas_view(request, tool_id):
     if request.method == 'POST':
         form = RentaForm(request.POST)
         if form.is_valid():
-            # Guardamos las fechas en la sesión para usarlas en el carrito
+            # Guardamos las fechas en la sesi n para usarlas en el carrito
             request.session['fecha_inicio'] = str(form.cleaned_data['fecha_inicio'])
             request.session['fecha_fin'] = str(form.cleaned_data['fecha_fin'])
             return redirect('agregar_al_carrito', tool_id=tool_id)
@@ -312,7 +313,7 @@ def agregar_al_carrito_view(request, tool_id):
     if not arrendatario:
         return render(request, 'tools/no_role.html', {'error': "Necesitas un perfil de arrendatario para alquilar herramientas."})
 
-    # Obtener las fechas desde la sesión
+    # Obtener las fechas desde la sesi n
     fecha_inicio = request.session.get('fecha_inicio')
     fecha_fin = request.session.get('fecha_fin')
     
@@ -332,13 +333,13 @@ def agregar_al_carrito_view(request, tool_id):
             costo_total=costo_total
         )
         
-        # Limpiar las fechas de la sesión
+        # Limpiar las fechas de la sesi n
         del request.session['fecha_inicio']
         del request.session['fecha_fin']
 
-        return redirect('carrito')  # Redirige al carrito después de agregar el producto
+        return redirect('carrito')  # Redirige al carrito despu s de agregar el producto
     
-    # Si las fechas no están en la sesión, redirigir a seleccionar fechas
+    # Si las fechas no est n en la sesi n, redirigir a seleccionar fechas
     return redirect('seleccionar_fechas', tool_id=tool_id)
 
 @login_required
@@ -375,22 +376,21 @@ def resumen_view(request):
         'monto_total': monto_total,
     })
 
+
 @login_required
 def confirmar_renta_view(request):
     arrendatario = getattr(request.user, 'arrendatario', None)
     if not arrendatario:
         return render(request, 'tools/no_role.html', {'error': "Necesitas un perfil de arrendatario para confirmar la renta."})
 
-    # Obtener los elementos del carrito
     carrito_items = Carrito.objects.filter(arrendatario=arrendatario)
 
     if not carrito_items:
         messages.error(request, "No tienes herramientas en el carrito.")
         return redirect('carrito')
 
-    # Crear una renta para cada herramienta en el carrito
     for item in carrito_items:
-        Renta.objects.create(
+        renta = Renta.objects.create(
             herramienta=item.herramienta,
             arrendatario=arrendatario,
             fecha_inicio=item.fecha_inicio,
@@ -399,19 +399,22 @@ def confirmar_renta_view(request):
             estado="Activa"
         )
 
-    # Limpiar el carrito después de confirmar la renta
-    carrito_items.delete()
+        # Crear notificaci n para el arrendador
+        mensaje = f"Una nueva renta ha sido generada para tu herramienta '{item.herramienta.nombre}'"
+        Notificacion.objects.create(usuario=item.herramienta.arrendador.usuario, mensaje=mensaje)
 
-    messages.success(request, "¡La renta se ha confirmado correctamente!")
-    return redirect('arrendatario_home')  # Redirige a la página del arrendatario
+    carrito_items.delete()
+    messages.success(request, " La renta se ha confirmado correctamente!")
+    return redirect('arrendatario_home')
 
 @staff_member_required
 def admin_home(request):
     """
-    Vista del administrador para ver herramientas pendientes y decidir su aprobación o rechazo.
+    Vista del administrador para ver herramientas pendientes y decidir su aprobaci n o rechazo.
     """
     pending_tools = Tool.objects.filter(estado='Pendiente')  # Obtener solo las herramientas en estado "Pendiente"
     return render(request, 'admin/admin_home.html', {'pending_tools': pending_tools})
+
 
 @staff_member_required
 @require_POST
@@ -419,7 +422,12 @@ def approve_tool(request, tool_id):
     tool = get_object_or_404(Tool, id=tool_id)
     tool.estado = 'Disponible'
     tool.save()
-    return redirect('admin_home')  # Redirige al home del administrador después de aprobar
+    
+    # Crear notificaci n para el arrendador
+    mensaje = f"Tu herramienta '{tool.nombre}' ha sido aprobada y ahora est  disponible."
+    Notificacion.objects.create(usuario=tool.arrendador.usuario, mensaje=mensaje)
+
+    return redirect('admin_home')
 
 @staff_member_required
 @require_POST
@@ -427,7 +435,13 @@ def reject_tool(request, tool_id):
     tool = get_object_or_404(Tool, id=tool_id)
     tool.estado = 'Rechazado'
     tool.save()
-    return redirect('admin_home')  # Redirige al home del administrador después de rechazar
+
+    # Crear notificaci n para el arrendador
+    mensaje = f"Tu herramienta '{tool.nombre}' ha sido rechazada."
+    Notificacion.objects.create(usuario=tool.arrendador.usuario, mensaje=mensaje)
+
+    return redirect('admin_home')
+
 @staff_member_required
 def admin_pending_tools(request):
     """
@@ -439,7 +453,7 @@ def admin_pending_tools(request):
 def pagar_sin_paypal_view(request):
     arrendatario = getattr(request.user, 'arrendatario', None)
     if not arrendatario:
-        messages.error(request, "No se encontró un perfil de arrendatario.")
+        messages.error(request, "No se encontr  un perfil de arrendatario.")
         return redirect("carrito")
 
     carrito_items = Carrito.objects.filter(arrendatario=arrendatario)
@@ -447,7 +461,7 @@ def pagar_sin_paypal_view(request):
         messages.error(request, "No tienes herramientas en el carrito.")
         return redirect("carrito")
 
-    ultimo_chat_id = None  # Variable para guardar el ID del último chat creado
+    ultimo_chat_id = None  # Variable para guardar el ID del  ltimo chat creado
 
     # Crear una instancia de Renta y Chat para cada elemento en el carrito
     for item in carrito_items:
@@ -468,18 +482,18 @@ def pagar_sin_paypal_view(request):
             renta=renta
         )
 
-        # Guardar el ID del último chat creado
+        # Guardar el ID del  ltimo chat creado
         ultimo_chat_id = chat.id
 
     # Vaciar el carrito
     carrito_items.delete()
 
-    # Redirigir al chat recién creado
+    # Redirigir al chat reci n creado
     if ultimo_chat_id:
         messages.success(request, "Renta completada exitosamente y chat creado.")
         return redirect(reverse("ver_chat", args=[ultimo_chat_id]))
 
-    # Si no se creó ningún chat, redirigir al home del arrendatario
+    # Si no se cre  ning n chat, redirigir al home del arrendatario
     messages.error(request, "No se pudo crear el chat. Redirigiendo al inicio.")
     return redirect("arrendatario_home")
     
@@ -512,7 +526,7 @@ def uber_callback(request):
     response = requests.post(token_url, data=data)
     access_token = response.json().get('access_token')
 
-    # Guarda el access_token en la sesión para usarlo después
+    # Guarda el access_token en la sesi n para usarlo despu s
     request.session['uber_access_token'] = access_token
 
     # Devuelve el token para pruebas
@@ -529,7 +543,7 @@ def obtener_cotizacion(request):
         'Content-Type': 'application/json',
     }
     data = {
-        'pickup_address': '123 Calle Falsa, Ciudad',  # Cambia estos datos según sea necesario
+        'pickup_address': '123 Calle Falsa, Ciudad',  # Cambia estos datos seg n sea necesario
         'dropoff_address': '456 Avenida Verdadera, Ciudad',
     }
     response = requests.post(url, headers=headers, json=data)
@@ -561,23 +575,23 @@ def detalles_herramienta(request, herramienta_id):
         estado="Finalizada"
     ).exists()
 
-    # Verificar si ya existe una reseña para este arrendatario y herramienta
-    reseña_existente = Resena.objects.filter(
+    # Verificar si ya existe una rese a para este arrendatario y herramienta
+    rese a_existente = Resena.objects.filter(
         herramienta=herramienta,
         arrendatario=request.user.arrendatario
     ).exists()
 
-    if request.method == 'POST' and ha_alquilado_y_finalizado and not reseña_existente:
+    if request.method == 'POST' and ha_alquilado_y_finalizado and not rese a_existente:
         form = ResenaForm(request.POST)
         if form.is_valid():
             resena = form.save(commit=False)
             resena.arrendatario = request.user.arrendatario
             resena.herramienta = herramienta
             resena.save()
-            messages.success(request, "Tu reseña ha sido enviada con éxito.")
+            messages.success(request, "Tu rese a ha sido enviada con  xito.")
             return redirect('tool_detail', herramienta_id=herramienta.id)
         else:
-            messages.error(request, "Hubo un error con tu reseña. Inténtalo de nuevo.")
+            messages.error(request, "Hubo un error con tu rese a. Int ntalo de nuevo.")
     else:
         form = ResenaForm()
 
@@ -585,7 +599,7 @@ def detalles_herramienta(request, herramienta_id):
         'herramienta': herramienta,
         'resenas': resenas,
         'promedio_calificacion': promedio_calificacion,
-        'ha_alquilado_y_finalizado': ha_alquilado_y_finalizado and not reseña_existente,
+        'ha_alquilado_y_finalizado': ha_alquilado_y_finalizado and not rese a_existente,
         'form': form,
     }
     return render(request, 'tools/tool_details.html', context)
