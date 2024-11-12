@@ -35,7 +35,7 @@ def cotizar_envio_view(request, tool_id):
     arrendador = herramienta.arrendador
     arrendatario = request.user.arrendatario
 
-    # Crear direcciones basadas en el modelo Direccion
+    # Crear direcciones basadas en el modelo `Direccion`
     origen_direccion = f"{arrendador.direccion.calle}, {arrendador.direccion.ciudad}, {arrendador.direccion.estado}, {arrendador.direccion.codigo_postal}"
     destino_direccion = f"{arrendatario.direccion.calle}, {arrendatario.direccion.ciudad}, {arrendatario.direccion.estado}, {arrendatario.direccion.codigo_postal}"
 
@@ -84,7 +84,7 @@ def uber_login_view(request):
     client_id = settings.UBER_CLIENT_ID
     redirect_uri = "https://8000-idx-t1mfds2024git-1729092128078.cluster-3ch54x2epbcnetrm6ivbqqebjk.cloudworkstations.dev/herramientas/uber/callback/"
     scope = "request estimate"  # Reemplaza con los permisos necesarios para tu aplicación (debe ser válido)
-    response_type = "code"  # Asegúrate de que response_type sea "code"
+    response_type = "code"  # Asegúrate de que `response_type` sea "code"
 
     # Construir la URL de autenticación
     authorization_url = (
