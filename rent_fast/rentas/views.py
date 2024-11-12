@@ -96,12 +96,16 @@ def ver_chat_view(request, chat_id):
     else:
         form = MensajeForm()
 
+    # Agrega la herramienta al contexto
+    herramienta = chat.herramienta  # Obtener la herramienta asociada al chat
+
     return render(request, 'ver_chat.html', {
         'chat': chat,
         'form': form,
-        'mensajes': chat.mensajes.all().order_by('enviado')  # Usar el related_name para acceder a los mensajes
+        'mensajes': chat.mensajes.all().order_by('enviado'),
+        'herramienta': herramienta  # Incluye la herramienta en el contexto
     })
-
+    
 @login_required
 def listar_chats_view(request):
     # Obtener los chats donde el usuario sea arrendador o arrendatario
@@ -169,3 +173,17 @@ def preguntas_sin_responder_view(request):
         form = RespuestaForm()
 
     return render(request, 'rentas/preguntas_sin_responder.html', {'preguntas': preguntas, 'form': form})
+
+@login_required
+def finalizar_renta_view(request, renta_id):
+    renta = get_object_or_404(Renta, id=renta_id, arrendatario__usuario=request.user)
+
+    if renta.estado != "Activa":
+        messages.error(request, "Esta renta ya ha sido finalizada o no se puede modificar.")
+        return redirect("rentas_arrendatario")  # Cambia al nombre de la URL de tus rentas del arrendatario si es diferente
+
+    renta.estado = "Finalizada"
+    renta.save()
+
+    messages.success(request, "La renta ha sido finalizada exitosamente.")
+    return redirect("ver_chat", chat_id=renta.chat_set.first().id)  # Redirige al chat relacionado

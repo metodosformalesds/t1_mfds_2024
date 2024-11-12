@@ -17,7 +17,7 @@ import json
 from django.http import JsonResponse
 from base64 import b64decode
 from .forms import UserForm, PersonalInfoForm, AddressForm
-from .models import Arrendador, Arrendatario, Direccion
+from .models import Arrendador, Arrendatario, Direccion, Notificacion
 
 # Configura el almacenamiento de archivos temporales
 file_storage = FileSystemStorage(location='media/tmp')
@@ -514,8 +514,51 @@ def actualizar_datos_view(request):
     }
     return render(request, 'users/update_dates.html', context)
 
+from django.shortcuts import render, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from .forms import UpdateAddressForm
+from .models import Arrendador, Arrendatario
+from django.urls import reverse
+
+@login_required
+def update_address(request):
+    # Determina si el usuario es Arrendador o Arrendatario
+    try:
+        perfil = Arrendador.objects.get(usuario=request.user)
+        es_arrendador = True
+    except Arrendador.DoesNotExist:
+        perfil = Arrendatario.objects.get(usuario=request.user)
+        es_arrendador = False
+
+    direccion = perfil.direccion
+
+    # Determina la URL de redirección
+    redireccion_url = reverse('arrendador_home') if es_arrendador else reverse('arrendatario_home')
+
+    if request.method == 'POST':
+        form = UpdateAddressForm(request.POST, instance=direccion)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "¡Tu dirección ha sido actualizada correctamente!")
+            # No redirigimos, solo mostramos el mensaje
+        else:
+            messages.error(request, "Por favor, corrige los errores en el formulario.")
+    else:
+        form = UpdateAddressForm(instance=direccion)
+
+    context = {
+        'form': form,
+        'redireccion_url': redireccion_url
+    }
+    return render(request, 'users/update_address.html', context)
 
 
 
 
-
+@login_required
+def ver_notificaciones(request):
+    # Obtener todas las notificaciones del usuario actual y marcarlas como leídas
+    notificaciones = Notificacion.objects.filter(usuario=request.user)
+    notificaciones.update(leido=True)
+    return render(request, 'users/notificaciones.html', {'notificaciones': notificaciones})

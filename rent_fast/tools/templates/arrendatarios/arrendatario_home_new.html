@@ -2,7 +2,7 @@
 
 {% block content %}
 <body>
-    <div class="group/design-root relative flex size-full min-h-screen flex-col overflow-x-hidden bg-white" style='font-family: "Work Sans", "Noto Sans", sans-serif;'>
+    <div class="group/design-root relative flex size-full min-h-screen flex-col overflow-x-hidden bg-slate-50" style='font-family: "Work Sans", "Noto Sans", sans-serif;'>
         <div class="layout-container flex h-full grow flex-col">
             <div class="flex flex-1 justify-center px-40 py-5">
                 <div class="layout-content-container flex max-w-[960px] flex-1 flex-col">
@@ -14,8 +14,8 @@
                                     <h2 class="@[480px]:text-base @[480px]:font-normal @[480px]:leading-normal text-sm font-normal leading-normal text-white">Encuentra la herramienta perfecta para tu futuro proyecto</h2>
                                 </div>
                                 
-                                <!-- Formulario de búsqueda -->
-                  <!-- Formulario de búsqueda -->
+                                <!-- Formulario de b squeda -->
+                  <!-- Formulario de b squeda -->
                               <form method="GET" action="{% url 'arrendatario_home' %}">
                                 <label class="@[480px]:h-16 flex h-14 w-full min-w-40 max-w-[480px] flex-col">
                                   <div class="flex h-full w-full flex-1 items-stretch rounded-xl">
@@ -36,40 +36,42 @@
                             </div>
                         </div>
                     </div>
+<!-- Secci n de herramientas sin categor a (Cerca de ti) -->
+<h2 class="px-4 pb-3 pt-5 text-[22px] font-bold leading-tight tracking-[-0.015em] text-[#111418]">Cerca de ti</h2>
+<div class="grid grid-cols-[repeat(auto-fit,minmax(158px,1fr))] gap-3 p-4">
+    {% for tool in herramientas_sin_categoria|slice:":5" %}  <!-- Muestra m ximo 20 herramientas -->
+    <a href="{% url 'tool_detail' tool.id %}">
+        <div class="flex flex-col gap-3 pb-3">
+            <div class="aspect-square w-full rounded-xl bg-cover bg-center bg-no-repeat" style='background-image: url("{% if tool.imagenes %}{{ tool.imagenes.url }}{% else %}https://cdn.usegalileo.ai/sdxl10/84ed65ba-6d8e-4158-b97a-6d36dabc415d.png{% endif %}");'></div>
+            <div>
+                <p class="text-base font-medium leading-normal text-[#111418]">{{ tool.nombre }}</p>
+                <p class="text-sm font-normal leading-normal text-[#60708a]">${{ tool.costo_dia }}/day</p>
+            </div>
+        </div>
+    </a>
+    {% endfor %}
+</div>
 
-                    <!-- Sección de herramientas sin categoría (Cerca de ti) -->
-                    <h2 class="px-4 pb-3 pt-5 text-[22px] font-bold leading-tight tracking-[-0.015em] text-[#111418]">Cerca de ti</h2>
-                    <div class="grid grid-cols-[repeat(auto-fit,minmax(158px,1fr))] gap-3 p-4">
-                        {% for tool in herramientas_sin_categoria %}
-                        <a href="{% url 'tool_detail' tool.id %}">
-                            <div class="flex flex-col gap-3 pb-3">
-                                <div class="aspect-square w-full rounded-xl bg-cover bg-center bg-no-repeat" style='background-image: url("{% if tool.imagenes %}{{ tool.imagenes.url }}{% else %}https://cdn.usegalileo.ai/sdxl10/84ed65ba-6d8e-4158-b97a-6d36dabc415d.png{% endif %}");'></div>
-                                <div>
-                                    <p class="text-base font-medium leading-normal text-[#111418]">{{ tool.nombre }}</p>
-                                    <p class="text-sm font-normal leading-normal text-[#60708a]">${{ tool.costo_dia }}/day</p>
-                                </div>
-                            </div>
-                        </a>
-                        {% endfor %}
-                    </div>
 
-                    <!-- Sección de herramientas por categoría -->
-                    {% for categoria, tools in herramientas_por_categoria.items %}
-                    <h2 class="px-4 pb-3 pt-5 text-[22px] font-bold leading-tight tracking-[-0.015em] text-[#111418]">{{ categoria }}</h2>
-                    <div class="flex overflow-x-auto space-x-3 p-4">
-                        {% for tool in tools %}
-                        <a href="{% url 'tool_detail' tool.id %}">
-                            <div class="flex flex-col gap-3 pb-3">
-                                <div class="aspect-square w-[150px] rounded-xl bg-cover bg-center bg-no-repeat" style='background-image: url("{% if tool.imagenes %}{{ tool.imagenes.url }}{% else %}https://cdn.usegalileo.ai/sdxl10/84ed65ba-6d8e-4158-b97a-6d36dabc415d.png{% endif %}");'></div>
-                                <div>
-                                    <p class="text-base font-medium leading-normal text-[#111418]">{{ tool.nombre }}</p>
-                                    <p class="text-sm font-normal leading-normal text-[#60708a]">${{ tool.costo_dia }}/day</p>
-                                </div>
-                            </div>
-                        </a>
-                        {% endfor %}
-                    </div>
-                    {% endfor %}
+                    <!-- Secci n de herramientas por categor a -->
+                   <!-- Secci n de herramientas por categor a -->
+{% for categoria, tools in herramientas_por_categoria.items %}
+<h2 class="px-4 pb-3 pt-5 text-[22px] font-bold leading-tight tracking-[-0.015em] text-[#111418]">{{ categoria }}</h2>
+<div class="flex overflow-x-auto space-x-3 p-4">
+    {% for tool in tools|slice:":5" %}  <!-- Muestra m ximo 20 herramientas -->
+    <a href="{% url 'tool_detail' tool.id %}">
+        <div class="flex flex-col gap-3 pb-3">
+            <div class="aspect-square w-[150px] rounded-xl bg-cover bg-center bg-no-repeat" style='background-image: url("{% if tool.imagenes %}{{ tool.imagenes.url }}{% else %}https://cdn.usegalileo.ai/sdxl10/84ed65ba-6d8e-4158-b97a-6d36dabc415d.png{% endif %}");'></div>
+            <div>
+                <p class="text-base font-medium leading-normal text-[#111418]">{{ tool.nombre }}</p>
+                <p class="text-sm font-normal leading-normal text-[#60708a]">${{ tool.costo_dia }}/day</p>
+            </div>
+        </div>
+    </a>
+    {% endfor %}
+</div>
+{% endfor %}
+
                 </div>
             </div>
         </div>

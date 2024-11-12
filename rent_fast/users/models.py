@@ -62,3 +62,12 @@ class Arrendatario(models.Model):
 
     def __str__(self):
         return f"{self.nombre} {self.apellidos} (Arrendatario)"
+
+class Notificacion(models.Model):
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notificaciones')
+    mensaje = models.TextField()
+    leido = models.BooleanField(default=False)
+    creado = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Notificación para {self.usuario.username}: {self.mensaje[:30]}..."

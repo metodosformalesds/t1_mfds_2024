@@ -85,6 +85,7 @@ INSTALLED_APPS = [
     "formtools",
     "crispy_forms",
     "crispy_tailwind",
+    'widget_tweaks',
     "requests",
     "users",
     "tools",
@@ -153,7 +154,9 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-            ],
+                'users.context_processors.notificaciones_no_leidas',
+                
+            ],  
         },
     },
 ]

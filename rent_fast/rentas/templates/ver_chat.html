@@ -8,8 +8,26 @@
         </svg>
         Regresar
     </a>
+    
     <!-- Título del chat -->
     <h1 class="text-3xl font-bold text-gray-800 mb-6 text-center">Chat</h1>
+
+    <!-- Información de la herramienta -->
+    <div class="bg-white p-6 rounded-lg shadow-md mb-6 flex items-center">
+        <div class="w-24 h-24 mr-4 flex-shrink-0">
+            <!-- Mostrar imagen de la herramienta o imagen predeterminada -->
+            {% if herramienta.imagen %}
+                <img src="{{ herramienta.imagen.url }}" alt="Imagen de la herramienta" class="w-full h-full object-cover rounded-lg">
+            {% else %}
+                <img src="https://th.bing.com/th/id/R.c686896019147f6d57529fcfb6d75a28?rik=x186ThmrCoWqCg&riu=http%3a%2f%2ffiles.123inventatuweb.com%2f51%2f04%2f51045ced-acc5-4921-908a-f734f25c548f.jpg&ehk=sh3bkI2UbFohecSeceNYuu%2b4PRQTpJvfgMz4yMjUVK4%3d&risl=&pid=ImgRaw&r=0" alt="Imagen de la herramienta predeterminada" class="w-full h-full object-cover rounded-lg">
+            {% endif %}
+        </div>
+        <div>
+            <h2 class="text-2xl font-semibold text-gray-800">{{ herramienta.nombre }}</h2>
+            <p class="text-gray-600">Fecha de inicio: {{ chat.renta.fecha_inicio }}</p>
+            <p class="text-gray-600">Fecha de fin: {{ chat.renta.fecha_fin }}</p>
+        </div>
+    </div>
 
     <!-- Contenedor de mensajes -->
     <div class="bg-white border rounded-lg shadow-md p-6 max-h-96 overflow-y-auto space-y-4">
@@ -29,6 +47,16 @@
         </div>
         {% endfor %}
     </div>
+
+    <!-- Botón para finalizar la renta, si es el arrendatario y la renta está activa -->
+    {% if chat.renta.estado == "Activa" and request.user == chat.arrendatario.usuario %}
+        <form method="post" action="{% url 'finalizar_renta' chat.renta.id %}" class="mt-6">
+            {% csrf_token %}
+            <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition duration-150">
+                Finalizar Renta
+            </button>
+        </form>
+    {% endif %}
 
     <!-- Formulario para enviar un nuevo mensaje -->
     <form method="post" class="mt-6">

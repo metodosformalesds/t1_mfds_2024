@@ -3,7 +3,7 @@
 {% block content %}
 <div class="container mx-auto py-8 px-4 sm:px-6 lg:px-8">
     <!-- Título del chat -->
-    <a href="{% url 'arrendador_home' %}" class="flex items-center text-black pb-4">
+    <a href="{% url 'arrendatario_home' %}" class="flex items-center text-black pb-4">
         <svg class="mr-2" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
             <path fill-rule="evenodd" d="M10.854 4.146a.5.5 0 0 1 0 .708L7.707 8l3.147 3.146a.5.5 0 0 1-.708.708l-3.5-3.5a.5.5 0 0 1 0-.708l3.5-3.5a.5.5 0 0 1 .708 0z"/>
         </svg>
@@ -16,18 +16,31 @@
         {% for chat in chats %}
             <!-- Card de chat individual -->
             <a href="{% url 'ver_chat' chat.id %}" class="block p-4 border rounded-lg hover:bg-blue-50 transition duration-150 ease-in-out">
-                <div class="flex items-center justify-between">
-                    <p class="text-lg font-semibold text-gray-900">{{ chat.herramienta.nombre }}</p>
-                    <p class="text-xs text-gray-500">{{ chat.fecha }}</p> <!-- Agrega una fecha si tienes disponible -->
+                <div class="flex items-center space-x-4">
+                    <!-- Mostrar imagen de la herramienta o imagen predeterminada -->
+                    <div class="w-16 h-16 flex-shrink-0">
+                        {% if chat.herramienta.imagen %}
+                            <img src="{{ chat.herramienta.imagen.url }}" alt="Imagen de la herramienta" class="w-full h-full object-cover rounded-lg">
+                        {% else %}
+                            <img src="https://th.bing.com/th/id/R.c686896019147f6d57529fcfb6d75a28?rik=x186ThmrCoWqCg&riu=http%3a%2f%2ffiles.123inventatuweb.com%2f51%2f04%2f51045ced-acc5-4921-908a-f734f25c548f.jpg&ehk=sh3bkI2UbFohecSeceNYuu%2b4PRQTpJvfgMz4yMjUVK4%3d&risl=&pid=ImgRaw&r=0" alt="Imagen de la herramienta predeterminada" class="w-full h-full object-cover rounded-lg">
+                        {% endif %}
+                    </div>
+                    <!-- Información del chat -->
+                    <div class="flex-1">
+                        <div class="flex justify-between items-center">
+                            <p class="text-lg font-semibold text-gray-900">{{ chat.herramienta.nombre }}</p>
+                            <p class="text-xs text-gray-500">{{ chat.creado|date:"d/m/Y" }}</p> <!-- Fecha de creación del chat -->
+                        </div>
+                        <p class="text-sm text-gray-600 mt-1">
+                            <span class="font-medium">Con:</span>
+                            {% if chat.arrendatario.usuario == request.user %}
+                                {{ chat.arrendador.usuario.get_full_name }}
+                            {% else %}
+                                {{ chat.arrendatario.usuario.get_full_name }}
+                            {% endif %}
+                        </p>
+                    </div>
                 </div>
-                <p class="text-sm text-gray-600 mt-1">
-                    <span class="font-medium">Con:</span>
-                    {% if chat.arrendatario.usuario == request.user %}
-                        {{ chat.arrendador.usuario.get_full_name }}
-                    {% else %}
-                        {{ chat.arrendatario.usuario.get_full_name }}
-                    {% endif %}
-                </p>
             </a>
         {% empty %}
         <!-- Mensaje si no hay chats -->
