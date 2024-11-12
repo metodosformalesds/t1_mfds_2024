@@ -2,6 +2,7 @@
 from django.views.decorators.csrf import csrf_exempt
 
 import requests
+import boto3
 import base64
 from django.core.files.storage import FileSystemStorage
 from django.contrib.auth.models import User
@@ -33,6 +34,7 @@ TEMPLATES = {
     'personal': 'users/register_personal.html',
     'address': 'users/register_address.html',
 }
+
 @csrf_exempt
 def verify_identity(request):
     if request.method == 'POST':
@@ -42,46 +44,73 @@ def verify_identity(request):
 
         # Validar que ambas imágenes estén presentes
         if not (captured_image_data and ine_image):
+            print("Error: Una o ambas imágenes están ausentes")
             return JsonResponse({"success": False, "error": "Se requieren ambas imágenes."})
 
         try:
-            # Decodificar la imagen capturada en base64
+            # Decodificar la imagen capturada en base64 a binario
             captured_image = base64.b64decode(captured_image_data.split(',')[1])
+            print("Imagen capturada decodificada exitosamente.")
 
-            # Preparar encabezados y URLs de la API de Azure Face
-            headers = {
-                "Ocp-Apim-Subscription-Key": settings.AZURE_FACE_API_KEY,
-                "Content-Type": "application/octet-stream"
-            }
-            detect_url = settings.AZURE_FACE_API_ENDPOINT + "/detect"
-            verify_url = settings.AZURE_FACE_API_ENDPOINT + "/verify"
+            # Preparar cliente de AWS Rekognition
+            import boto3
+            rekognition_client = boto3.client(
+                'rekognition',
+                aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
+                aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
+                region_name=settings.AWS_REGION
+            )
 
-            # Enviar solicitud de detección de rostro para la imagen capturada
-            detect_response = requests.post(detect_url, headers=headers, data=captured_image)
-            detect_response.raise_for_status()
-            face_id_captured = detect_response.json()[0]['faceId']
+            # Detectar rostros en la imagen capturada
+            print("Enviando solicitud para detectar rostros en la imagen capturada...")
+            captured_response = rekognition_client.detect_faces(
+                Image={'Bytes': captured_image},
+                Attributes=['ALL']
+            )
+            print("Respuesta de detección (capturada):", captured_response)
 
-            # Enviar solicitud de detección de rostro para la imagen INE
-            ine_image_data = ine_image.read()  # Leer archivo de la INE
-            detect_response_ine = requests.post(detect_url, headers=headers, data=ine_image_data)
-            detect_response_ine.raise_for_status()
-            face_id_ine = detect_response_ine.json()[0]['faceId']
+            if not captured_response['FaceDetails']:
+                print("No se detectó ningún rostro en la imagen capturada.")
+                return JsonResponse({"success": False, "error": "No se detectó un rostro en la imagen capturada."})
 
-            # Verificación de coincidencia entre los rostros detectados
-            verify_data = {"faceId1": face_id_captured, "faceId2": face_id_ine}
-            verify_response = requests.post(verify_url, headers=headers, json=verify_data)
-            verify_response.raise_for_status()
+            # Leer y enviar la imagen INE
+            ine_image_data = ine_image.read()
+            print("Enviando solicitud para detectar rostros en la imagen INE...")
+            ine_response = rekognition_client.detect_faces(
+                Image={'Bytes': ine_image_data},
+                Attributes=['ALL']
+            )
+            print("Respuesta de detección (INE):", ine_response)
 
-            # Procesar la respuesta de verificación de coincidencia
-            is_identical = verify_response.json().get("isIdentical", False)
-            return JsonResponse({"success": is_identical})
-        
-        except requests.RequestException as e:
-            return JsonResponse({"success": False, "error": f"Error en la solicitud a la API: {str(e)}"})
-        except (KeyError, IndexError):
-            return JsonResponse({"success": False, "error": "No se detectó un rostro en una o ambas imágenes."})
+            if not ine_response['FaceDetails']:
+                print("No se detectó ningún rostro en la imagen INE.")
+                return JsonResponse({"success": False, "error": "No se detectó un rostro en la imagen INE."})
 
+            # Comparar rostros
+            print("Enviando solicitud para comparar rostros...")
+            comparison_response = rekognition_client.compare_faces(
+                SourceImage={'Bytes': ine_image_data},
+                TargetImage={'Bytes': captured_image},
+                SimilarityThreshold=90  # Cambia el umbral según tus necesidades
+            )
+            print("Respuesta de comparación de rostros:", comparison_response)
+
+            # Validar si se encontraron coincidencias con el umbral de similitud
+            if not comparison_response['FaceMatches']:
+                print("No se encontró coincidencia en los rostros.")
+                return JsonResponse({"success": False, "error": "Los rostros no coinciden."})
+
+            # Resultado de coincidencia
+            print("Coincidencia de rostros exitosa.")
+            return JsonResponse({"success": True})
+
+        except Exception as e:
+            print(f"Error en la solicitud a AWS Rekognition: {str(e)}")
+            return JsonResponse({"success": False, "error": f"Error en la solicitud a AWS Rekognition: {str(e)}"})
+
+    print("Error: Método no permitido")
     return JsonResponse({"success": False, "error": "Método no permitido."})
+
 
 class RegisterWizard(SessionWizardView):
     form_list = FORMS

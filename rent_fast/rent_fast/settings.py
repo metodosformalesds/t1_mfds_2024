@@ -54,9 +54,11 @@ UBER_CLIENT_SECRET = 'D6Hb2hWO93NEIejQmjOyhkX3ZKF_-bYU46w8DxV2'  # Copia aquí t
 
 # Azure Face API settings
 AZURE_FACE_API_KEY = "4R2GHd5yKi9csgHDhZbSCSASDpd8383zvQd1111VnAaxL1tfc6wOJQQJ99AKACYeBjFXJ3w3AAAKACOG27Qb"
-AZURE_FACE_API_ENDPOINT = "https://rentfast12.cognitiveservices.azure.com/face/v1.0"
+AZURE_FACE_API_ENDPOINT = "https://rentfast12.cognitiveservices.azure.com"
 
-
+AWS_ACCESS_KEY_ID = 'AKIA5FTZCUUIAEVXO7EW'
+AWS_SECRET_ACCESS_KEY = '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'
+AWS_REGION = 'us-east-1'  # Ajusta la región según tu preferencia
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
