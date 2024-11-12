@@ -35,7 +35,7 @@ def cotizar_envio_view(request, tool_id):
     arrendador = herramienta.arrendador
     arrendatario = request.user.arrendatario
 
-    # Crear direcciones basadas en el modelo `Direccion`
+    # Crear direcciones basadas en el modelo Direccion
     origen_direccion = f"{arrendador.direccion.calle}, {arrendador.direccion.ciudad}, {arrendador.direccion.estado}, {arrendador.direccion.codigo_postal}"
     destino_direccion = f"{arrendatario.direccion.calle}, {arrendatario.direccion.ciudad}, {arrendatario.direccion.estado}, {arrendatario.direccion.codigo_postal}"
 
@@ -84,7 +84,7 @@ def uber_login_view(request):
     client_id = settings.UBER_CLIENT_ID
     redirect_uri = "https://8000-idx-t1mfds2024git-1729092128078.cluster-3ch54x2epbcnetrm6ivbqqebjk.cloudworkstations.dev/herramientas/uber/callback/"
     scope = "request estimate"  # Reemplaza con los permisos necesarios para tu aplicación (debe ser válido)
-    response_type = "code"  # Asegúrate de que `response_type` sea "code"
+    response_type = "code"  # Asegúrate de que response_type sea "code"
 
     # Construir la URL de autenticación
     authorization_url = (
@@ -173,7 +173,7 @@ def arrendatario_home(request):
     }
 
     # Herramientas sin categoría (para la sección "Cerca de ti")
-    herramientas_sin_categoria = Tool.objects.filter(categoria__isnull=True, estado="Disponible", nombre__icontains=search_query)
+    herramientas_sin_categoria = Tool.objects.filter(categoria_isnull=True, estado="Disponible", nombre_icontains=search_query)
 
     return render(request, 'arrendatarios/arrendatario_home_new.html', {
         'herramientas_sin_categoria': herramientas_sin_categoria,
@@ -200,6 +200,10 @@ class ToolListView(generic.ListView):
     template_name = "tools/list_tool.html"
     context_object_name = "tools"
 
+# Importa el modelo y el formulario de Reseña
+from rentas.models import Resena
+from rentas.forms import ResenaForm
+
 class ToolDetailView(DetailView):
     model = Tool
     template_name = "tools/tool_details.html"
@@ -207,26 +211,54 @@ class ToolDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['form'] = PreguntaForm()  # Añadimos el formulario de pregunta al contexto
+        tool = self.get_object()
+        user = self.request.user
+        arrendatario = getattr(user, 'arrendatario', None)
+        
+        # Obtener las reseñas de la herramienta
+        context['resenas'] = Resena.objects.filter(herramienta=tool)
+        
+        # Verificar si el usuario ha alquilado y finalizado la herramienta
+        context['ha_alquilado_y_finalizado'] = (
+            arrendatario and Renta.objects.filter(
+                herramienta=tool,
+                arrendatario=arrendatario,
+                estado="Finalizada"
+            ).exists()
+        )
+        
+        # Añadir el formulario de reseña al contexto
+        context['form'] = ResenaForm() if context['ha_alquilado_y_finalizado'] else None
         return context
 
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
-        form = PreguntaForm(request.POST)
         arrendatario = getattr(request.user, 'arrendatario', None)
 
-        if not arrendatario:
-            # Redirecciona si el usuario no es un arrendatario
-            return redirect('login')
+        # Verificar si el usuario ha alquilado y finalizado la herramienta
+        ha_alquilado_y_finalizado = (
+            arrendatario and Renta.objects.filter(
+                herramienta=self.object,
+                arrendatario=arrendatario,
+                estado="Finalizada"
+            ).exists()
+        )
 
+        if not ha_alquilado_y_finalizado:
+            messages.error(request, "Debes finalizar la renta de esta herramienta para dejar una reseña.")
+            return redirect('tool_detail', pk=self.object.pk)
+
+        form = ResenaForm(request.POST)
         if form.is_valid():
-            pregunta = form.save(commit=False)
-            pregunta.herramienta = self.object  # Asocia la pregunta con la herramienta actual
-            pregunta.arrendatario = arrendatario
-            pregunta.save()
-            return redirect('tool_detail', pk=self.object.pk)  # Redirige a la misma página para actualizar el contenido
-
-        return self.get(request, *args, **kwargs)
+            resena = form.save(commit=False)
+            resena.arrendatario = arrendatario
+            resena.herramienta = self.object
+            resena.save()
+            messages.success(request, "Tu reseña ha sido enviada con éxito.")
+            return redirect('tool_detail', pk=self.object.pk)
+        else:
+            messages.error(request, "Hubo un error con tu reseña. Inténtalo de nuevo.")
+            return self.get(request, *args, **kwargs)
 
 @login_required
 def add_tool_view(request):
@@ -503,3 +535,57 @@ def obtener_cotizacion(request):
     response = requests.post(url, headers=headers, json=data)
 
     return JsonResponse(response.json())
+
+# Resenas
+from rentas.models import Resena
+from rentas.forms import ResenaForm
+from django.db.models import Avg
+from django.contrib import messages
+from django.shortcuts import get_object_or_404, redirect, render
+from django.contrib.auth.decorators import login_required
+from tools.models import Tool
+from rentas.models import Renta
+
+@login_required
+def detalles_herramienta(request, herramienta_id):
+    herramienta = get_object_or_404(Tool, id=herramienta_id)
+    resenas = Resena.objects.filter(herramienta=herramienta)
+
+    # Calcular el promedio de las calificaciones
+    promedio_calificacion = resenas.aggregate(Avg('calificacion'))['calificacion__avg']
+
+    # Verificar si el usuario ha alquilado y finalizado la herramienta
+    ha_alquilado_y_finalizado = Renta.objects.filter(
+        herramienta=herramienta,
+        arrendatario=request.user.arrendatario,
+        estado="Finalizada"
+    ).exists()
+
+    # Verificar si ya existe una reseña para este arrendatario y herramienta
+    reseña_existente = Resena.objects.filter(
+        herramienta=herramienta,
+        arrendatario=request.user.arrendatario
+    ).exists()
+
+    if request.method == 'POST' and ha_alquilado_y_finalizado and not reseña_existente:
+        form = ResenaForm(request.POST)
+        if form.is_valid():
+            resena = form.save(commit=False)
+            resena.arrendatario = request.user.arrendatario
+            resena.herramienta = herramienta
+            resena.save()
+            messages.success(request, "Tu reseña ha sido enviada con éxito.")
+            return redirect('tool_detail', herramienta_id=herramienta.id)
+        else:
+            messages.error(request, "Hubo un error con tu reseña. Inténtalo de nuevo.")
+    else:
+        form = ResenaForm()
+
+    context = {
+        'herramienta': herramienta,
+        'resenas': resenas,
+        'promedio_calificacion': promedio_calificacion,
+        'ha_alquilado_y_finalizado': ha_alquilado_y_finalizado and not reseña_existente,
+        'form': form,
+    }
+    return render(request, 'tools/tool_details.html', context)
