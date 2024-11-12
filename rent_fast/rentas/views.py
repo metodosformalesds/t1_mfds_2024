@@ -96,12 +96,16 @@ def ver_chat_view(request, chat_id):
     else:
         form = MensajeForm()
 
+    # Agrega la herramienta al contexto
+    herramienta = chat.herramienta  # Obtener la herramienta asociada al chat
+
     return render(request, 'ver_chat.html', {
         'chat': chat,
         'form': form,
-        'mensajes': chat.mensajes.all().order_by('enviado')  # Usar el related_name para acceder a los mensajes
+        'mensajes': chat.mensajes.all().order_by('enviado'),
+        'herramienta': herramienta  # Incluye la herramienta en el contexto
     })
-
+    
 @login_required
 def listar_chats_view(request):
     # Obtener los chats donde el usuario sea arrendador o arrendatario
