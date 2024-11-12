@@ -576,12 +576,12 @@ def detalles_herramienta(request, herramienta_id):
     ).exists()
 
     # Verificar si ya existe una rese a para este arrendatario y herramienta
-    rese a_existente = Resena.objects.filter(
+    resena_existente = Resena.objects.filter(
         herramienta=herramienta,
         arrendatario=request.user.arrendatario
     ).exists()
 
-    if request.method == 'POST' and ha_alquilado_y_finalizado and not rese a_existente:
+    if request.method == 'POST' and ha_alquilado_y_finalizado and not resena_existente:
         form = ResenaForm(request.POST)
         if form.is_valid():
             resena = form.save(commit=False)
@@ -599,7 +599,7 @@ def detalles_herramienta(request, herramienta_id):
         'herramienta': herramienta,
         'resenas': resenas,
         'promedio_calificacion': promedio_calificacion,
-        'ha_alquilado_y_finalizado': ha_alquilado_y_finalizado and not rese a_existente,
+        'ha_alquilado_y_finalizado': ha_alquilado_y_finalizado and not resena_existente,
         'form': form,
     }
     return render(request, 'tools/tool_details.html', context)
