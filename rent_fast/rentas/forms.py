@@ -21,3 +21,17 @@ class MensajeForm(forms.ModelForm):
         fields = ['contenido']
         labels = {'contenido': 'Escribe tu mensaje'}
         widgets = {'contenido': forms.Textarea(attrs={'rows': 3})}
+        
+# rentas/forms.py
+
+from django import forms
+from .models import Resena
+
+class ResenaForm(forms.ModelForm):
+    class Meta:
+        model = Resena
+        fields = ['comentario', 'calificacion']
+        widgets = {
+            'comentario': forms.Textarea(attrs={'class': 'form-input', 'placeholder': 'Escribe tu comentario aquí...'}),
+            'calificacion': forms.Select(attrs={'class': 'form-select'}),
+        }

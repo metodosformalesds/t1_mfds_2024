@@ -173,7 +173,7 @@ def arrendatario_home(request):
     }
 
     # Herramientas sin categoría (para la sección "Cerca de ti")
-    herramientas_sin_categoria = Tool.objects.filter(categoria_isnull=True, estado="Disponible", nombre_icontains=search_query)
+    herramientas_sin_categoria = Tool.objects.filter(categoria__isnull=True, estado="Disponible", nombre__icontains=search_query)
 
     return render(request, 'arrendatarios/arrendatario_home_new.html', {
         'herramientas_sin_categoria': herramientas_sin_categoria,

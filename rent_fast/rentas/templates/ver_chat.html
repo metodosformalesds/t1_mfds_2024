@@ -30,6 +30,16 @@
         {% endfor %}
     </div>
 
+    <!-- Botón para finalizar la renta, si es el arrendatario y la renta está activa -->
+    {% if chat.renta.estado == "Activa" and request.user == chat.arrendatario.usuario %}
+        <form method="post" action="{% url 'finalizar_renta' chat.renta.id %}" class="mt-6">
+            {% csrf_token %}
+            <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition duration-150">
+                Finalizar Renta
+            </button>
+        </form>
+    {% endif %}
+
     <!-- Formulario para enviar un nuevo mensaje -->
     <form method="post" class="mt-6">
         {% csrf_token %}

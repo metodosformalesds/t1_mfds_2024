@@ -1,5 +1,5 @@
 from django.contrib.auth.views import LoginView, LogoutView
-from .views import RegisterWizard, Landing,verify_identity, RegisterAddres, TerminosCondiciones, RegisterPersonal, password_reset_request, verify_reset_code, set_new_password, actualizar_datos_view  # Agrega RegisterPersonal
+from .views import RegisterWizard, Landing,verify_identity, RegisterAddres, TerminosCondiciones, RegisterPersonal, password_reset_request, verify_reset_code, set_new_password, actualizar_datos_view, update_address  # Agrega RegisterPersonal
 from django.urls import path
 
 urlpatterns = [
@@ -15,5 +15,8 @@ urlpatterns = [
     path('verify_reset_code/', verify_reset_code, name='verify_reset_code'),
     path('set_new_password/', set_new_password, name='set_new_password'),
     path("update_dates/", actualizar_datos_view, name="update_dates"),
+    path("update_address/", update_address, name="update_address"), 
+
 
 ]
+

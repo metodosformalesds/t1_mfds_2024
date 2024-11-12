@@ -26,7 +26,18 @@
                         {% if user.arrendatario %}
                             <!-- Botones exclusivos para arrendatarios -->
                             <a href="{% url 'listar_chats' %}" class="text-white bg-indigo-700 hover:bg-indigo-800 focus:ring-4 focus:ring-indigo-300 font-medium rounded-lg text-sm px-4 lg:px-5 py-2 lg:py-2.5 dark:bg-indigo-600 dark:hover:bg-indigo-700 focus:outline-none dark:focus:ring-indigo-800">Mis Chats</a>
-                            <a href="{% url 'rentas_arrendatario' %}" class="text-white bg-indigo-700 hover:bg-indigo-800 focus:ring-4 focus:ring-indigo-300 font-medium rounded-lg text-sm px-4 lg:px-5 py-2 lg:py-2.5 dark:bg-indigo-600 dark:hover:bg-indigo-700 focus:outline-none dark:focus:ring-indigo-800">Ver Mis Rentas</a>                        {% endif %}
+                            <a href="{% url 'rentas_arrendatario' %}" class="text-white bg-indigo-700 hover:bg-indigo-800 focus:ring-4 focus:ring-indigo-300 font-medium rounded-lg text-sm px-4 lg:px-5 py-2 lg:py-2.5 dark:bg-indigo-600 dark:hover:bg-indigo-700 focus:outline-none dark:focus:ring-indigo-800">Ver Mis Rentas</a>
+                            <!-- Botón del carrito de compras solo para arrendatarios -->
+                            <a href="{% url 'carrito' %}" class="text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-4 lg:px-5 py-2 lg:py-2.5 dark:bg-blue-500 dark:hover:bg-blue-600 focus:outline-none dark:focus:ring-blue-800">
+                                <!-- Icono de carrito -->
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-6 h-6 inline">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.344 2.175L7.503 15h9.992l2.169-9H5.654" />
+                                    <circle cx="10" cy="20.5" r="1.5" />
+                                    <circle cx="17" cy="20.5" r="1.5" />
+                                </svg>
+                                <span class="sr-only">Carrito</span>
+                            </a>
+                        {% endif %}
                         {% if user.arrendador %}
                             <!-- Botones exclusivos para arrendadores -->
                             <a href="{% url 'listar_chats' %}" class="text-white bg-indigo-700 hover:bg-indigo-800 focus:ring-4 focus:ring-indigo-300 font-medium rounded-lg text-sm px-4 lg:px-5 py-2 lg:py-2.5 dark:bg-indigo-600 dark:hover:bg-indigo-700 focus:outline-none dark:focus:ring-indigo-800">Mis Chats</a>
@@ -34,7 +45,7 @@
                             <a href="{% url 'preguntas_sin_responder' %}" class="text-white bg-indigo-700 hover:bg-indigo-800 focus:ring-4 focus:ring-indigo-300 font-medium rounded-lg text-sm px-4 lg:px-5 py-2 lg:py-2.5 dark:bg-indigo-600 dark:hover:bg-indigo-700 focus:outline-none dark:focus:ring-indigo-800">Ver Preguntas Sin Responder</a>
                             <a href="{% url 'add_tool' %}" class="text-white bg-indigo-700 hover:bg-indigo-800 focus:ring-4 focus:ring-indigo-300 font-medium rounded-lg text-sm px-4 lg:px-5 py-2 lg:py-2.5 dark:bg-indigo-600 dark:hover:bg-indigo-700 focus:outline-none dark:focus:ring-indigo-800">Agregar herramienta</a>
                         {% endif %}
-                        <!-- Botón de Cerrar Sesión sin cambios -->
+                        <!-- Botón de Cerrar Sesión -->
                         <form action="{% url 'logout' %}" method="post" class="inline">
                             {% csrf_token %}
                             <button type="submit" class="text-gray-800 dark:text-white hover:bg-gray-50 focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-4 lg:px-5 py-2 lg:py-2.5 dark:bg-gray-700 focus:outline-none dark:focus:ring-gray-800">
@@ -63,6 +74,7 @@
                             </button>
                             <div id="dropdown-menu" class="absolute right-0 mt-2 w-48 bg-white border rounded-md shadow-lg hidden z-50">
                                 <a href="{% url 'update_dates' %}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Actualizar Datos</a>
+                                <a href="{% url 'update_address' %}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Actualizar Direccion</a>
                             </div>
                         </div>
                     {% endif %}

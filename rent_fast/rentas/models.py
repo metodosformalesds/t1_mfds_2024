@@ -57,3 +57,16 @@ class Respuesta(models.Model):
 
     def __str__(self):
         return f"Respuesta a pregunta sobre {self.pregunta.herramienta.nombre}"
+    
+class Resena(models.Model):
+    arrendatario = models.ForeignKey(Arrendatario, on_delete=models.CASCADE)
+    herramienta = models.ForeignKey('tools.Tool', on_delete=models.CASCADE)
+    comentario = models.TextField()
+    calificacion = models.IntegerField(choices=[(i, str(i)) for i in range(1, 6)])  # Calificación de 1 a 5
+    fecha_creacion = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('arrendatario', 'herramienta')
+
+    def __str__(self):
+        return f"Reseña de {self.arrendatario} para {self.herramienta.nombre}"
