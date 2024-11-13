@@ -22,13 +22,23 @@
     <div class="space-y-4">
         {% if rentas %}
             {% for renta in rentas %}
-                <div class="p-4 border border-gray-200 rounded-lg shadow hover:shadow-lg">
-                    <h3 class="text-xl font-bold">{{ renta.herramienta.nombre }}</h3>
-                    <p class="text-gray-600">Arrendador: {{ renta.herramienta.arrendador.nombre }} {{ renta.herramienta.arrendador.apellidos }}</p>
-                    <p class="text-gray-600">Fecha de Inicio: {{ renta.fecha_inicio }}</p>
-                    <p class="text-gray-600">Fecha de Fin: {{ renta.fecha_fin }}</p>
-                    <p class="text-gray-600">Costo Total: ${{ renta.costo_total }}</p>
-                    <p class="text-gray-600">Estado: {{ renta.get_estado_display }}</p>
+                <div class="flex p-4 border border-gray-200 rounded-lg shadow hover:shadow-lg bg-white">
+                    <div class="w-24 h-24 mr-4">
+                        <!-- Imagen de la herramienta o imagen predeterminada -->
+                        {% if renta.herramienta.imagen %}
+                            <img src="{{ renta.herramienta.imagen.url }}" alt="Imagen de la herramienta" class="w-full h-full object-cover rounded-lg">
+                        {% else %}
+                            <img src="https://th.bing.com/th/id/R.c686896019147f6d57529fcfb6d75a28?rik=x186ThmrCoWqCg&riu=http%3a%2f%2ffiles.123inventatuweb.com%2f51%2f04%2f51045ced-acc5-4921-908a-f734f25c548f.jpg&ehk=sh3bkI2UbFohecSeceNYuu%2b4PRQTpJvfgMz4yMjUVK4%3d&risl=&pid=ImgRaw&r=0" alt="Imagen predeterminada" class="w-full h-full object-cover rounded-lg">
+                        {% endif %}
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold">{{ renta.herramienta.nombre }} (Folio: {{ renta.id }})</h3>
+                        <p class="text-gray-600">Arrendador: {{ renta.herramienta.arrendador.nombre }} {{ renta.herramienta.arrendador.apellidos }}</p>
+                        <p class="text-gray-600">Fecha de Inicio: {{ renta.fecha_inicio }}</p>
+                        <p class="text-gray-600">Fecha de Fin: {{ renta.fecha_fin }}</p>
+                        <p class="text-gray-600">Costo Total: ${{ renta.costo_total }}</p>
+                        <p class="text-gray-600">Estado: {{ renta.get_estado_display }}</p>
+                    </div>
                 </div>
             {% endfor %}
         {% else %}
