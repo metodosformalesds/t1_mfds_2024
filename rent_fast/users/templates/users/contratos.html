@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% load tailwind_filters %}
+{% block content %}
+
+<div class="bg-gray-200 p-5">
+    <div class="max-w-3xl mx-auto bg-white p-8 rounded-lg shadow-lg border border-gray-300">
+        <h1 class="text-center text-2xl font-bold text-gray-800 mb-6">Contrato de Renta de Herramientas</h1>
+        <div class="terms-box h-96 border border-black p-5 overflow-y-scroll bg-gray-100 mb-8 rounded-lg shadow-inner">
+            <h2 class="text-lg font-semibold mb-4">Contrato de Renta de Herramientas a través de Plataforma Virtual:</h2>
+            <p class="mb-4"><strong>Partes:</strong></p>
+            <p class="mb-4">Arrendador: [Nombre completo del arrendador], identificado con [tipo de documento e identificación], con domicilio en [dirección].</p>
+            <p class="mb-4">Arrendatario: [Nombre completo del arrendatario], identificado con [tipo de documento e identificación], con domicilio en [dirección].</p>
+            <p class="mb-4">Ambas partes reconocen que han aceptado los términos y condiciones descritos a continuación:</p>
+
+            <p class="mb-4"><strong>1. Objeto del Contrato:</strong></p>
+            <p class="mb-4">El presente contrato tiene por objeto el alquiler temporal de la herramienta descrita en la cláusula siguiente por parte del arrendador al arrendatario a través de la plataforma digital [nombre de la plataforma].</p>
+
+            <p class="mb-4"><strong>2. Descripción de la Herramienta:</strong></p>
+            <ul class="list-disc pl-5 mb-4">
+                <li>2.1. Herramienta a rentar: [Nombre de la herramienta].</li>
+                <li>2.2. Estado de la herramienta: [Descripción del estado actual de la herramienta, incluyendo detalles de posibles desgastes o daños previos].</li>
+                <li>2.3. El arrendador asegura que la herramienta está en condiciones operativas adecuadas para el uso por el arrendatario, a menos que se especifique lo contrario en este contrato.</li>
+            </ul>
+
+            <p class="mb-4"><strong>3. Duración del Contrato:</strong></p>
+            <ul class="list-disc pl-5 mb-4">
+                <li>3.1. La duración de la renta será desde [fecha de inicio] hasta [fecha de término], por un periodo total de [número de días/horas].</li>
+                <li>3.2. El arrendatario deberá devolver la herramienta en la fecha y hora acordadas. En caso de retraso, se aplicarán penalizaciones establecidas en este contrato.</li>
+            </ul>
+
+            <p class="mb-4"><strong>4. Monto de la Renta y Forma de Pago:</strong></p>
+            <ul class="list-disc pl-5 mb-4">
+                <li>4.1. El arrendatario se compromete a pagar la cantidad de [monto de la renta] por el periodo establecido.</li>
+                <li>4.2. El pago se realizará mediante [método de pago a través de la plataforma] en la fecha de inicio de la renta.</li>
+                <li>4.3. En caso de cancelación por parte del arrendatario, se aplicará una penalización del [porcentaje o monto específico] si la cancelación se realiza con menos de [número de días] de anticipación.</li>
+            </ul>
+
+            <p class="mb-4"><strong>5. Garantía y Responsabilidad:</strong></p>
+            <ul class="list-disc pl-5 mb-4">
+                <li>5.1. El arrendador puede ofrecer una garantía por el uso de la herramienta. Si no se ofrece garantía, se asumirá que la herramienta no estaba en condiciones óptimas al momento de su entrega.</li>
+                <li>5.2. El arrendatario es responsable de cualquier daño causado a la herramienta durante el periodo de renta, a menos que se deba a fallas técnicas no relacionadas con el uso normal.</li>
+                <li>5.3. El arrendador no será responsable por daños o pérdidas ocasionados durante el uso indebido de la herramienta por parte del arrendatario.</li>
+            </ul>
+
+            <p class="mb-4"><strong>6. Entrega y Devolución de la Herramienta:</strong></p>
+            <ul class="list-disc pl-5 mb-4">
+                <li>6.1. La entrega de la herramienta será acordada entre las partes a través del sistema de mensajería integrado en la plataforma, con posibilidad de utilizar un servicio de entrega por medio de la API de Uber.</li>
+                <li>6.2. El arrendatario deberá devolver la herramienta en las mismas condiciones en que fue recibida, salvo el desgaste normal por su uso adecuado.</li>
+            </ul>
+
+            <p class="mb-4"><strong>7. Obligaciones del Arrendador:</strong></p>
+            <ul class="list-disc pl-5 mb-4">
+                <li>7.1. Entregar la herramienta en condiciones aptas para el uso especificado.</li>
+                <li>7.2. Informar de cualquier defecto o desgaste previo que la herramienta pudiera tener antes de la firma del contrato.</li>
+            </ul>
+
+            <p class="mb-4"><strong>8. Obligaciones del Arrendatario:</strong></p>
+            <ul class="list-disc pl-5 mb-4">
+                <li>8.1. Utilizar la herramienta únicamente para los fines descritos y bajo las condiciones estipuladas.</li>
+                <li>8.2. Pagar el precio acordado y devolver la herramienta a tiempo y en las mismas condiciones.</li>
+                <li>8.3. Notificar de inmediato cualquier daño o mal funcionamiento de la herramienta durante el periodo de uso.</li>
+            </ul>
+
+            <p class="mb-4"><strong>9. Resolución de Disputas:</strong></p>
+            <ul class="list-disc pl-5 mb-4">
+                <li>9.1. Cualquier controversia que surja entre las partes será mediada a través de los servicios de atención al cliente de la plataforma.</li>
+                <li>9.2. En caso de que no se llegue a una solución amigable, las partes se someterán a los tribunales competentes en [Ciudad/Estado].</li>
+            </ul>
+
+            <p class="mb-4"><strong>10. Terminación del Contrato:</strong></p>
+            <p class="mb-4">Este contrato se dará por terminado una vez que la herramienta haya sido devuelta en las condiciones acordadas y el arrendatario haya cumplido con todas las obligaciones de pago.</p>
+
+            <p class="mb-4"><strong>11. Aceptación de los Términos:</strong></p>
+            <p class="mb-4">Ambas partes declaran haber leído y comprendido este contrato, y aceptan sus términos en su totalidad.</p>
+        </div>
+        <a href="{% url 'tool_detail' tool.id %}" class="w-full block text-center p-4 bg-blue-500 text-white rounded-lg font-bold hover:bg-blue-600 transition">
+            Aceptar
+        </a>
+    </div>
+</div>
+
+{% endblock content %}
