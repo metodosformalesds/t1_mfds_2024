@@ -606,3 +606,12 @@ def upload_identity_image(request):
 
     return JsonResponse({"success": False, "error": "Método no permitido."})
 
+from django.shortcuts import render
+from tools.models import Tool
+
+def contratos_view(request):
+    # Supongamos que quieres pasar una herramienta específica
+    tool = Tool.objects.first()  # O la forma en que obtienes la herramienta
+    return render(request, 'users/contratos.html', {'tool': tool})
+
+

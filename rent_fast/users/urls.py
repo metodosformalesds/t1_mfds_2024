@@ -1,6 +1,6 @@
 from django.contrib.auth.views import LoginView, LogoutView
 from .views import RegisterWizard,ver_notificaciones, Landing,verify_identity, RegisterAddres, TerminosCondiciones, RegisterPersonal, password_reset_request, verify_reset_code, set_new_password, actualizar_datos_view 
-from .views import RegisterWizard, Landing,verify_identity, RegisterAddres, TerminosCondiciones, RegisterPersonal, password_reset_request, verify_reset_code, set_new_password, actualizar_datos_view, update_address, generate_qr_for_identity, upload_identity_image
+from .views import RegisterWizard, Landing,verify_identity, RegisterAddres, TerminosCondiciones, RegisterPersonal, password_reset_request, verify_reset_code, set_new_password, actualizar_datos_view, update_address, generate_qr_for_identity, upload_identity_image, contratos_view
 from django.urls import path
 
 urlpatterns = [
@@ -20,6 +20,8 @@ urlpatterns = [
     path("update_address/", update_address, name="update_address"), 
     path('generate_qr_for_identity/', generate_qr_for_identity, name='generate_qr_for_identity'),
     path('upload_identity_image/', upload_identity_image, name='upload_identity_image'),
+    path('contratos/', contratos_view, name='contratos'),
+
 ]
 
 
