@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import home_view, arrendador_home, arrendatario_home, ToolFormView, ToolListView, ToolDetailView, add_tool_view, rent_tool_view, agregar_al_carrito_view, carrito_view, seleccionar_fechas_view, resumen_view, confirmar_renta_view, admin_home, approve_tool, reject_tool, uber_auth, uber_callback, obtener_cotizacion, pagar_sin_paypal_view
+from .views import home_view, arrendador_home, arrendatario_home, ToolFormView, ToolListView, ToolDetailView, add_tool_view, rent_tool_view, agregar_al_carrito_view, carrito_view, seleccionar_fechas_view, resumen_view, confirmar_renta_view, admin_home, approve_tool, reject_tool, uber_auth, uber_callback, obtener_cotizacion, pagar_sin_paypal_view, eliminar_del_carrito_view
 
 urlpatterns = [
     path('', home_view, name='home'),
@@ -9,7 +9,7 @@ urlpatterns = [
     path('agregar/', add_tool_view, name='add_tool'),
     path('', ToolListView.as_view(), name='list_tool'),
     path('carrito/', carrito_view, name='carrito'),
-    path('carrito/', carrito_view, name='carrito'),
+    path('carrito/eliminar/<int:item_id>/', eliminar_del_carrito_view, name='eliminar_del_carrito'),
     path('herramienta/<int:tool_id>/seleccionar-fechas/', seleccionar_fechas_view, name='seleccionar_fechas'),
     path('herramienta/<int:tool_id>/agregar-al-carrito/', agregar_al_carrito_view, name='agregar_al_carrito'),
     path('resumen/', resumen_view, name='resumen'),
@@ -21,4 +21,5 @@ urlpatterns = [
     path('uber/auth/', uber_auth, name='uber_auth'),
     path('uber/callback/', uber_callback, name='uber_callback'),
     path('uber/cotizacion/', obtener_cotizacion, name='obtener_cotizacion'),
+    
 ]

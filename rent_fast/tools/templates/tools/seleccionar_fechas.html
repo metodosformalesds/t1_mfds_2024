@@ -48,4 +48,28 @@
     </div>
   </div>
 </div>
+
+<!-- Flatpickr CSS y JavaScript -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const fechasOcupadas = {{ fechas_ocupadas|safe }};  // Recibe las fechas ocupadas desde el contexto
+    
+    flatpickr("input[name='fecha_inicio']", {
+      dateFormat: "Y-m-d",
+      disable: fechasOcupadas,  // Deshabilita las fechas ocupadas
+      minDate: "today",  // No permite seleccionar fechas pasadas
+      onChange: function(selectedDates, dateStr, instance) {
+        // Actualiza el campo de fecha fin para que comience después de la fecha de inicio seleccionada
+        flatpickr("input[name='fecha_fin']", {
+          dateFormat: "Y-m-d",
+          disable: fechasOcupadas,
+          minDate: dateStr  // Comienza desde la fecha seleccionada en fecha_inicio
+        });
+      }
+    });
+  });
+</script>
 {% endblock %}

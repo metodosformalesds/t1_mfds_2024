@@ -287,22 +287,36 @@ def carrito_view(request):
         'monto_total': monto_total,
     })
 
+from datetime import timedelta
 
 @login_required
 def seleccionar_fechas_view(request, tool_id):
     herramienta = get_object_or_404(Tool, id=tool_id)
     
+    # Obtener todas las rentas activas de la herramienta y calcular los días ocupados
+    rentas = Renta.objects.filter(herramienta=herramienta, estado="Activa")
+    fechas_ocupadas = []
+
+    for renta in rentas:
+        current_date = renta.fecha_inicio
+        while current_date <= renta.fecha_fin:
+            fechas_ocupadas.append(current_date.strftime("%Y-%m-%d"))
+            current_date += timedelta(days=1)
+
     if request.method == 'POST':
         form = RentaForm(request.POST)
         if form.is_valid():
-            # Guardamos las fechas en la sesi n para usarlas en el carrito
             request.session['fecha_inicio'] = str(form.cleaned_data['fecha_inicio'])
             request.session['fecha_fin'] = str(form.cleaned_data['fecha_fin'])
             return redirect('agregar_al_carrito', tool_id=tool_id)
     else:
         form = RentaForm()
     
-    return render(request, 'tools/seleccionar_fechas.html', {'form': form, 'tool': herramienta})
+    return render(request, 'tools/seleccionar_fechas.html', {
+        'form': form,
+        'tool': herramienta,
+        'fechas_ocupadas': fechas_ocupadas,  # Pasamos las fechas ocupadas al contexto
+    })
 
 @login_required
 def agregar_al_carrito_view(request, tool_id):
@@ -603,3 +617,11 @@ def detalles_herramienta(request, herramienta_id):
         'form': form,
     }
     return render(request, 'tools/tool_details.html', context)
+
+@login_required
+def eliminar_del_carrito_view(request, item_id):
+    item = get_object_or_404(Carrito, id=item_id, arrendatario=request.user.arrendatario)
+    
+    item.delete()
+    messages.success(request, "El artículo ha sido eliminado del carrito.")
+    return redirect("carrito")  # Redirige a la página del carrito después de eliminar
