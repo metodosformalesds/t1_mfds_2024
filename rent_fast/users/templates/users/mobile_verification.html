@@ -1,63 +1,41 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Verificación de Identidad</title>
-</head>
-<body>
-    <h2>Verificación de Identidad</h2>
-    <form id="verification-form" method="POST" enctype="multipart/form-data">
-        {% csrf_token %}
-        <!-- Cargar INE -->
-        <label for="ine_image">Sube tu INE:</label>
-        <input type="file" accept="image/*" name="ine_image" id="ine_image" required>
+{% extends "base.html" %}
+{% block content %}
+<div class="bg-slate-50 flex items-center justify-center min-h-screen">
+    <div class="bg-white p-8 rounded shadow-md w-full max-w-md">
+        <h2 class="text-2xl font-bold mb-6 text-center">Verificación de Identidad</h2>
 
-        <!-- Captura en vivo desde la cámara -->
-        <div>
-            <video id="live-video" autoplay></video>
-            <button type="button" onclick="captureImage()">Capturar Imagen</button>
-        </div>
+        <!-- Campo para capturar la imagen -->
+        <input type="file" id="ine_image" accept="image/*" capture="camera" required class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50">
+        
+        <!-- Botón para enviar la imagen -->
+        <button onclick="sendImage()" class="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 focus:outline-none mt-4">
+            Enviar para Verificación
+        </button>
+    </div>
+</div>
 
-        <input type="hidden" name="captured_image" id="captured_image">
-        <button type="submit">Verificar Identidad</button>
-    </form>
+<script>
+    const tempId = "{{ temp_id }}";
+    const protocol = window.location.protocol === "https:" ? "wss" : "ws";
+    const socket = new WebSocket(`${protocol}://${window.location.host}/ws/verify_identity/${tempId}/`);
 
-    <script>
-        // Abrir cámara
-        navigator.mediaDevices.getUserMedia({ video: true })
-            .then(stream => { document.getElementById("live-video").srcObject = stream; });
+    function sendImage() {
+        const ineImageInput = document.getElementById("ine_image").files[0];
+        const reader = new FileReader();
 
-        // Capturar imagen y convertirla a base64
-        function captureImage() {
-            const video = document.getElementById("live-video");
-            const canvas = document.createElement("canvas");
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
-            canvas.getContext("2d").drawImage(video, 0, 0);
-            document.getElementById("captured_image").value = canvas.toDataURL("image/png");
+        reader.onloadend = function() {
+            const imageData = reader.result.split(",")[1];
+            socket.send(JSON.stringify({ 'image_data': imageData }));
+            alert("Imagen enviada correctamente.");
+        };
+
+        if (ineImageInput) {
+            reader.readAsDataURL(ineImageInput);
+        } else {
+            alert("Por favor, selecciona una imagen.");
         }
+    }
+</script>
 
-        // Enviar formulario para verificar
-        document.getElementById("verification-form").addEventListener("submit", function(event) {
-            event.preventDefault();
-            const formData = new FormData(this);
-            fetch("{% url 'upload_identity_image' %}", {
-                method: "POST",
-                body: formData,
-                headers: { "X-CSRFToken": "{{ csrf_token }}" }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert(data.message);
-                    window.location.href = "{% url 'register_personal' %}";
-                } else {
-                    alert(data.error);
-                }
-            })
-            .catch(error => console.error("Error en la verificación:", error));
-        });
-    </script>
-</body>
-</html>
+{% endblock %}
+

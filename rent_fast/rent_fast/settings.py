@@ -90,6 +90,7 @@ INSTALLED_APPS = [
     "users",
     "tools",
     'rentas',
+    'channels',
 #allauth appss
     'allauth',
     'allauth.account',
@@ -98,6 +99,13 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.google',
 
 ]
+
+ASGI_APPLICATION = "rent_fast.asgi.application"
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer",
+    },
+}
 
 SITE_ID = 1
  

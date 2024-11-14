@@ -546,16 +546,20 @@ def ver_notificaciones(request):
     notificaciones.update(leido=True)
     return render(request, 'users/notificaciones.html', {'notificaciones': notificaciones})
 
-
+import uuid
+from django.core.cache import cache
 
 def generate_qr_for_identity(request):
-    user_id = request.user.id  # Puedes usar la ID del usuario para el enlace
-    url = request.build_absolute_uri(reverse('upload_identity_image')) + f"?user_id={user_id}"
+    temp_id = uuid.uuid4()  # Genera un UUID temporal
+    url = request.build_absolute_uri(reverse('upload_identity_image')) + f"?temp_id={temp_id}"
     qr = qrcode.make(url)
     response = HttpResponse(content_type="image/png")
     qr.save(response, "PNG")
+
+    # Guarda el ID temporal en cache para verificación
+    cache.set(f'verification_{temp_id}', False, timeout=3600)  # Valido por 1 hora
     return response
-@csrf_exempt
+
 @csrf_exempt
 def upload_identity_image(request):
     if request.method == 'GET':

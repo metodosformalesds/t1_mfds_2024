@@ -81,17 +81,56 @@
 </div>
 
 <script>
+    let socket;
+
     // Función para generar el QR
     function generateQR() {
-        fetch("{% url 'generate_qr_for_identity' %}")  // URL que apunta a la vista que genera el QR
+        fetch("{% url 'generate_qr_for_identity' %}")
             .then(response => response.blob())
             .then(blob => {
                 const url = URL.createObjectURL(blob);
                 const qrImage = document.getElementById("qr-image");
                 qrImage.src = url;
                 document.getElementById("qr-container").classList.remove("hidden");
+
+                // Después de generar el QR, conecta el WebSocket
+                initializeWebSocket();
             })
             .catch(error => console.error("Error al generar QR:", error));
+    }
+
+    // Inicializa el WebSocket solo si se ha generado un `temp_id`
+    function initializeWebSocket() {
+        const tempId = "{{ temp_id }}";
+        if (!tempId) {
+            console.error("No temp_id provided.");
+            return;
+        }
+
+        const protocol = window.location.protocol === "https:" ? "wss" : "ws";
+        socket = new WebSocket(`${protocol}://${window.location.host}/ws/verify_identity/${tempId}/`);
+
+        socket.onmessage = function(event) {
+            const data = JSON.parse(event.data);
+            if (data.image_data) {
+                const image = document.createElement('img');
+                image.src = 'data:image/png;base64,' + data.image_data;
+                document.getElementById("verification-preview").appendChild(image);
+                document.getElementById("continue-btn").disabled = false;
+            }
+        };
+
+        socket.onopen = function() {
+            console.log("WebSocket connection established.");
+        };
+
+        socket.onclose = function() {
+            console.log("WebSocket connection closed.");
+        };
+
+        socket.onerror = function(error) {
+            console.error("WebSocket error:", error);
+        };
     }
 
     // Función para previsualizar la imagen de perfil seleccionada
