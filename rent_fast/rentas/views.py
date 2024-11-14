@@ -67,12 +67,38 @@ def pago_exitoso_view(request):
     pago = Payment.find(payment_id)
     if pago.execute({"payer_id": payer_id}):
         messages.success(request, "Pago completado con éxito")
-        # Aquí puedes crear la instancia de `Renta` y limpiar el carrito
+        
+        # Crear rentas y vaciar el carrito
+        arrendatario = getattr(request.user, 'arrendatario', None)
+        carrito_items = Carrito.objects.filter(arrendatario=arrendatario)
+
+        for item in carrito_items:
+            # Crear una nueva renta
+            renta = Renta.objects.create(
+                herramienta=item.herramienta,
+                arrendatario=arrendatario,
+                fecha_inicio=item.fecha_inicio,
+                fecha_fin=item.fecha_fin,
+                costo_total=item.costo_total,
+                estado="Activa",
+            )
+            
+            # Opcional: Crear un chat relacionado con la renta
+            Chat.objects.create(
+                arrendador=item.herramienta.arrendador,
+                arrendatario=arrendatario,
+                herramienta=item.herramienta,
+                renta=renta
+            )
+        
+        # Eliminar todos los items del carrito después de crear las rentas
+        carrito_items.delete()
+        
         return redirect("arrendatario_home")
     else:
         messages.error(request, "Error al confirmar el pago")
         return redirect("carrito")
-
+        
 def pago_cancelado_view(request):
     messages.info(request, "El pago fue cancelado.")
     return redirect("carrito")
