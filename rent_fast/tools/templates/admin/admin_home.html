@@ -46,6 +46,7 @@
               </div>
               <!-- Botones de acción -->
               <div class="flex gap-2">
+                <a href="{% url 'revisar_tool' tool.id %}" class="px-4 py-2 bg-blue-500 text-white rounded-md text-sm">Revisión</a> <!-- Nuevo botón de Revisión -->
                 <form method="post" action="{% url 'approve_tool' tool.id %}">
                   {% csrf_token %}
                   <button type="submit" class="px-4 py-2 bg-green-500 text-white rounded-md text-sm">Aceptar</button>

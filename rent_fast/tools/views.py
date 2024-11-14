@@ -36,7 +36,7 @@ def cotizar_envio_view(request, tool_id):
     arrendador = herramienta.arrendador
     arrendatario = request.user.arrendatario
 
-    # Crear direcciones basadas en el modelo `Direccion`
+    # Crear direcciones basadas en el modelo Direccion
     origen_direccion = f"{arrendador.direccion.calle}, {arrendador.direccion.ciudad}, {arrendador.direccion.estado}, {arrendador.direccion.codigo_postal}"
     destino_direccion = f"{arrendatario.direccion.calle}, {arrendatario.direccion.ciudad}, {arrendatario.direccion.estado}, {arrendatario.direccion.codigo_postal}"
 
@@ -85,7 +85,7 @@ def uber_login_view(request):
     client_id = settings.UBER_CLIENT_ID
     redirect_uri = "https://8000-idx-t1mfds2024git-1729092128078.cluster-3ch54x2epbcnetrm6ivbqqebjk.cloudworkstations.dev/herramientas/uber/callback/"
     scope = "request estimate"  # Reemplaza con los permisos necesarios para tu aplicaci n (debe ser v lido)
-    response_type = "code"  # Aseg rate de que `response_type` sea "code"
+    response_type = "code"  # Aseg rate de que response_type sea "code"
 
     # Construir la URL de autenticaci n
     authorization_url = (
@@ -144,23 +144,21 @@ def home_view(request):
 
 @login_required
 def arrendador_home(request):
-    """
-    Vista para el home del Arrendador.
-    """
     arrendador = Arrendador.objects.get(usuario=request.user)
-    tools = Tool.objects.filter(arrendador=arrendador)
     
-    # Obtener las rentas asociadas a las herramientas del arrendador
-    rentas = Renta.objects.filter(herramienta__in=tools)
-
-    # Calcular los d as de renta en Python
-    for renta in rentas:
-        renta.dias_renta = (renta.fecha_fin - renta.fecha_inicio).days + 1
-
+    # Separar herramientas por estado
+    tools_pendientes = Tool.objects.filter(arrendador=arrendador, estado='Pendiente').order_by('-id')
+    tools_aprobadas = Tool.objects.filter(arrendador=arrendador, estado='Disponible').order_by('-id')
+    tools_rechazadas = Tool.objects.filter(arrendador=arrendador, estado='Rechazado').order_by('-id')
+    
     return render(request, "arrendadores/arrendador_home.html", {
-        'tools': tools,
-        'rentas': rentas,
+        'tools_pendientes': tools_pendientes,
+        'tools_aprobadas': tools_aprobadas,
+        'tools_rechazadas': tools_rechazadas,
     })
+
+
+    
 
 @login_required
 def arrendatario_home(request):
@@ -201,9 +199,15 @@ class ToolListView(generic.ListView):
     template_name = "tools/list_tool.html"
     context_object_name = "tools"
 
-# Importa el modelo y el formulario de Rese a
-from rentas.models import Resena
-from rentas.forms import ResenaForm
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
+
+# Agregar imports si es necesario
+from rentas.models import Pregunta
+from rentas.forms import PreguntaForm
+
+from rentas.models import Pregunta
+from rentas.forms import PreguntaForm
 
 class ToolDetailView(DetailView):
     model = Tool
@@ -215,8 +219,8 @@ class ToolDetailView(DetailView):
         tool = self.get_object()
         user = self.request.user
         arrendatario = getattr(user, 'arrendatario', None)
-        
-        # Obtener las rese as de la herramienta
+
+        # Obtener las reseñas de la herramienta
         context['resenas'] = Resena.objects.filter(herramienta=tool)
         
         # Verificar si el usuario ha alquilado y finalizado la herramienta
@@ -228,38 +232,59 @@ class ToolDetailView(DetailView):
             ).exists()
         )
         
-        # A adir el formulario de rese a al contexto
-        context['form'] = ResenaForm() if context['ha_alquilado_y_finalizado'] else None
+        # Solo muestra el formulario de reseña si la renta fue finalizada y aún no hay reseña
+        if context['ha_alquilado_y_finalizado'] and not Resena.objects.filter(herramienta=tool, arrendatario=arrendatario).exists():
+            context['form'] = ResenaForm()
+        else:
+            context['form'] = None
+        
+        # Agregar preguntas y respuestas
+        context['preguntas'] = tool.preguntas.all()
+        context['pregunta_form'] = PreguntaForm()
+
         return context
 
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
         arrendatario = getattr(request.user, 'arrendatario', None)
 
-        # Verificar si el usuario ha alquilado y finalizado la herramienta
-        ha_alquilado_y_finalizado = (
-            arrendatario and Renta.objects.filter(
-                herramienta=self.object,
-                arrendatario=arrendatario,
-                estado="Finalizada"
-            ).exists()
-        )
+        # Manejar el formulario de reseñas
+        if 'comentario' in request.POST:
+            ha_alquilado_y_finalizado = (
+                arrendatario and Renta.objects.filter(
+                    herramienta=self.object,
+                    arrendatario=arrendatario,
+                    estado="Finalizada"
+                ).exists()
+            )
+            if not ha_alquilado_y_finalizado:
+                messages.error(request, "Debes finalizar la renta de esta herramienta para dejar una reseña.")
+                return redirect('tool_detail', pk=self.object.pk)
+            form = ResenaForm(request.POST)
+            if form.is_valid():
+                resena = form.save(commit=False)
+                resena.arrendatario = arrendatario
+                resena.herramienta = self.object
+                resena.save()
+                messages.success(request, "Tu reseña ha sido enviada con éxito.")
+                return redirect('tool_detail', pk=self.object.pk)
+            else:
+                messages.error(request, "Hubo un error con tu reseña. Inténtalo de nuevo.")
+        
+        # Manejar el formulario de preguntas
+        elif 'pregunta_texto' in request.POST and arrendatario:
+            pregunta_form = PreguntaForm(request.POST)
+            if pregunta_form.is_valid():
+                pregunta = pregunta_form.save(commit=False)
+                pregunta.herramienta = self.object
+                pregunta.arrendatario = arrendatario
+                pregunta.save()
+                messages.success(request, "Tu pregunta ha sido enviada.")
+                return redirect('tool_detail', pk=self.object.pk)
+            else:
+                messages.error(request, "Hubo un error con tu pregunta. Inténtalo de nuevo.")
 
-        if not ha_alquilado_y_finalizado:
-            messages.error(request, "Debes finalizar la renta de esta herramienta para dejar una rese a.")
-            return redirect('tool_detail', pk=self.object.pk)
-
-        form = ResenaForm(request.POST)
-        if form.is_valid():
-            resena = form.save(commit=False)
-            resena.arrendatario = arrendatario
-            resena.herramienta = self.object
-            resena.save()
-            messages.success(request, "Tu rese a ha sido enviada con  xito.")
-            return redirect('tool_detail', pk=self.object.pk)
-        else:
-            messages.error(request, "Hubo un error con tu rese a. Int ntalo de nuevo.")
-            return self.get(request, *args, **kwargs)
+        return self.get(request, *args, **kwargs)
 
 @login_required
 def add_tool_view(request):
@@ -429,18 +454,28 @@ def approve_tool(request, tool_id):
 
     return redirect('admin_home')
 
+
+from .forms import RechazarToolForm
 @staff_member_required
 @require_POST
 def reject_tool(request, tool_id):
     tool = get_object_or_404(Tool, id=tool_id)
-    tool.estado = 'Rechazado'
-    tool.save()
+    if request.method == 'POST':
+        form = RechazarToolForm(request.POST, instance=tool)
+        if form.is_valid():
+            tool.estado = 'Rechazado'
+            form.save()
 
-    # Crear notificaci n para el arrendador
-    mensaje = f"Tu herramienta '{tool.nombre}' ha sido rechazada."
-    Notificacion.objects.create(usuario=tool.arrendador.usuario, mensaje=mensaje)
+            # Crear notificación para el arrendador con el motivo del rechazo
+            mensaje = f"Tu herramienta '{tool.nombre}' ha sido rechazada. Motivo: {tool.mensaje_rechazo}"
+            Notificacion.objects.create(usuario=tool.arrendador.usuario, mensaje=mensaje)
 
-    return redirect('admin_home')
+            return redirect('admin_home')
+    else:
+        form = RechazarToolForm(instance=tool)
+
+    return render(request, 'admin/reject_tool.html', {'form': form, 'tool': tool})
+
 
 @staff_member_required
 def admin_pending_tools(request):
@@ -603,3 +638,41 @@ def detalles_herramienta(request, herramienta_id):
         'form': form,
     }
     return render(request, 'tools/tool_details.html', context)
+
+# tools/views.py
+# tools/views.py
+from django.shortcuts import get_object_or_404, redirect, render
+from .models import Tool
+from .forms import ToolForm
+
+def editar_herramienta_view(request, tool_id):
+    herramienta = get_object_or_404(Tool, id=tool_id, arrendador=request.user.arrendador)
+
+    if request.method == 'POST':
+        form = ToolForm(request.POST, request.FILES, instance=herramienta)
+        if form.is_valid():
+            # Aquí pasamos el arrendador al método save del formulario
+            form.save(arrendador=request.user.arrendador)
+            return redirect('arrendador_home')
+    else:
+        form = ToolForm(instance=herramienta)
+
+    return render(request, 'tools/editar_herramienta.html', {'form': form})
+
+@login_required
+def eliminar_herramienta_view(request, tool_id):
+    herramienta = get_object_or_404(Tool, id=tool_id, arrendador=request.user.arrendador)
+
+    if request.method == 'POST':
+        herramienta.delete()
+        return redirect('arrendador_home')  # Redirige al home del arrendador
+
+    return render(request, 'tools/eliminar_herramienta.html', {'herramienta': herramienta})
+
+from django.shortcuts import render, get_object_or_404
+from .models import Tool
+
+@staff_member_required
+def revisar_tool_view(request, tool_id):
+    herramienta = get_object_or_404(Tool, id=tool_id)  # Obtener la herramienta específica
+    return render(request, 'admin/revision_tool.html', {'herramienta': herramienta})

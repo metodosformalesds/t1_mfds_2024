@@ -558,7 +558,7 @@ def update_address(request):
 
 @login_required
 def ver_notificaciones(request):
-    # Obtener todas las notificaciones del usuario actual y marcarlas como leídas
-    notificaciones = Notificacion.objects.filter(usuario=request.user)
+    notificaciones = Notificacion.objects.filter(usuario=request.user).order_by('-creado')
     notificaciones.update(leido=True)
     return render(request, 'users/notificaciones.html', {'notificaciones': notificaciones})
+

@@ -7,15 +7,25 @@
     {% if notificaciones %}
         <div class="space-y-4">
             {% for notificacion in notificaciones %}
-                <div class="p-4 border border-gray-200 rounded-lg shadow hover:shadow-lg bg-white">
-                    <p class="text-gray-700">{{ notificacion.mensaje }}</p>
-                    <p class="text-sm text-gray-500">Fecha: {{ notificacion.creado|date:"d/m/Y H:i" }}</p>
-                    {% if notificacion.leido %}
-                        <span class="text-xs text-green-600">Leído</span>
-                    {% else %}
-                        <span class="text-xs text-red-600">No leído</span>
-                    {% endif %}
-                </div>
+                {% if notificacion.herramienta %}
+                    <!-- Enlace activo si hay herramienta asociada -->
+                    <a href="{% url 'editar_herramienta' notificacion.herramienta.id %}" class="block p-4 border border-gray-200 rounded-lg shadow hover:shadow-lg bg-white">
+                {% else %}
+                    <!-- Sin enlace si no hay herramienta -->
+                    <div class="block p-4 border border-gray-200 rounded-lg shadow bg-white">
+                {% endif %}
+                        <p class="text-gray-700">{{ notificacion.mensaje }}</p>
+                        <p class="text-sm text-gray-500">Fecha: {{ notificacion.creado|date:"d/m/Y H:i" }}</p>
+                        {% if notificacion.leido %}
+                            <span class="text-xs text-green-600">Leído</span>
+                        {% else %}
+                            <span class="text-xs text-red-600">No leído</span>
+                        {% endif %}
+                {% if notificacion.herramienta %}
+                    </a>
+                {% else %}
+                    </div>
+                {% endif %}
             {% endfor %}
         </div>
     {% else %}

@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+
+{% block content %}
+<div class="relative flex size-full min-h-screen flex-col bg-slate-50 group/design-root overflow-x-hidden" style='font-family: "Public Sans", "Noto Sans", sans-serif;'>
+    <div class="layout-container flex h-full grow flex-col">
+
+        <!-- Encabezado del formulario -->
+        <div class="px-40 flex flex-1 justify-center py-5">
+            <div class="layout-content-container flex flex-col w-full max-w-[512px] py-5">
+                <div class="flex flex-col gap-3 p-4">
+                    <a href="{% url 'arrendador_home' %}" class="flex items-center text-black pb-4">
+                        <svg class="mr-2" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M10.854 4.146a.5.5 0 0 1 0 .708L7.707 8l3.147 3.146a.5.5 0 0 1-.708.708l-3.5-3.5a.5.5 0 0 1 0-.708l3.5-3.5a.5.5 0 0 1 .708 0z"/>
+                        </svg>
+                        Regresar
+                    </a>
+                    <p class="text-[#0e141b] tracking-light text-[32px] font-bold leading-tight">Editar Herramienta</p>
+                    <p class="text-[#4e7397] text-sm font-normal leading-normal">Actualiza la información de tu herramienta.</p>
+                </div>
+
+                <!-- Formulario de Django -->
+                <form method="POST" enctype="multipart/form-data" class="space-y-6">
+                    {% csrf_token %}
+                    <div class="flex flex-col gap-4 px-4">
+
+                        <!-- Campo de Nombre -->
+                        <label class="flex flex-col min-w-40 flex-1">
+                            <span class="text-[#0e141b] text-base font-medium leading-normal pb-2">Nombre de la herramienta</span>
+                            {{ form.nombre|add_class:"form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-[#0e141b] focus:outline-0 focus:ring-0 border border-[#d0dbe7] bg-slate-50 focus:border-[#d0dbe7] h-14 placeholder:text-[#4e7397] p-[15px] text-base font-normal leading-normal" }}
+                        </label>
+
+                        <!-- Campo de Descripción -->
+                        <label class="flex flex-col min-w-40 flex-1">
+                            <span class="text-[#0e141b] text-base font-medium leading-normal pb-2">Describe tu herramienta</span>
+                            {{ form.descripcion|add_class:"form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-[#0e141b] focus:outline-0 focus:ring-0 border border-[#d0dbe7] bg-slate-50 focus:border-[#d0dbe7] h-14 placeholder:text-[#4e7397] p-[15px] text-base font-normal leading-normal" }}
+                        </label>
+
+                        <!-- Campo de Costo por Día -->
+                        <label class="flex flex-col min-w-40 flex-1">
+                            <span class="text-[#0e141b] text-base font-medium leading-normal pb-2">Costo de alquiler por día</span>
+                            {{ form.costo_dia|add_class:"form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-[#0e141b] focus:outline-0 focus:ring-0 border border-[#d0dbe7] bg-slate-50 focus:border-[#d0dbe7] h-14 placeholder:text-[#4e7397] p-[15px] text-base font-normal leading-normal" }}
+                        </label>
+
+                        <!-- Campo de Categoría -->
+                        <label class="flex flex-col min-w-40 flex-1">
+                            <span class="text-[#0e141b] text-base font-medium leading-normal pb-2">Categoría</span>
+                            {{ form.categoria|add_class:"form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-[#0e141b] focus:outline-0 focus:ring-0 border border-[#d0dbe7] bg-slate-50 focus:border-[#d0dbe7] h-14 placeholder:text-[#4e7397] p-[15px] text-base font-normal leading-normal" }}
+                        </label>
+
+                        <!-- Campo de Imágenes -->
+                        <label class="flex flex-col min-w-40 flex-1">
+                            <span class="text-[#0e141b] text-base font-medium leading-normal pb-2">Imágenes</span>
+                            <!-- Mostrar la imagen actual si existe -->
+                            {% if form.instance.imagenes %}
+                                <img src="{{ form.instance.imagenes.url }}" class="mt-4 w-full h-48 object-cover rounded-lg" alt="Imagen actual">
+                            {% endif %}
+                            {{ form.imagenes|add_class:"form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-[#0e141b] focus:outline-0 focus:ring-0 border border-[#d0dbe7] bg-slate-50 focus:border-[#d0dbe7] h-14 placeholder:text-[#4e7397] p-[15px] text-base font-normal leading-normal" }}
+                            <img id="imagePreview" class="mt-4 w-full h-48 object-cover rounded-lg hidden" alt="Vista previa de la imagen" />
+                        </label>
+                    </div>
+
+                    <!-- Botón de Enviar -->
+                    <div class="flex justify-center px-4 py-3">
+                        <button type="submit" class="flex w-full max-w-[480px] items-center justify-center rounded-xl h-12 px-6 bg-[#1980e6] text-white text-base font-bold">
+                            Guardar cambios
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Script para la vista previa de la imagen -->
+<script>
+    document.querySelector('input[type="file"]').addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        const preview = document.getElementById('imagePreview');
+        
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                preview.src = e.target.result;
+                preview.classList.remove('hidden');
+            };
+            reader.readAsDataURL(file);
+        } else {
+            preview.src = '';
+            preview.classList.add('hidden');
+        }
+    });
+</script>
+{% endblock %}

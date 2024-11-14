@@ -115,7 +115,17 @@ def listar_chats_view(request):
         arrendatario__usuario=request.user
     )
 
-    return render(request, 'rentas/listar_chats.html', {'chats': chats})
+    # Determinar la URL de redirección según el tipo de usuario
+    if hasattr(request.user, 'arrendador'):
+        url_redireccion = reverse('arrendador_home')
+    else:
+        url_redireccion = reverse('arrendatario_home')
+
+    return render(request, 'rentas/listar_chats.html', {
+        'chats': chats,
+        'url_redireccion': url_redireccion
+    })
+
 
 @login_required
 def rentas_arrendador_view(request):
@@ -152,6 +162,7 @@ def rentas_arrendatario_view(request):
         "estados": Renta._meta.get_field("estado").choices,
     })
 
+from .models import Respuesta
 @login_required
 def preguntas_sin_responder_view(request):
     arrendador = Arrendador.objects.get(usuario=request.user)
@@ -162,10 +173,12 @@ def preguntas_sin_responder_view(request):
         if form.is_valid():
             pregunta_id = request.POST.get('pregunta_id')
             pregunta = get_object_or_404(Pregunta, id=pregunta_id)
-            respuesta = form.save(commit=False)
-            respuesta.pregunta = pregunta
-            respuesta.arrendador = arrendador
-            respuesta.save()
+            respuesta_texto = form.cleaned_data['respuesta_texto']
+            respuesta = Respuesta.objects.create(
+                pregunta=pregunta,
+                arrendador=arrendador,
+                respuesta_texto=respuesta_texto
+            )
             messages.success(request, "Respuesta enviada correctamente.")
             return redirect('preguntas_sin_responder')
 
