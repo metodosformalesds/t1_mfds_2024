@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verificación de Identidad</title>
+</head>
+<body>
+    <h2>Verificación de Identidad</h2>
+    <form id="verification-form" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <!-- Cargar INE -->
+        <label for="ine_image">Sube tu INE:</label>
+        <input type="file" accept="image/*" name="ine_image" id="ine_image" required>
+
+        <!-- Captura en vivo desde la cámara -->
+        <div>
+            <video id="live-video" autoplay></video>
+            <button type="button" onclick="captureImage()">Capturar Imagen</button>
+        </div>
+
+        <input type="hidden" name="captured_image" id="captured_image">
+        <button type="submit">Verificar Identidad</button>
+    </form>
+
+    <script>
+        // Abrir cámara
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then(stream => { document.getElementById("live-video").srcObject = stream; });
+
+        // Capturar imagen y convertirla a base64
+        function captureImage() {
+            const video = document.getElementById("live-video");
+            const canvas = document.createElement("canvas");
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            canvas.getContext("2d").drawImage(video, 0, 0);
+            document.getElementById("captured_image").value = canvas.toDataURL("image/png");
+        }
+
+        // Enviar formulario para verificar
+        document.getElementById("verification-form").addEventListener("submit", function(event) {
+            event.preventDefault();
+            const formData = new FormData(this);
+            fetch("{% url 'upload_identity_image' %}", {
+                method: "POST",
+                body: formData,
+                headers: { "X-CSRFToken": "{{ csrf_token }}" }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(data.message);
+                    window.location.href = "{% url 'register_personal' %}";
+                } else {
+                    alert(data.error);
+                }
+            })
+            .catch(error => console.error("Error en la verificación:", error));
+        });
+    </script>
+</body>
+</html>

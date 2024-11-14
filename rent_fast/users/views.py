@@ -3,6 +3,10 @@ from django.views.decorators.csrf import csrf_exempt
 
 import requests
 import boto3
+import qrcode
+from urllib.parse import quote  # En lugar de urlquote
+from django.http import HttpResponse
+
 import base64
 from django.core.files.storage import FileSystemStorage
 from django.contrib.auth.models import User
@@ -111,7 +115,6 @@ def verify_identity(request):
     print("Error: Método no permitido")
     return JsonResponse({"success": False, "error": "Método no permitido."})
 
-
 class RegisterWizard(SessionWizardView):
     form_list = FORMS
     template_name = 'users/register_wizard.html'
@@ -120,35 +123,15 @@ class RegisterWizard(SessionWizardView):
     def get_template_names(self):
         return [TEMPLATES[self.steps.current]]
 
-    def post(self, *args, **kwargs):
-        print("Paso actual del asistente:", self.steps.current)  # Debug del paso actual
-
-        # Llamar a la lógica de post de `SessionWizardView`
-        response = super().post(*args, **kwargs)
-
-        # Si estamos en el paso 'personal', realizar la verificación de INE
+        def post(self, *args, **kwargs):
+         response = super().post(*args, **kwargs)
         if self.steps.current == 'personal':
-            form = self.get_form(data=self.request.POST, files=self.request.FILES)
-            if form.is_valid():
-                ine_image = form.cleaned_data.get('ine_image')
-                
-                # Realizar verificación de INE solo si se ha proporcionado la imagen
-                if ine_image:
-                    ine_verification_status = self.verify_ine(ine_image)
-                    if not ine_verification_status:
-                        messages.error(self.request, "La verificación del documento INE falló. Inténtalo nuevamente.")
-                        print("Error en verificación de INE.")
-                        return self.render_to_response(self.get_context_data(form=form))
-                    else:
-                        messages.success(self.request, "¡El documento INE fue verificado con éxito!")
-                        print("INE verificado correctamente.")
-
-                # Si existe una foto de perfil, guardarla en `extra_data`
-                profile_picture = form.cleaned_data.get('profile_picture')
-                if profile_picture:
-                    self.storage.extra_data['profile_picture'] = profile_picture
-
+        # Verificar si la identidad ha sido confirmada
+            if not self.request.session.get('identity_verified', False):
+                messages.error(self.request, "Por favor, verifica tu identidad antes de continuar.")
+            return self.render_to_response(self.get_context_data(form=self.get_form()))
         return response
+
 
     def done(self, form_list, **kwargs):
         print("Entrando en el método done()")  # Confirmar que hemos llegado a done()
@@ -561,4 +544,65 @@ def ver_notificaciones(request):
     notificaciones = Notificacion.objects.filter(usuario=request.user).order_by('-creado')
     notificaciones.update(leido=True)
     return render(request, 'users/notificaciones.html', {'notificaciones': notificaciones})
+
+
+
+def generate_qr_for_identity(request):
+    user_id = request.user.id  # Puedes usar la ID del usuario para el enlace
+    url = request.build_absolute_uri(reverse('upload_identity_image')) + f"?user_id={user_id}"
+    qr = qrcode.make(url)
+    response = HttpResponse(content_type="image/png")
+    qr.save(response, "PNG")
+    return response
+@csrf_exempt
+@csrf_exempt
+def upload_identity_image(request):
+    if request.method == 'GET':
+        # Renderiza la página para capturar la foto desde el dispositivo
+        return render(request, 'users/mobile_verification.html')
+
+    elif request.method == 'POST':
+        captured_image_data = request.POST.get('captured_image')
+        ine_image_data = request.FILES.get('ine_image')  # Permite que el usuario suba su INE
+
+        if not captured_image_data or not ine_image_data:
+            return JsonResponse({"success": False, "error": "Se requieren ambas imágenes para la verificación."})
+
+        try:
+            # Decodificar la imagen capturada y la imagen del INE en binario
+            captured_image = base64.b64decode(captured_image_data.split(',')[1])
+            ine_image = ine_image_data.read()
+
+            rekognition_client = boto3.client(
+                'rekognition',
+                aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
+                aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
+                region_name=settings.AWS_REGION
+            )
+
+            # Detectar rostros en ambas imágenes
+            captured_response = rekognition_client.detect_faces(Image={'Bytes': captured_image}, Attributes=['ALL'])
+            ine_response = rekognition_client.detect_faces(Image={'Bytes': ine_image}, Attributes=['ALL'])
+
+            if not captured_response['FaceDetails'] or not ine_response['FaceDetails']:
+                return JsonResponse({"success": False, "error": "No se detectó un rostro en una de las imágenes."})
+
+            # Comparar ambas imágenes
+            comparison_response = rekognition_client.compare_faces(
+                SourceImage={'Bytes': ine_image},
+                TargetImage={'Bytes': captured_image},
+                SimilarityThreshold=90
+            )
+
+            if comparison_response['FaceMatches']:
+                # Guardar el estado de verificación en la sesión
+                request.session['identity_verified'] = True
+                return JsonResponse({"success": True, "message": "La verificación fue exitosa."})
+            else:
+                return JsonResponse({"success": False, "error": "Las imágenes no coinciden."})
+
+        except Exception as e:
+            return JsonResponse({"success": False, "error": f"Error en la verificación: {str(e)}"})
+
+    return JsonResponse({"success": False, "error": "Método no permitido."})
 

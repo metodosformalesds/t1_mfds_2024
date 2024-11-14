@@ -38,7 +38,7 @@
                 {{ wizard.form.ine_image|as_crispy_field }}
             </div>
 
-            <!-- Nuevo Campo: Foto de Perfil con Vista Previa -->
+            <!-- Campo para Foto de Perfil con Vista Previa -->
             <div class="mb-6">
                 <label class="block text-gray-700 font-medium">Foto de perfil</label>
                 <input type="file" name="{{ wizard.form.profile_picture.name }}" id="id_profile_picture" onchange="previewImage(event)" class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none">
@@ -64,6 +64,16 @@
                 <h3 class="text-xl font-bold mb-4">Verificar Identidad</h3>
                 <video id="live-video" autoplay class="w-full h-48 border rounded"></video>
                 <button onclick="captureAndVerify()" class="w-full bg-blue-500 text-white py-2 rounded mt-4">Capturar y Verificar</button>
+                
+                <!-- Botón para generar y mostrar el QR -->
+                <button onclick="generateQR()" class="w-full bg-green-500 text-white py-2 rounded mt-4">Verificar con QR desde el Teléfono</button>
+
+                <!-- Imagen QR para mostrar el código generado -->
+                <div id="qr-container" class="hidden mt-4">
+                    <p class="text-center text-gray-700 mb-2">Escanea este código QR con tu teléfono:</p>
+                    <img id="qr-image" src="" alt="QR Code para verificación">
+                </div>
+                
                 <button onclick="closeVerificationDialog()" class="w-full bg-red-500 text-white py-2 rounded mt-4">Cancelar</button>
             </div>
         </div>
@@ -71,6 +81,19 @@
 </div>
 
 <script>
+    // Función para generar el QR
+    function generateQR() {
+        fetch("{% url 'generate_qr_for_identity' %}")  // URL que apunta a la vista que genera el QR
+            .then(response => response.blob())
+            .then(blob => {
+                const url = URL.createObjectURL(blob);
+                const qrImage = document.getElementById("qr-image");
+                qrImage.src = url;
+                document.getElementById("qr-container").classList.remove("hidden");
+            })
+            .catch(error => console.error("Error al generar QR:", error));
+    }
+
     // Función para previsualizar la imagen de perfil seleccionada
     function previewImage(event) {
         const image = document.getElementById('profile-preview');

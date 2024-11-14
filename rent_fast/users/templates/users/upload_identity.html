@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Captura para Verificación de Identidad</title>
+</head>
+<body>
+    <h2>Captura y Envía tu Foto para Verificación</h2>
+    <form id="capture-form" method="POST">
+        {% csrf_token %}
+        <input type="file" accept="image/*" capture="user" name="captured_image" required onchange="submitForm()">
+        <button type="submit">Enviar Foto</button>
+    </form>
+
+    <script>
+        function submitForm() {
+            const form = document.getElementById('capture-form');
+            const formData = new FormData(form);
+            fetch("{% url 'upload_identity_image' %}", {
+                method: "POST",
+                body: formData,
+                headers: { "X-CSRFToken": "{{ csrf_token }}" }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(data.message);  // Notifica éxito
+                    window.close();  // Cierra la ventana después de la verificación
+                } else {
+                    alert(data.error);
+                }
+            })
+            .catch(error => console.error("Error:", error));
+        }
+    </script>
+</body>
+</html>
