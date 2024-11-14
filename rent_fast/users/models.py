@@ -71,3 +71,16 @@ class Notificacion(models.Model):
 
     def __str__(self):
         return f"Notificación para {self.usuario.username}: {self.mensaje[:30]}..."
+    
+from tools.models import Tool  # Importa el modelo de herramienta
+
+class Notificacion(models.Model):
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notificaciones')
+    mensaje = models.TextField()
+    herramienta = models.ForeignKey(Tool, on_delete=models.CASCADE, null=True, blank=True)  # Relación con Tool
+    leido = models.BooleanField(default=False)
+    creado = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Notificación para {self.usuario.username}: {self.mensaje[:30]}..."
+

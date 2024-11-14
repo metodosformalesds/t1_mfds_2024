@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="relative flex size-full min-h-screen flex-col bg-slate-50 overflow-x-hidden group/design-root" style='font-family: "Public Sans", "Noto Sans", sans-serif;'>
+    <div class="layout-container flex h-full grow flex-col">
+
+        <!-- Encabezado y mensaje de confirmación -->
+        <div class="px-40 flex flex-1 justify-center py-5">
+            <div class="layout-content-container flex flex-col w-full max-w-[512px] py-5">
+                <div class="flex flex-col gap-3 p-4">
+                    <!-- Botón de regresar -->
+                    <a href="{% url 'arrendador_home' %}" class="flex items-center text-black pb-4">
+                        <svg class="mr-2" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M10.854 4.146a.5.5 0 0 1 0 .708L7.707 8l3.147 3.146a.5.5 0 0 1-.708.708l-3.5-3.5a.5.5 0 0 1 0-.708l3.5-3.5a.5.5 0 0 1 .708 0z"/>
+                        </svg>
+                        Regresar
+                    </a>
+                    <p class="text-[#0e141b] tracking-light text-[32px] font-bold leading-tight">Eliminar Herramienta</p>
+                    <p class="text-[#4e7397] text-sm font-normal leading-normal">¿Estás seguro de que deseas eliminar <strong>{{ herramienta.nombre }}</strong>?</p>
+                </div>
+
+                <!-- Formulario de eliminación -->
+                <form method="POST" class="space-y-6">
+                    {% csrf_token %}
+                    <div class="flex justify-center px-4 py-3">
+                        <button type="submit" class="flex w-full max-w-[480px] items-center justify-center rounded-xl h-12 px-6 bg-red-600 text-white text-base font-bold">
+                            Eliminar
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Botón de cancelar -->
+                <div class="flex justify-center px-4 py-3">
+                    <a href="{% url 'arrendador_home' %}" class="flex w-full max-w-[480px] items-center justify-center rounded-xl h-12 px-6 bg-gray-300 text-black text-base font-bold">
+                        Cancelar
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

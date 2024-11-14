@@ -17,6 +17,7 @@ class Tool(models.Model):
     estado = models.CharField(max_length=20, choices=[('Pendiente', 'Pendiente'), ('Disponible', 'Disponible'), ('Rechazado', 'Rechazado')], default='Pendiente')
     imagenes = models.ImageField(upload_to='tools/', null=True, blank=True)
     categoria = models.ForeignKey(Categoria, on_delete=models.SET_NULL, null=True, blank=True)  # Nueva relación
+    mensaje_rechazo = models.TextField(null=True, blank=True)
 
     def __str__(self):
         return self.nombre

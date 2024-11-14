@@ -5,7 +5,7 @@ from rentas.models import Renta
 class ToolForm(forms.ModelForm):
     class Meta:
         model = Tool
-        fields = ['nombre', 'descripcion', 'costo_dia', 'imagenes', 'categoria']  # Incluimos el campo `categoria`
+        fields = ['nombre', 'descripcion', 'costo_dia', 'imagenes', 'categoria']  # Incluimos el campo categoria
         labels = {
             'nombre': 'Nombre de la Herramienta',
             'descripcion': 'Descripción',
@@ -15,7 +15,8 @@ class ToolForm(forms.ModelForm):
         }
 
     def save(self, arrendador, *args, **kwargs):
-        tool = super().save(commit=False)
+        if arrendador:
+            tool = super().save(commit=False)
         tool.arrendador = arrendador
         tool.estado = "Pendiente"  # Asignamos el estado por defecto a "Pendiente"
         tool.save()
@@ -57,3 +58,16 @@ class CarritoForm(forms.ModelForm):
         if commit:
             carrito_item.save()
         return carrito_item
+    
+from django import forms
+from .models import Tool
+
+class RechazarToolForm(forms.ModelForm):
+    class Meta:
+        model = Tool
+        fields = ['mensaje_rechazo']
+        widgets = {
+            'mensaje_rechazo': forms.Textarea(attrs={'rows': 3, 'placeholder': 'Escribe el motivo del rechazo...'}),
+        }
+
+    

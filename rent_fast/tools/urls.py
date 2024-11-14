@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import home_view, arrendador_home, arrendatario_home, ToolFormView, ToolListView, ToolDetailView, add_tool_view, rent_tool_view, agregar_al_carrito_view, carrito_view, seleccionar_fechas_view, resumen_view, confirmar_renta_view, admin_home, approve_tool, reject_tool, uber_auth, uber_callback, obtener_cotizacion, pagar_sin_paypal_view, eliminar_del_carrito_view
+from .views import home_view, arrendador_home, arrendatario_home, ToolFormView, ToolListView, ToolDetailView, add_tool_view, rent_tool_view, agregar_al_carrito_view, carrito_view, seleccionar_fechas_view, resumen_view, confirmar_renta_view, admin_home, approve_tool, reject_tool, uber_auth, uber_callback, obtener_cotizacion, pagar_sin_paypal_view, eliminar_del_carrito_view, editar_herramienta_view, eliminar_herramienta_view, revisar_tool_view
 
 urlpatterns = [
     path('', home_view, name='home'),
@@ -22,4 +22,8 @@ urlpatterns = [
     path('uber/callback/', uber_callback, name='uber_callback'),
     path('uber/cotizacion/', obtener_cotizacion, name='obtener_cotizacion'),
     
+    path('herramienta/<int:tool_id>/editar/', editar_herramienta_view, name='editar_herramienta'),
+    path('herramienta/<int:tool_id>/eliminar/', eliminar_herramienta_view, name='eliminar_herramienta'),
+    path('admin/revisar_tool/<int:tool_id>/', revisar_tool_view, name='revisar_tool'),
+
 ]

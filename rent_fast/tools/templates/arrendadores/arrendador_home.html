@@ -7,31 +7,92 @@
         <!-- Título de Mis Herramientas y Botón de Agregar Herramienta -->
         <div class="flex justify-center px-40 py-5">
             <div class="layout-content-container flex max-w-[960px] flex-1 flex-col">
-                <div class="flex flex-wrap justify-between gap-3 p-4">
-                    <p class="tracking-light min-w-72 text-[32px] font-bold leading-tight text-[#0e141b]">Mis herramientas</p>
+                <div class="flex justify-between items-center p-4">
+                    <p class="tracking-light text-[32px] font-bold text-[#0e141b]">Mis herramientas</p>
+                </div>
 
-                    <!-- Mostrar herramientas -->
-                    {% for tool in tools %}
-                    <div class="p-4">
-                        <div class="flex items-stretch justify-between gap-4 rounded-xl">
-                            <div class="flex flex-[2_2_0px] flex-col gap-4">
-                                <div class="flex flex-col gap-1">
-                                    <p class="text-sm font-normal leading-normal text-[#4e7397]">{{ tool.estado }}</p>
-                                    <p class="text-base font-bold leading-tight text-[#0e141b]">{{ tool.nombre }}</p>
-                                    <p class="text-sm font-normal leading-normal text-[#4e7397]">${{ tool.costo_dia }}</p>
-                                </div>
-                                <a href="#" class="flex h-8 w-fit min-w-[84px] max-w-[480px] items-center justify-center overflow-hidden rounded-xl bg-[#e7edf3] px-4 text-sm font-medium leading-normal text-[#0e141b]">
-                                    Editar
-                                </a>
-                            </div>
+                <!-- Herramientas Pendientes -->
+                <h2 class="text-xl font-semibold text-[#0e141b] mb-4">Herramientas Pendientes</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-4">
+                    {% for tool in tools_pendientes %}
+                    <div class="flex flex-col items-center bg-white rounded-xl shadow-md p-4">
+                        <img src="{% if tool.imagenes %}{{ tool.imagenes.url }}{% else %}https://cdn.usegalileo.ai/sdxl10/84ed65ba-6d8e-4158-b97a-6d36dabc415d.png{% endif %}" alt="{{ tool.nombre }}" class="w-48 h-32 rounded-xl object-cover mb-4">
 
-                            <!-- Mostrar imagen de la herramienta con tamaño ajustado -->
-                            <img src="{% if tool.imagenes %}{{ tool.imagenes.url }}{% else %}https://cdn.usegalileo.ai/sdxl10/84ed65ba-6d8e-4158-b97a-6d36dabc415d.png{% endif %}" alt="{{ tool.nombre }}" class="w-48 h-32 rounded-xl object-cover">
+                        <div class="flex flex-col items-center gap-2">
+                            <p class="text-sm font-normal text-yellow-500">{{ tool.estado }}</p>
+                            <p class="text-base font-bold text-[#0e141b]">{{ tool.nombre }}</p>
+                            <p class="text-sm font-normal text-[#4e7397]">${{ tool.costo_dia }}</p>
+                        </div>
 
-                            <!-- Mostrar la URL de la imagen para depuración -->
-                            <p class="text-xs text-red-500 mt-2">URL de la imagen: {% if tool.imagenes %}{{ tool.imagenes.url }}{% else %}No hay imagen disponible{% endif %}</p>
+                        <!-- Botones de acción -->
+                        <div class="flex gap-2 mt-4">
+                            <a href="{% url 'editar_herramienta' tool.id %}" class="h-8 px-4 flex items-center justify-center bg-[#e7edf3] text-[#0e141b] rounded-xl text-sm font-medium">
+                                Editar
+                            </a>
+                            <a href="{% url 'eliminar_herramienta' tool.id %}" class="h-8 px-4 flex items-center justify-center bg-red-500 text-white rounded-xl text-sm font-medium">
+                                Eliminar
+                            </a>
                         </div>
                     </div>
+                    {% empty %}
+                    <p class="text-sm text-gray-500">No hay herramientas pendientes.</p>
+                    {% endfor %}
+                </div>
+
+                <!-- Herramientas Aprobadas -->
+                <h2 class="text-xl font-semibold text-[#0e141b] mt-8 mb-4">Herramientas Disponibles</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-4">
+                    {% for tool in tools_aprobadas %}
+                    <div class="flex flex-col items-center bg-white rounded-xl shadow-md p-4">
+                        <img src="{% if tool.imagenes %}{{ tool.imagenes.url }}{% else %}https://cdn.usegalileo.ai/sdxl10/84ed65ba-6d8e-4158-b97a-6d36dabc415d.png{% endif %}" alt="{{ tool.nombre }}" class="w-48 h-32 rounded-xl object-cover mb-4">
+
+                        <div class="flex flex-col items-center gap-2">
+                            <p class="text-sm font-normal text-[#4e7397]">{{ tool.estado }}</p>
+                            <p class="text-base font-bold text-[#0e141b]">{{ tool.nombre }}</p>
+                            <p class="text-sm font-normal text-[#4e7397]">${{ tool.costo_dia }}</p>
+                        </div>
+
+                        <!-- Botones de acción -->
+                        <div class="flex gap-2 mt-4">
+                            <a href="{% url 'editar_herramienta' tool.id %}" class="h-8 px-4 flex items-center justify-center bg-[#e7edf3] text-[#0e141b] rounded-xl text-sm font-medium">
+                                Editar
+                            </a>
+                            <a href="{% url 'eliminar_herramienta' tool.id %}" class="h-8 px-4 flex items-center justify-center bg-red-500 text-white rounded-xl text-sm font-medium">
+                                Eliminar
+                            </a>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <p class="text-sm text-gray-500">No hay herramientas aprobadas.</p>
+                    {% endfor %}
+                </div>
+
+                <!-- Herramientas Rechazadas -->
+                <h2 class="text-xl font-semibold text-[#0e141b] mt-8 mb-4">Herramientas Rechazadas</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-4">
+                    {% for tool in tools_rechazadas %}
+                    <div class="flex flex-col items-center bg-white rounded-xl shadow-md p-4">
+                        <img src="{% if tool.imagenes %}{{ tool.imagenes.url }}{% else %}https://cdn.usegalileo.ai/sdxl10/84ed65ba-6d8e-4158-b97a-6d36dabc415d.png{% endif %}" alt="{{ tool.nombre }}" class="w-48 h-32 rounded-xl object-cover mb-4">
+
+                        <div class="flex flex-col items-center gap-2">
+                            <p class="text-sm font-normal text-red-500">{{ tool.estado }}</p>
+                            <p class="text-base font-bold text-[#0e141b]">{{ tool.nombre }}</p>
+                            <p class="text-sm font-normal text-[#4e7397]">${{ tool.costo_dia }}</p>
+                            <p class="text-xs text-red-500 mt-2">Motivo: {{ tool.mensaje_rechazo }}</p>
+                        </div>
+
+                        <!-- Botones de acción -->
+                        <div class="flex gap-2 mt-4">
+                            <a href="{% url 'editar_herramienta' tool.id %}" class="h-8 px-4 flex items-center justify-center bg-[#e7edf3] text-[#0e141b] rounded-xl text-sm font-medium">
+                                Editar
+                            </a>
+                            <a href="{% url 'eliminar_herramienta' tool.id %}" class="h-8 px-4 flex items-center justify-center bg-red-500 text-white rounded-xl text-sm font-medium">
+                                Eliminar
+                            </a>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <p class="text-sm text-gray-500">No hay herramientas rechazadas.</p>
                     {% endfor %}
                 </div>
             </div>
