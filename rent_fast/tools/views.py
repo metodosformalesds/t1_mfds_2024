@@ -202,12 +202,6 @@ class ToolListView(generic.ListView):
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 
-# Agregar imports si es necesario
-from rentas.models import Pregunta
-from rentas.forms import PreguntaForm
-
-from rentas.models import Pregunta
-from rentas.forms import PreguntaForm
 
 class ToolDetailView(DetailView):
     model = Tool
