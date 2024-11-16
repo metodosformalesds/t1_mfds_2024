@@ -2,10 +2,9 @@
 {% load tailwind_filters %}
 {% block content %}
 <div class="flex min-h-screen justify-center items-center bg-slate-50">
-    <!-- Contenedor del formulario con estilo de cuadro -->
     <div class="bg-white p-8 rounded shadow-md w-full max-w-md">
         
-        <!-- Enlace de "Regresar" con ícono de flecha SVG -->
+        <!-- Enlace de "Regresar" -->
         <a href="{% url 'login' %}" class="flex items-center text-black pb-4">
             <svg class="mr-2" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
                 <path fill-rule="evenodd" d="M10.854 4.146a.5.5 0 0 1 0 .708L7.707 8l3.147 3.146a.5.5 0 0 1-.708.708l-3.5-3.5a.5.5 0 0 1 0-.708l3.5-3.5a.5.5 0 0 1 .708 0z"/>
@@ -13,43 +12,81 @@
             Regresar
         </a>
 
-        <!-- Título del formulario -->
+        <!-- Título -->
         <h2 class="text-2xl font-bold mb-6 text-center">Crea tu cuenta</h2>
 
-        <!-- Inicio del formulario de creación de cuenta -->
+        <!-- Formulario -->
         <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
             {{ wizard.management_form }}
 
-            <!-- Campo de nombre de usuario -->
+            <!-- Nombre de Usuario -->
             <div class="mb-4">
                 <label class="block text-gray-700 font-medium">Nombre de Usuario</label>
                 {{ wizard.form.username|as_crispy_field }}
             </div>
 
-            <!-- Campo de correo electrónico -->
+            <!-- Correo Electrónico -->
             <div class="mb-4">
                 <label class="block text-gray-700 font-medium">Correo Electrónico</label>
                 {{ wizard.form.email|as_crispy_field }}
             </div>
 
-            <!-- Campo de contraseña -->
-            <div class="mb-4">
+            <!-- Contraseña -->
+            <div class="mb-4 relative">
                 <label class="block text-gray-700 font-medium">Contraseña</label>
                 {{ wizard.form.password1|as_crispy_field }}
+                <button 
+                    type="button" 
+                    onclick="togglePassword('id_password1', 'eyeIcon1')"  
+                    class="absolute top-1/2 right-3 transform -translate-y-1/2"
+                >
+                    <svg id="eyeIcon1" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500 hover:text-blue-600 transition-colors duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.522 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.478 0-8.268-2.943-9.542-7z"/>
+                    </svg>
+                </button>
             </div>
 
-            <!-- Campo de confirmación de contraseña -->
-            <div class="mb-4">
+            <!-- Confirmar Contraseña -->
+            <div class="mb-4 relative">
                 <label class="block text-gray-700 font-medium">Confirmar Contraseña</label>
                 {{ wizard.form.password2|as_crispy_field }}
+                <button 
+                    type="button" 
+                    onclick="togglePassword('id_password2', 'eyeIcon2')" 
+                    class="absolute top-[calc(50%+25px)] right-3 transform -translate-y-1/2"
+                >
+                    <svg id="eyeIcon2" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500 hover:text-blue-600 transition-colors duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.522 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.478 0-8.268-2.943-9.542-7z"/>
+                    </svg>
+                </button>
             </div>
 
-            <!-- Botón de envío del formulario -->
+            <!-- Botón Enviar -->
             <button class="bg-blue-500 text-white py-2 rounded w-full hover:bg-blue-600 focus:outline-none" type="submit">
                 Continuar
             </button>
         </form>
     </div>
 </div>
+
+<!-- Script para visibilidad de contraseñas -->
+<script>
+    function togglePassword(fieldId, eyeIconId) {
+        const passwordField = document.getElementById(fieldId);
+        const eyeIcon = document.getElementById(eyeIconId);
+
+        if (passwordField.type === "password") {
+            passwordField.type = "text";  // Cambia el campo a texto
+            eyeIcon.classList.add("text-blue-600");  // Cambia el color del ícono
+            eyeIcon.classList.remove("text-gray-500");
+        } else {
+            passwordField.type = "password";  // Cambia el campo a contraseña
+            eyeIcon.classList.add("text-gray-500");
+            eyeIcon.classList.remove("text-blue-600");
+        }
+    }
+</script>
 {% endblock %}

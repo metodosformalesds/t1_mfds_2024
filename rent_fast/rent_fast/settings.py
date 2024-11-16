@@ -250,3 +250,5 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'rentfast64@gmail.com'  # Cambia a tu dirección de Gmail
 EMAIL_HOST_PASSWORD = 'kwrzmaebrnxfllvf'  # Cambia a tu contraseña de Gmail o, preferiblemente, a una contraseña de aplicación
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+LANGUAGE_CODE = 'es' 
