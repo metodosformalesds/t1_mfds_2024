@@ -1,4 +1,6 @@
 from django.contrib.auth.views import LoginView, LogoutView
+from django.conf import settings
+from django.conf.urls.static import static
 from .views import RegisterWizard,ver_notificaciones, Landing,verify_identity, RegisterAddres, TerminosCondiciones, RegisterPersonal, password_reset_request, verify_reset_code, set_new_password, actualizar_datos_view 
 from .views import RegisterWizard, Landing,verify_identity, RegisterAddres, TerminosCondiciones, RegisterPersonal, password_reset_request, verify_reset_code, set_new_password, actualizar_datos_view, update_address, generate_qr_for_identity, upload_identity_image, contratos_view
 from django.urls import path
@@ -24,4 +26,6 @@ urlpatterns = [
 
 ]
 
-
+# Configuración para servir archivos de medios en modo desarrollo
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
