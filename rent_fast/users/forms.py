@@ -152,15 +152,13 @@ class AddressForm(forms.ModelForm):
         model = Direccion
         fields = ['calle', 'colonia', 'codigo_postal', 'ciudad', 'estado' ]
 
-from django import forms
-from .models import Direccion
-
 class UpdateAddressForm(forms.ModelForm):
     class Meta:
         model = Direccion
-        fields = ['calle', 'ciudad', 'estado', 'codigo_postal']
+        fields = ['calle', 'colonia', 'ciudad', 'estado', 'codigo_postal']  # Incluye 'colonia'
         widgets = {
             'calle': forms.TextInput(attrs={'class': 'form-input'}),
+            'colonia': forms.TextInput(attrs={'class': 'form-input'}),  # Widget para 'colonia'
             'ciudad': forms.TextInput(attrs={'class': 'form-input'}),
             'estado': forms.TextInput(attrs={'class': 'form-input'}),
             'codigo_postal': forms.TextInput(attrs={'class': 'form-input'}),

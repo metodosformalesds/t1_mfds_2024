@@ -506,35 +506,45 @@ from django.urls import reverse
 
 @login_required
 def update_address(request):
-    # Determina si el usuario es Arrendador o Arrendatario
+    """
+    Vista para actualizar la dirección del usuario autenticado.
+    Determina si el usuario es Arrendador o Arrendatario y permite actualizar los datos de su dirección.
+    """
     try:
+        # Determinar si el usuario es Arrendador
         perfil = Arrendador.objects.get(usuario=request.user)
         es_arrendador = True
     except Arrendador.DoesNotExist:
+        # Si no es Arrendador, verificar si es Arrendatario
         perfil = Arrendatario.objects.get(usuario=request.user)
         es_arrendador = False
 
+    # Obtener la dirección asociada al perfil
     direccion = perfil.direccion
 
-    # Determina la URL de redirección
+    # Determinar la URL de redirección según el rol del usuario
     redireccion_url = reverse('arrendador_home') if es_arrendador else reverse('arrendatario_home')
 
     if request.method == 'POST':
+        # Procesar el formulario con los datos enviados
         form = UpdateAddressForm(request.POST, instance=direccion)
         if form.is_valid():
+            # Guardar los cambios en la dirección
             form.save()
             messages.success(request, "¡Tu dirección ha sido actualizada correctamente!")
-            # No redirigimos, solo mostramos el mensaje
         else:
             messages.error(request, "Por favor, corrige los errores en el formulario.")
     else:
+        # Mostrar el formulario con los datos existentes
         form = UpdateAddressForm(instance=direccion)
 
+    # Contexto para renderizar la plantilla
     context = {
         'form': form,
-        'redireccion_url': redireccion_url
+        'redireccion_url': redireccion_url,
     }
     return render(request, 'users/update_address.html', context)
+
 
 
 
