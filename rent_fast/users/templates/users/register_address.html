@@ -3,35 +3,34 @@
 {% block content %}
 <div class="bg-slate-50 flex items-center justify-center min-h-screen">
     <div class="bg-white p-8 rounded shadow-md w-full max-w-md">
-        <a href="{% url 'address' %}" class="flex items-center text-black pb-4">
-            <svg class="mr-2" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                <path fill-rule="evenodd" d="M10.854 4.146a.5.5 0 0 1 0 .708L7.707 8l3.147 3.146a.5.5 0 0 1-.708.708l-3.5-3.5a.5.5 0 0 1 0-.708l3.5-3.5a.5.5 0 0 1 .708 0z"/>
-            </svg>
-            Regresar
-        </a>
         <h2 class="text-2xl font-bold mb-6 text-center">Registra tu dirección</h2>
         <form method="post" novalidate>
             {% csrf_token %}
-            {{ wizard.management_form }}
-
+            
+            <!-- Renderiza los campos del formulario -->
             <div class="mb-4">
                 <label for="id_calle" class="block text-gray-700 font-medium">Calle</label>
-                {{ wizard.form.calle|as_crispy_field }}
+                {{ form.calle|as_crispy_field }}
             </div>
 
             <div class="mb-4">
-                <label for="id_ciudad" class="block text-gray-700 font-medium">Ciudad</label>
-                {{ wizard.form.ciudad|as_crispy_field }}
-            </div>
-
-            <div class="mb-4">
-                <label for="id_estado" class="block text-gray-700 font-medium">Estado</label>
-                {{ wizard.form.estado|as_crispy_field }}
+                <label for="id_colonia" class="block text-gray-700 font-medium">Colonia</label>
+                {{ form.colonia|as_crispy_field }}
             </div>
 
             <div class="mb-4">
                 <label for="id_codigo_postal" class="block text-gray-700 font-medium">Código Postal</label>
-                {{ wizard.form.codigo_postal|as_crispy_field }}
+                {{ form.codigo_postal|as_crispy_field }}
+            </div>
+
+            <div class="mb-4">
+                <label for="id_ciudad" class="block text-gray-700 font-medium">Ciudad</label>
+                {{ form.ciudad|as_crispy_field }}
+            </div>
+
+            <div class="mb-4">
+                <label for="id_estado" class="block text-gray-700 font-medium">Estado</label>
+                {{ form.estado|as_crispy_field }}
             </div>
 
             <button type="submit" class="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500">

@@ -8,10 +8,11 @@ class Direccion(models.Model):
     calle = models.CharField(max_length=255)
     ciudad = models.CharField(max_length=100)
     estado = models.CharField(max_length=100)
+    colonia = models.CharField(max_length=255, blank=True, null=True)  # Agrega el campo colonia
     codigo_postal = models.CharField(max_length=10)
 
     def __str__(self):
-        return f"{self.calle}, {self.ciudad}, {self.estado}, {self.codigo_postal}"
+        return f"{self.calle}, {self.codigo_postal}, {self.colonia}, {self.ciudad}, {self.estado} "
 
 class Arrendador(models.Model):
     """

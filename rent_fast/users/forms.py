@@ -150,7 +150,7 @@ class AddressForm(forms.ModelForm):
     """
     class Meta:
         model = Direccion
-        fields = ['calle', 'ciudad', 'estado', 'codigo_postal']
+        fields = ['calle', 'colonia', 'codigo_postal', 'ciudad', 'estado' ]
 
 from django import forms
 from .models import Direccion
