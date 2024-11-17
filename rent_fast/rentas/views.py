@@ -131,26 +131,73 @@ def ver_chat_view(request, chat_id):
         'mensajes': chat.mensajes.all().order_by('enviado'),
         'herramienta': herramienta  # Incluye la herramienta en el contexto
     })
-    
+
+from django.db.models import Q
 @login_required
 def listar_chats_view(request):
-    # Obtener los chats donde el usuario sea arrendador o arrendatario
-    chats = Chat.objects.filter(
-        arrendador__usuario=request.user
-    ) | Chat.objects.filter(
-        arrendatario__usuario=request.user
-    )
-
-    # Determinar la URL de redirección según el tipo de usuario
-    if hasattr(request.user, 'arrendador'):
-        url_redireccion = reverse('arrendador_home')
+    user = request.user
+    if hasattr(user, 'arrendador'):
+        chats_no_ocultos = Chat.objects.filter(arrendador__usuario=user, oculto_arrendador=False).order_by('-creado')
+        chats_ocultos = Chat.objects.filter(arrendador__usuario=user, oculto_arrendador=True).order_by('-creado')
+    elif hasattr(user, 'arrendatario'):
+        chats_no_ocultos = Chat.objects.filter(arrendatario__usuario=user, oculto_arrendatario=False).order_by('-creado')
+        chats_ocultos = Chat.objects.filter(arrendatario__usuario=user, oculto_arrendatario=True).order_by('-creado')
     else:
-        url_redireccion = reverse('arrendatario_home')
+        chats_no_ocultos = chats_ocultos = []
 
     return render(request, 'rentas/listar_chats.html', {
-        'chats': chats,
-        'url_redireccion': url_redireccion
+        'chats_no_ocultos': chats_no_ocultos,
+        'chats_ocultos': chats_ocultos,
     })
+
+from django.shortcuts import redirect
+from django.http import HttpResponseForbidden
+
+@login_required
+def ocultar_chat(request, chat_id):
+    chat = get_object_or_404(Chat, id=chat_id)
+    user = request.user
+
+    if hasattr(user, 'arrendador') and chat.arrendador.usuario == user:
+        chat.oculto_arrendador = True
+    elif hasattr(user, 'arrendatario') and chat.arrendatario.usuario == user:
+        chat.oculto_arrendatario = True
+
+    chat.save()
+    return redirect('listar_chats')
+
+@login_required
+def mostrar_chat(request, chat_id):
+    chat = get_object_or_404(Chat, id=chat_id)
+    user = request.user
+
+    if hasattr(user, 'arrendador') and chat.arrendador.usuario == user:
+        chat.oculto_arrendador = False
+    elif hasattr(user, 'arrendatario') and chat.arrendatario.usuario == user:
+        chat.oculto_arrendatario = False
+
+    chat.save()
+    return redirect('listar_chats')
+
+@login_required
+def restaurar_chat_view(request, chat_id):
+    chat = get_object_or_404(Chat, id=chat_id)
+
+    # Verificar que el usuario sea parte del chat
+    if not (request.user == chat.arrendador.usuario or request.user == chat.arrendatario.usuario):
+        return redirect('listar_chats')
+
+    # Restaurar el chat oculto
+    if chat.oculto:
+        chat.oculto = False
+        chat.save()
+        messages.success(request, "El chat ha sido restaurado.")
+    else:
+        messages.error(request, "Este chat no está oculto.")
+
+    return redirect('listar_chats')
+
+
 
 
 @login_required

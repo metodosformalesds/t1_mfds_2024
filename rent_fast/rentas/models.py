@@ -26,9 +26,10 @@ class Chat(models.Model):
     arrendador = models.ForeignKey('users.Arrendador', on_delete=models.CASCADE)
     arrendatario = models.ForeignKey('users.Arrendatario', on_delete=models.CASCADE)
     herramienta = models.ForeignKey('tools.Tool', on_delete=models.CASCADE)
-    renta = models.ForeignKey(Renta, on_delete=models.CASCADE)  # Add this line to link Chat with Renta
+    renta = models.ForeignKey(Renta, on_delete=models.CASCADE)  
     creado = models.DateTimeField(auto_now_add=True)
-
+    oculto_arrendador = models.BooleanField(default=False)
+    oculto_arrendatario = models.BooleanField(default=False)
 
 class Mensaje(models.Model):
     chat = models.ForeignKey(Chat, related_name='mensajes', on_delete=models.CASCADE)

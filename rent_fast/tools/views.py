@@ -655,18 +655,23 @@ def detalles_herramienta(request, herramienta_id):
     return render(request, 'tools/tool_details.html', context)
 
 # tools/views.py
-# tools/views.py
 from django.shortcuts import get_object_or_404, redirect, render
 from .models import Tool
 from .forms import ToolForm
 
+from django.http import HttpResponseForbidden
+
+@login_required
 def editar_herramienta_view(request, tool_id):
     herramienta = get_object_or_404(Tool, id=tool_id, arrendador=request.user.arrendador)
+    
+    # Verificar si la herramienta está en renta activa
+    if Renta.objects.filter(herramienta=herramienta, estado="Activa").exists():
+        return HttpResponseForbidden("No puedes editar una herramienta que está en renta activa.")
 
     if request.method == 'POST':
         form = ToolForm(request.POST, request.FILES, instance=herramienta)
         if form.is_valid():
-            # Aquí pasamos el arrendador al método save del formulario
             form.save(arrendador=request.user.arrendador)
             return redirect('arrendador_home')
     else:
@@ -674,13 +679,18 @@ def editar_herramienta_view(request, tool_id):
 
     return render(request, 'tools/editar_herramienta.html', {'form': form})
 
+
 @login_required
 def eliminar_herramienta_view(request, tool_id):
     herramienta = get_object_or_404(Tool, id=tool_id, arrendador=request.user.arrendador)
 
+    # Verificar si la herramienta está en renta activa
+    if Renta.objects.filter(herramienta=herramienta, estado="Activa").exists():
+        return HttpResponseForbidden("No puedes eliminar una herramienta que está en renta activa.")
+
     if request.method == 'POST':
         herramienta.delete()
-        return redirect('arrendador_home')  # Redirige al home del arrendador
+        return redirect('arrendador_home')
 
     return render(request, 'tools/eliminar_herramienta.html', {'herramienta': herramienta})
 

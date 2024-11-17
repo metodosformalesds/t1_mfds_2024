@@ -1,6 +1,6 @@
 # rentas/urls.py
 from django.urls import path
-from .views import iniciar_pago_view,preguntas_sin_responder_view, pago_exitoso_view, pago_cancelado_view, ver_chat_view, listar_chats_view, rentas_arrendador_view, rentas_arrendatario_view, finalizar_renta_view
+from .views import iniciar_pago_view,preguntas_sin_responder_view, pago_exitoso_view, pago_cancelado_view, ver_chat_view, listar_chats_view, rentas_arrendador_view, rentas_arrendatario_view, finalizar_renta_view, ocultar_chat, restaurar_chat_view, mostrar_chat
 
 urlpatterns = [
     path("pago/", iniciar_pago_view, name="iniciar_pago"),
@@ -12,5 +12,9 @@ urlpatterns = [
     path('rentas_arrendatario/', rentas_arrendatario_view, name='rentas_arrendatario'),
     path('preguntas-sin-responder/', preguntas_sin_responder_view, name='preguntas_sin_responder'),
     path("finalizar-renta/<int:renta_id>/", finalizar_renta_view, name="finalizar_renta"),
+    path('ocultar_chat/<int:chat_id>/', ocultar_chat, name='ocultar_chat'),
+    path('restaurar_chat/<int:chat_id>/', restaurar_chat_view, name='restaurar_chat'),
+    path('chats/mostrar/<int:chat_id>/', mostrar_chat, name='mostrar_chat'),
+
 
 ]
