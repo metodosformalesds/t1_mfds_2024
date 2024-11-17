@@ -23,10 +23,10 @@
                     <div class="flex-1">
                         <div class="flex justify-between items-center">
                             <p class="text-lg font-semibold text-gray-900">{{ chat.herramienta.nombre }}</p>
-                            <p class="text-xs text-gray-500">{{ chat.creado|date:"d/m/Y" }}</p> <!-- Fecha de creación del chat -->
+                            <p class="text-xs text-gray-500">{{ chat.creado|date:"d/m/Y H:i" }}</p> <!-- Fecha y hora de creación del chat -->
                         </div>
                         <p class="text-sm text-gray-600 mt-1">
-                            <span class="font-medium">Con:</span>
+                            <span class="font-medium">Con: {% if request.user == chat.arrendatario.usuario %}{{ chat.arrendador.nombre }}{% else %}{{ chat.arrendatario.nombre }}{% endif %}</p></span>
                             {% if chat.arrendatario.usuario == request.user %}
                                 {{ chat.arrendador.usuario.get_full_name }}
                             {% else %}
