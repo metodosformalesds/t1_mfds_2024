@@ -32,15 +32,12 @@
 
     <!-- Sección de botones -->
     <div class="flex flex-col space-y-3 px-4 py-5">
-      <button class="flex h-12 py-2 flex-1 cursor-pointer items-center justify-center rounded-xl bg-[#1980e6] px-6 text-base font-bold text-slate-50" onclick="window.location.href='{% url 'seleccionar_fechas' tool.id %}'">
-        Alquilar ahora
+      <button class="flex h-12 py-2 flex-1 cursor-pointer items-center justify-center rounded-xl bg-[#1980e6] px-6 text-base font-bold text-slate-50" onclick="window.location.href='{% url 'contratos' %}'">
+         Agregar al carrito
       </button>
       <button class="bg-[#1980e6] text-white px-6 py-2 rounded-md font-bold" onclick="window.location.href='{% url 'uber_auth' %}'">
         Cotizar precio de envío
-      </button>
-      <button class="flex items-center justify-center h-12 w-full rounded-lg bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600 text-white font-bold text-base hover:from-blue-500 hover:via-blue-600 hover:to-blue-700 transition duration-300 shadow-md transform hover:scale-105" onclick="window.location.href='{% url 'contratos' %}'">
-        Leer Contratos
-      </button>      
+      </button>   
     </div>
 
     <!-- Información del vendedor -->
