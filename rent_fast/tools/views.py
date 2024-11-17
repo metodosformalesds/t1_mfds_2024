@@ -146,17 +146,24 @@ def home_view(request):
 def arrendador_home(request):
     arrendador = Arrendador.objects.get(usuario=request.user)
     
-    # Separar herramientas por estado
+    # Herramientas por estado
     tools_pendientes = Tool.objects.filter(arrendador=arrendador, estado='Pendiente').order_by('-id')
-    tools_aprobadas = Tool.objects.filter(arrendador=arrendador, estado='Disponible').order_by('-id')
     tools_rechazadas = Tool.objects.filter(arrendador=arrendador, estado='Rechazado').order_by('-id')
-    
+    tools_disponibles = Tool.objects.filter(arrendador=arrendador, estado='Disponible').exclude(
+        id__in=Renta.objects.filter(estado='Activa').values_list('herramienta_id', flat=True)
+    ).order_by('-id')
+
+    # Herramientas en renta
+    herramientas_en_renta = Renta.objects.filter(
+        herramienta__arrendador=arrendador, estado='Activa'
+    ).select_related('herramienta')
+
     return render(request, "arrendadores/arrendador_home.html", {
         'tools_pendientes': tools_pendientes,
-        'tools_aprobadas': tools_aprobadas,
+        'tools_aprobadas': tools_disponibles,
         'tools_rechazadas': tools_rechazadas,
+        'herramientas_en_renta': herramientas_en_renta,
     })
-
 
     
 

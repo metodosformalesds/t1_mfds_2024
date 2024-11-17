@@ -39,6 +39,26 @@
                     {% endfor %}
                 </div>
 
+                <!-- Herramientas En Renta -->
+                <h2 class="text-xl font-semibold text-[#0e141b] mt-8 mb-4">Herramientas en Renta</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-4">
+                    {% for renta in herramientas_en_renta %}
+                    <div class="flex flex-col items-center bg-white rounded-xl shadow-md p-4">
+                        <img src="{% if renta.herramienta.imagenes %}{{ renta.herramienta.imagenes.url }}{% else %}https://cdn.usegalileo.ai/sdxl10/84ed65ba-6d8e-4158-b97a-6d36dabc415d.png{% endif %}" alt="{{ renta.herramienta.nombre }}" class="w-48 h-32 rounded-xl object-cover mb-4">
+
+                        <div class="flex flex-col items-center gap-2">
+                            <p class="text-sm font-normal text-green-500">En Renta</p>
+                            <p class="text-base font-bold text-[#0e141b]">{{ renta.herramienta.nombre }}</p>
+                            <p class="text-sm font-normal text-[#4e7397]">Arrendatario: {{ renta.arrendatario.nombre }} {{ renta.arrendatario.apellidos }}</p>
+                            <p class="text-sm font-normal text-[#4e7397]">Desde: {{ renta.fecha_inicio }}</p>
+                            <p class="text-sm font-normal text-[#4e7397]">Hasta: {{ renta.fecha_fin }}</p>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <p class="text-sm text-gray-500">No hay herramientas en renta.</p>
+                    {% endfor %}
+                </div>
+
                 <!-- Herramientas Aprobadas -->
                 <h2 class="text-xl font-semibold text-[#0e141b] mt-8 mb-4">Herramientas Disponibles</h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-4">
@@ -63,7 +83,7 @@
                         </div>
                     </div>
                     {% empty %}
-                    <p class="text-sm text-gray-500">No hay herramientas aprobadas.</p>
+                    <p class="text-sm text-gray-500">No hay herramientas disponibles.</p>
                     {% endfor %}
                 </div>
 
