@@ -86,3 +86,7 @@ usuario:
 admin
 password:
 123456789
+
+(Paypal):
+sb-nasg433710735@personal.example.com
+fFZN2gP*
