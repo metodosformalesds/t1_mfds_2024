@@ -18,13 +18,7 @@
             <a href="{% url 'ver_chat' chat.id %}" class="block p-4 border rounded-lg hover:bg-blue-50 transition duration-150 ease-in-out">
                 <div class="flex items-center space-x-4">
                     <!-- Mostrar imagen de la herramienta o imagen predeterminada -->
-                    <div class="w-16 h-16 flex-shrink-0">
-                        {% if chat.herramienta.imagen %}
-                            <img src="{{ chat.herramienta.imagen.url }}" alt="Imagen de la herramienta" class="w-full h-full object-cover rounded-lg">
-                        {% else %}
-                            <img src="https://th.bing.com/th/id/R.c686896019147f6d57529fcfb6d75a28?rik=x186ThmrCoWqCg&riu=http%3a%2f%2ffiles.123inventatuweb.com%2f51%2f04%2f51045ced-acc5-4921-908a-f734f25c548f.jpg&ehk=sh3bkI2UbFohecSeceNYuu%2b4PRQTpJvfgMz4yMjUVK4%3d&risl=&pid=ImgRaw&r=0" alt="Imagen de la herramienta predeterminada" class="w-full h-full object-cover rounded-lg">
-                        {% endif %}
-                    </div>
+                    <div class="w-16 h-16 flex-shrink-0 rounded-lg bg-cover bg-center bg-no-repeat" style='background-image: url("{% if chat.herramienta.imagenes %}{{ chat.herramienta.imagenes.url }}{% else %}https://cdn.usegalileo.ai/sdxl10/84ed65ba-6d8e-4158-b97a-6d36dabc415d.png{% endif %}");'></div>
                     <!-- Información del chat -->
                     <div class="flex-1">
                         <div class="flex justify-between items-center">
