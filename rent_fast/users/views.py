@@ -154,6 +154,7 @@ class RegisterWizard(SessionWizardView):
             calle=address_data['calle'],
             ciudad=address_data['ciudad'],
             estado=address_data['estado'],
+            colonia=address_data.get('colonia', ''),
             codigo_postal=address_data['codigo_postal'],
         )
         print("Dirección creada:", direccion)

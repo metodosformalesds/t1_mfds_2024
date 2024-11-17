@@ -14,6 +14,30 @@
         <!-- Título del login -->
         <h1 class="text-4xl font-bold text-center text-[#121417] mb-6">Bienvenidos a Rent Fast</h1>
 
+        <!-- Mensajes flash -->
+        {% if messages %}
+        <div class="mb-4">
+            {% for message in messages %}
+            <div class="p-4 rounded-md {% if message.tags == 'success' %}bg-green-100 text-green-800{% elif message.tags == 'error' %}bg-red-100 text-red-800{% else %}bg-gray-100 text-gray-800{% endif %}">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- Errores de formulario -->
+        {% if form.errors %}
+        <div class="mb-4">
+            {% for field, errors in form.errors.items %}
+            <div class="p-4 rounded-md bg-red-100 text-red-800">
+                {% for error in errors %}
+                <p>{{ error }}</p>
+                {% endfor %}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
         <!-- Formulario de inicio de sesión -->
         <form method="post" class="space-y-6">
             {% csrf_token %}
