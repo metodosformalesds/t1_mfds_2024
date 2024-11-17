@@ -34,8 +34,10 @@ class Chat(models.Model):
 class Mensaje(models.Model):
     chat = models.ForeignKey(Chat, related_name='mensajes', on_delete=models.CASCADE)
     remitente = models.ForeignKey(User, on_delete=models.CASCADE)
-    contenido = models.TextField()
+    contenido = models.TextField(blank=True, null=True) 
     enviado = models.DateTimeField(auto_now_add=True)
+    archivo = models.FileField(upload_to='chat_archivos/', blank=True, null=True)  # Campo para archivos o imágenes
+
 
 class Pregunta(models.Model):
     herramienta = models.ForeignKey('tools.Tool', on_delete=models.CASCADE, related_name="preguntas")

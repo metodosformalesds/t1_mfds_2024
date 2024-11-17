@@ -103,34 +103,36 @@ def pago_cancelado_view(request):
     messages.info(request, "El pago fue cancelado.")
     return redirect("carrito")
 
+from django.shortcuts import redirect
+
 @login_required
 def ver_chat_view(request, chat_id):
     chat = get_object_or_404(Chat, id=chat_id)
 
-    # Verificar si el usuario es parte del chat
     if not (request.user == chat.arrendador.usuario or request.user == chat.arrendatario.usuario):
-        return redirect('home')  # Redirige si el usuario no es parte del chat
+        return redirect('home')
 
     if request.method == 'POST':
-        form = MensajeForm(request.POST)
-        if form.is_valid():
-            mensaje = form.save(commit=False)
-            mensaje.chat = chat
-            mensaje.remitente = request.user
-            mensaje.save()
-            return redirect('ver_chat', chat_id=chat.id)
-    else:
-        form = MensajeForm()
+        contenido = request.POST.get('contenido', '').strip()
+        archivo = request.FILES.get('archivo', None)
 
-    # Agrega la herramienta al contexto
-    herramienta = chat.herramienta  # Obtener la herramienta asociada al chat
+        if contenido or archivo:  # Asegurarse de que al menos uno esté presente
+            mensaje = Mensaje.objects.create(
+                chat=chat,
+                remitente=request.user,
+                contenido=contenido if contenido else None,
+                archivo=archivo if archivo else None
+            )
+            return redirect('ver_chat', chat_id=chat.id)
 
     return render(request, 'ver_chat.html', {
         'chat': chat,
-        'form': form,
         'mensajes': chat.mensajes.all().order_by('enviado'),
-        'herramienta': herramienta  # Incluye la herramienta en el contexto
+        'herramienta': chat.herramienta,
     })
+
+
+
 
 from django.db.models import Q
 @login_required
