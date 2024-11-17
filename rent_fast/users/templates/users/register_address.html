@@ -1,42 +1,117 @@
+register_address.html
 {% extends "base.html" %}
 {% load tailwind_filters %}
 {% block content %}
 <div class="bg-slate-50 flex items-center justify-center min-h-screen">
     <div class="bg-white p-8 rounded shadow-md w-full max-w-md">
-        <h2 class="text-2xl font-bold mb-6 text-center">Registra tu dirección</h2>
+        <h2 class="text-2xl font-bold mb-6 text-center">Actualizar Dirección</h2>
         <form method="post" novalidate>
             {% csrf_token %}
             {{ wizard.management_form }}
 
+            <!-- Calle -->
             <div class="mb-4">
-                <label for="id_calle" class="block text-gray-700 font-medium">Calle</label>
-                {{ wizard.form.calle|as_crispy_field }}
+                <label for="id_calle" class="block text-gray-700 font-medium">Calle*</label>
+                <input 
+                    type="text" 
+                    id="id_calle" 
+                    name="{{ wizard.form.calle.html_name }}" 
+                    value="{{ wizard.form.calle.value|default:'' }}" 
+                    placeholder="Ejemplo: Av. Principal 123"
+                    class="border rounded-md p-2 w-full focus:ring-2 focus:ring-blue-500 focus:outline-none">
             </div>
 
+            <!-- Código Postal -->
             <div class="mb-4">
-                <label for="id_codigo_postal" class="block text-gray-700 font-medium">Código Postal</label>
-                {{ wizard.form.codigo_postal|as_crispy_field }}
+                <label for="id_codigo_postal" class="block text-gray-700 font-medium">Código Postal*</label>
+                <div class="flex gap-2 items-center">
+                    <input 
+                        type="text" 
+                        id="id_codigo_postal" 
+                        name="{{ wizard.form.codigo_postal.html_name }}" 
+                        value="{{ wizard.form.codigo_postal.value|default:'' }}" 
+                        placeholder="Ejemplo: 32575"
+                        class="border rounded-md p-2 w-full focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                    <button 
+                        type="button" 
+                        class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500" 
+                        onclick="buscarCodigoPostalYCalle()">
+                        Buscar
+                    </button>
+                </div>
             </div>
 
-            <div class="mb-4">
-                <label for="id_ciudad" class="block text-gray-700 font-medium">Ciudad</label>
-                {{ wizard.form.ciudad|as_crispy_field }}
-            </div>
-
-            <div class="mb-4">
-                <label for="id_estado" class="block text-gray-700 font-medium">Estado</label>
-                {{ wizard.form.estado|as_crispy_field }}
-            </div>
-
+            <!-- Colonia -->
             <div class="mb-4">
                 <label for="id_colonia" class="block text-gray-700 font-medium">Colonia</label>
-                {{ wizard.form.colonia|as_crispy_field }}
+                <input 
+                    type="text" 
+                    id="id_colonia" 
+                    name="{{ wizard.form.colonia.html_name }}" 
+                    value="{{ wizard.form.colonia.value|default:'' }}" 
+                    placeholder="Ejemplo: Centro"
+                    class="border rounded-md p-2 w-full focus:ring-2 focus:ring-blue-500 focus:outline-none">
             </div>
 
+            <!-- Ciudad -->
+            <div class="mb-4">
+                <label for="id_ciudad" class="block text-gray-700 font-medium">Ciudad*</label>
+                <input 
+                    type="text" 
+                    id="id_ciudad" 
+                    name="{{ wizard.form.ciudad.html_name }}" 
+                    value="{{ wizard.form.ciudad.value|default:'' }}" 
+                    placeholder="Ejemplo: Ciudad Juárez"
+                    class="border rounded-md p-2 w-full focus:ring-2 focus:ring-blue-500 focus:outline-none" 
+                    readonly>
+            </div>
+
+            <!-- Estado -->
+            <div class="mb-4">
+                <label for="id_estado" class="block text-gray-700 font-medium">Estado*</label>
+                <input 
+                    type="text" 
+                    id="id_estado" 
+                    name="{{ wizard.form.estado.html_name }}" 
+                    value="{{ wizard.form.estado.value|default:'' }}" 
+                    placeholder="Ejemplo: Chihuahua"
+                    class="border rounded-md p-2 w-full focus:ring-2 focus:ring-blue-500 focus:outline-none" 
+                    readonly>
+            </div>
+
+            <!-- Botón Guardar -->
             <button type="submit" class="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                Guardar Dirección
+                Guardar Cambios
             </button>
         </form>
     </div>
 </div>
+
+<script>
+    function buscarCodigoPostalYCalle() {
+        const codigoPostal = document.getElementById("id_codigo_postal").value;
+        const calle = document.getElementById("id_calle").value;
+
+        if (!codigoPostal || !calle) {
+            alert("Por favor, ingresa el código postal y la calle.");
+            return;
+        }
+
+        fetch(`/usuarios/buscar-codigo-postal-calle/?codigo_postal=${codigoPostal}&calle=${calle}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    alert(data.error);
+                } else {
+                    document.getElementById("id_ciudad").value = data.ciudad || "";
+                    document.getElementById("id_estado").value = data.estado || "";
+                }
+            })
+            .catch(error => {
+                console.error("Error al realizar la solicitud:", error);
+                alert("Ocurrió un error al buscar los datos. Intenta nuevamente.");
+            });
+    }
+</script>
+
 {% endblock %}

@@ -252,3 +252,4 @@ EMAIL_HOST_PASSWORD = 'kwrzmaebrnxfllvf'  # Cambia a tu contraseña de Gmail o, 
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 LANGUAGE_CODE = 'es' 
+GOOGLE_MAPS_API_KEY = "AIzaSyAWGHYEvO4RWJf0NbdEDP_x-o_zk2T-nUA"

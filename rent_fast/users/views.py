@@ -629,3 +629,36 @@ def contratos_view(request):
     return render(request, 'users/contratos.html', {'tool': tool})
 
 
+from django.http import JsonResponse
+from django.conf import settings
+import requests
+
+def buscar_codigo_postal_calle(request):
+    codigo_postal = request.GET.get("codigo_postal")
+    calle = request.GET.get("calle")
+
+    if not codigo_postal or not calle:
+        return JsonResponse({"error": "El código postal y la calle son requeridos."}, status=400)
+
+    resultado = {"ciudad": "", "estado": ""}
+
+    # Construcción de la URL para la API de Geocoding
+    api_key = settings.GOOGLE_MAPS_API_KEY
+    maps_url = f"https://maps.googleapis.com/maps/api/geocode/json?address={calle},{codigo_postal}&key={api_key}"
+
+    try:
+        response = requests.get(maps_url)
+        data = response.json()
+
+        if data.get("status") == "OK":
+            address_components = data["results"][0]["address_components"]
+
+            # Extraer ciudad y estado
+            resultado["ciudad"] = next((comp["long_name"] for comp in address_components if "locality" in comp["types"]), "")
+            resultado["estado"] = next((comp["long_name"] for comp in address_components if "administrative_area_level_1" in comp["types"]), "")
+        else:
+            return JsonResponse({"error": "No se encontraron resultados para la dirección especificada."}, status=404)
+    except Exception as e:
+        return JsonResponse({"error": f"Error al conectar con Google Maps: {str(e)}"}, status=500)
+
+    return JsonResponse(resultado)
