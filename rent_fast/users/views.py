@@ -663,3 +663,76 @@ def buscar_codigo_postal_calle(request):
         return JsonResponse({"error": f"Error al conectar con Google Maps: {str(e)}"}, status=500)
 
     return JsonResponse(resultado)
+
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from .models import Arrendador, Arrendatario
+
+@login_required
+def gestionar_usuarios(request):
+    """
+    Vista para listar y gestionar los usuarios registrados (Arrendadores y Arrendatarios).
+    """
+    arrendadores = Arrendador.objects.all()
+    arrendatarios = Arrendatario.objects.all()
+
+    context = {
+        'arrendadores': arrendadores,
+        'arrendatarios': arrendatarios,
+    }
+    return render(request, 'users/gestionar_usuarios.html', context)
+
+@login_required
+def eliminar_usuario(request, usuario_id, tipo_usuario):
+    """
+    Vista para eliminar un usuario (Arrendador o Arrendatario).
+    """
+    if tipo_usuario == 'arrendador':
+        usuario = get_object_or_404(Arrendador, id=usuario_id)
+    elif tipo_usuario == 'arrendatario':
+        usuario = get_object_or_404(Arrendatario, id=usuario_id)
+    else:
+        messages.error(request, 'Tipo de usuario no válido.')
+        return redirect('gestionar_usuarios')
+
+    # Almacenar el nombre del usuario antes de eliminarlo
+    nombre_usuario = f'{usuario.nombre} {usuario.apellidos}'
+
+    usuario.usuario.delete()  # Eliminar al usuario relacionado
+    usuario.delete()  # Eliminar el perfil
+
+    # Agregar un mensaje de éxito
+    messages.success(request, f'El usuario {nombre_usuario} ha sido eliminado correctamente.')
+
+    # Redirigir a la página de gestión de usuarios
+    return redirect('gestionar_usuarios')
+
+
+# views.py
+from django.contrib import messages
+from .forms import PersonalInfoForm, UpdateAddressForm
+from .models import Arrendador, Arrendatario
+from django.shortcuts import get_object_or_404, redirect, render
+from .forms import EditarArrendadorForm, EditarArrendatarioForm
+from .models import Arrendador, Arrendatario
+@login_required
+def editar_usuario(request, usuario_id, tipo_usuario):
+    if tipo_usuario == "arrendador":
+        usuario = get_object_or_404(Arrendador, id=usuario_id)
+        form_class = EditarArrendadorForm
+    elif tipo_usuario == "arrendatario":
+        usuario = get_object_or_404(Arrendatario, id=usuario_id)
+        form_class = EditarArrendatarioForm
+    else:
+        return redirect('gestionar_usuarios')  # Si el tipo no coincide, regresa a la gestión de usuarios.
+
+    if request.method == "POST":
+        form = form_class(request.POST, request.FILES, instance=usuario)
+        if form.is_valid():
+            form.save()  # Guarda los cambios en la base de datos.
+            return redirect('gestionar_usuarios')  # Redirige después de guardar.
+    else:
+        form = form_class(instance=usuario)  # Carga los datos actuales del usuario.
+
+    return render(request, 'users/editar_usuario.html', {'form': form, 'tipo_usuario': tipo_usuario})

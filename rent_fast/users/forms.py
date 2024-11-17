@@ -163,3 +163,22 @@ class UpdateAddressForm(forms.ModelForm):
             'estado': forms.TextInput(attrs={'class': 'form-input'}),
             'codigo_postal': forms.TextInput(attrs={'class': 'form-input'}),
         }
+
+from django import forms
+from .models import Arrendador, Arrendatario
+
+class EditarArrendadorForm(forms.ModelForm):
+    """
+    Formulario para editar la información de un Arrendador.
+    """
+    class Meta:
+        model = Arrendador
+        fields = ['nombre', 'apellidos', 'telefono', 'correo', 'profile_picture']
+
+class EditarArrendatarioForm(forms.ModelForm):
+    """
+    Formulario para editar la información de un Arrendatario.
+    """
+    class Meta:
+        model = Arrendatario
+        fields = ['nombre', 'apellidos', 'telefono', 'correo', 'profile_picture']
