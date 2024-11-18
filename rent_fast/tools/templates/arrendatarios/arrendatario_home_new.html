@@ -10,7 +10,7 @@
                         <div class="@[480px]:p-4">
                             <div class="@[480px]:gap-8 @[480px]:rounded-xl @[480px]:px-10 flex min-h-[480px] flex-col items-start justify-end gap-6 bg-cover bg-center bg-no-repeat px-4 pb-10" style='background-image: linear-gradient(rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.4) 100%), url("https://cdn.usegalileo.ai/sdxl10/f03a180c-8965-40b1-a047-a99b876b07fc.png");'>
                                 <div class="flex flex-col gap-2 text-left">
-                                    <h1 class="@[480px]:text-5xl @[480px]:font-black @[480px]:leading-tight @[480px]:tracking-[-0.033em] text-4xl font-black leading-tight tracking-[-0.033em] text-white">Renta Herramientas Cercas de ti</h1>
+                                    <h1 class="@[480px]:text-5xl @[480px]:font-black @[480px]:leading-tight @[480px]:tracking-[-0.033em] text-4xl font-black leading-tight tracking-[-0.033em] text-white">Renta Herramientas</h1>
                                     <h2 class="@[480px]:text-base @[480px]:font-normal @[480px]:leading-normal text-sm font-normal leading-normal text-white">Encuentra la herramienta perfecta para tu futuro proyecto</h2>
                                 </div>
                                 
@@ -37,7 +37,7 @@
                         </div>
                     </div>
 <!-- Secci n de herramientas sin categor a (Cerca de ti) -->
-<h2 class="px-4 pb-3 pt-5 text-[22px] font-bold leading-tight tracking-[-0.015em] text-[#111418]">Cerca de ti</h2>
+<h2 class="px-4 pb-3 pt-5 text-[22px] font-bold leading-tight tracking-[-0.015em] text-[#111418]">Todas las herramientas</h2>
 <div class="grid grid-cols-[repeat(auto-fit,minmax(158px,1fr))] gap-3 p-4">
     {% for tool in herramientas_sin_categoria|slice:":5" %}  <!-- Muestra m ximo 20 herramientas -->
     <a href="{% url 'tool_detail' tool.id %}">

@@ -5,9 +5,9 @@
   <div class="layout-content-container flex max-w-[960px] flex-1 flex-col">
     <!-- Breadcrumbs -->
     <div class="flex flex-wrap gap-2 p-4">
-      <a class="text-base font-medium leading-normal text-[#4e7397]" href="#" onclick="window.location.href='/inicio'">Inicio</a>
+      <a class="text-base font-medium leading-normal text-[#4e7397]" href="{% url 'home' %}">Inicio</a>
       <span class="text-base font-medium leading-normal text-[#4e7397]">/</span>
-      <span class="text-base font-medium leading-normal text-[#0e141b]">Herramientas eléctricas</span>
+      <span class="text-base font-medium leading-normal text-[#0e141b]">{{ tool.nombre }}</span>
     </div>
 
     <!-- Título de la herramienta -->
@@ -33,25 +33,22 @@
     <!-- Sección de botones -->
     <div class="flex flex-col space-y-3 px-4 py-5">
       <button class="flex h-12 py-2 flex-1 cursor-pointer items-center justify-center rounded-xl bg-[#1980e6] px-6 text-base font-bold text-slate-50" onclick="window.location.href='{% url 'seleccionar_fechas' tool.id %}'">
-        Alquilar ahora
+         Agregar al carrito
       </button>
       <button class="bg-[#1980e6] text-white px-6 py-2 rounded-md font-bold" onclick="window.location.href='{% url 'uber_auth' %}'">
         Cotizar precio de envío
-      </button>
-      <button class="flex items-center justify-center h-12 w-full rounded-lg bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600 text-white font-bold text-base hover:from-blue-500 hover:via-blue-600 hover:to-blue-700 transition duration-300 shadow-md transform hover:scale-105" onclick="window.location.href='{% url 'contratos' %}'">
-        Leer Contratos
-      </button>      
+      </button>   
     </div>
 
     <!-- Información del vendedor -->
     <div class="flex items-center px-4 py-4">
-      <img class="w-12 h-12 rounded-full" src="https://randomuser.me/api/portraits/men/31.jpg" alt="Foto del vendedor"/>
+      <img class="w-12 h-12 rounded-full" src="{% if tool.arrendador.profile_picture %}{{ tool.arrendador.profile_picture.url }}{% else %}https://via.placeholder.com/150{% endif %}" alt="Foto del vendedor"/>
       <p class="ml-4 text-[#0e141b] font-bold">Herramienta de: {{ tool.arrendador.nombre }} {{ tool.arrendador.apellidos }}</p>
     </div>
 
     <!-- Ubicación del vendedor -->
     <h2 class="px-4 pb-3 pt-5 text-[22px] font-bold text-[#0e141b]">Ubicación</h2>
-    <p class="px-4 pb-3 pt-1 text-base font-normal text-[#0e141b]">{{ tool.arrendador.direccion }}</p>
+    <p class="px-4 pb-3 pt-1 text-base font-normal text-[#0e141b]">{{ tool.arrendador.direccion.colonia }}</p>
 
     <!-- Descripción de la herramienta -->
     <h2 class="px-4 pb-3 pt-5 text-[22px] font-bold text-[#0e141b]">Descripción</h2>
@@ -112,17 +109,20 @@
       {% endfor %}
     </div>
 
-    <!-- Formulario para hacer una pregunta -->
-    {% if user.is_authenticated and user.arrendatario %}
+    {% if user.is_authenticated %}
+    {% if user.arrendatario %}
       <h2 class="px-4 pb-3 pt-5 text-[22px] font-bold text-[#0e141b]">Haz una Pregunta</h2>
       <form method="post" action="{% url 'tool_detail' tool.id %}" class="p-4 border rounded-lg bg-gray-100">
         {% csrf_token %}
-        {{ form.as_p }}
+        {{ pregunta_form.as_p }}
         <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Enviar Pregunta</button>
       </form>
     {% else %}
       <p class="text-red-500">Debes ser un arrendatario registrado para hacer preguntas.</p>
     {% endif %}
+  {% else %}
+    <p class="text-red-500">Debes iniciar sesión para hacer preguntas.</p>
+  {% endif %}
   </div>
 </div>
 {% endblock %}

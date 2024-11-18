@@ -10,12 +10,24 @@ class UserForm(forms.ModelForm):
     Incluye campos para el nombre de usuario, correo electrónico y contraseñas.
     Valida que ambas contraseñas coincidan y que cumplan con los requisitos de seguridad.
     """
+    email = forms.EmailField(
+        label="Correo Electrónico",
+        required=True,
+        help_text="Introduce un correo electrónico válido.",
+        error_messages={
+            'required': 'El correo electrónico es obligatorio.',
+            'invalid': 'Por favor, introduce un correo electrónico válido.',
+        }
+    )
     password1 = forms.CharField(
-        widget=forms.PasswordInput,
+        widget=forms.PasswordInput(attrs={'id': 'id_password1', 'class': 'form-input'}),
         label="Contraseña",
         help_text="La contraseña debe tener al menos 8 caracteres, incluyendo una mayúscula, una minúscula, un número y un carácter especial."
     )
-    password2 = forms.CharField(widget=forms.PasswordInput, label="Confirmar Contraseña")
+    password2 = forms.CharField(
+        widget=forms.PasswordInput(attrs={'id': 'id_password2', 'class': 'form-input'}),
+        label="Confirmar Contraseña"
+    )
 
     class Meta:
         model = User
@@ -51,6 +63,7 @@ class UserForm(forms.ModelForm):
                 self.add_error('password1', "La contraseña debe contener al menos un carácter especial.")
 
         return cleaned_data
+
 
 # Paso 2: Formulario de información personal (con selección de rol y foto de perfil)
 class PersonalInfoForm(forms.Form):
@@ -137,18 +150,35 @@ class AddressForm(forms.ModelForm):
     """
     class Meta:
         model = Direccion
-        fields = ['calle', 'ciudad', 'estado', 'codigo_postal']
-
-from django import forms
-from .models import Direccion
+        fields = ['calle', 'colonia', 'codigo_postal', 'ciudad', 'estado' ]
 
 class UpdateAddressForm(forms.ModelForm):
     class Meta:
         model = Direccion
-        fields = ['calle', 'ciudad', 'estado', 'codigo_postal']
+        fields = ['calle', 'colonia', 'ciudad', 'estado', 'codigo_postal']  # Incluye 'colonia'
         widgets = {
             'calle': forms.TextInput(attrs={'class': 'form-input'}),
+            'colonia': forms.TextInput(attrs={'class': 'form-input'}),  # Widget para 'colonia'
             'ciudad': forms.TextInput(attrs={'class': 'form-input'}),
             'estado': forms.TextInput(attrs={'class': 'form-input'}),
             'codigo_postal': forms.TextInput(attrs={'class': 'form-input'}),
         }
+
+from django import forms
+from .models import Arrendador, Arrendatario
+
+class EditarArrendadorForm(forms.ModelForm):
+    """
+    Formulario para editar la información de un Arrendador.
+    """
+    class Meta:
+        model = Arrendador
+        fields = ['nombre', 'apellidos', 'telefono', 'correo', 'profile_picture']
+
+class EditarArrendatarioForm(forms.ModelForm):
+    """
+    Formulario para editar la información de un Arrendatario.
+    """
+    class Meta:
+        model = Arrendatario
+        fields = ['nombre', 'apellidos', 'telefono', 'correo', 'profile_picture']

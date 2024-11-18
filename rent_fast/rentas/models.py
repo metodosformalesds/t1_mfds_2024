@@ -26,15 +26,18 @@ class Chat(models.Model):
     arrendador = models.ForeignKey('users.Arrendador', on_delete=models.CASCADE)
     arrendatario = models.ForeignKey('users.Arrendatario', on_delete=models.CASCADE)
     herramienta = models.ForeignKey('tools.Tool', on_delete=models.CASCADE)
-    renta = models.ForeignKey(Renta, on_delete=models.CASCADE)  # Add this line to link Chat with Renta
+    renta = models.ForeignKey(Renta, on_delete=models.CASCADE)  
     creado = models.DateTimeField(auto_now_add=True)
-
+    oculto_arrendador = models.BooleanField(default=False)
+    oculto_arrendatario = models.BooleanField(default=False)
 
 class Mensaje(models.Model):
     chat = models.ForeignKey(Chat, related_name='mensajes', on_delete=models.CASCADE)
     remitente = models.ForeignKey(User, on_delete=models.CASCADE)
-    contenido = models.TextField()
+    contenido = models.TextField(blank=True, null=True) 
     enviado = models.DateTimeField(auto_now_add=True)
+    archivo = models.FileField(upload_to='chat_archivos/', blank=True, null=True)  # Campo para archivos o imágenes
+
 
 class Pregunta(models.Model):
     herramienta = models.ForeignKey('tools.Tool', on_delete=models.CASCADE, related_name="preguntas")

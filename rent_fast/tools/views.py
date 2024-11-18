@@ -146,17 +146,24 @@ def home_view(request):
 def arrendador_home(request):
     arrendador = Arrendador.objects.get(usuario=request.user)
     
-    # Separar herramientas por estado
+    # Herramientas por estado
     tools_pendientes = Tool.objects.filter(arrendador=arrendador, estado='Pendiente').order_by('-id')
-    tools_aprobadas = Tool.objects.filter(arrendador=arrendador, estado='Disponible').order_by('-id')
     tools_rechazadas = Tool.objects.filter(arrendador=arrendador, estado='Rechazado').order_by('-id')
-    
+    tools_disponibles = Tool.objects.filter(arrendador=arrendador, estado='Disponible').exclude(
+        id__in=Renta.objects.filter(estado='Activa').values_list('herramienta_id', flat=True)
+    ).order_by('-id')
+
+    # Herramientas en renta
+    herramientas_en_renta = Renta.objects.filter(
+        herramienta__arrendador=arrendador, estado='Activa'
+    ).select_related('herramienta')
+
     return render(request, "arrendadores/arrendador_home.html", {
         'tools_pendientes': tools_pendientes,
-        'tools_aprobadas': tools_aprobadas,
+        'tools_aprobadas': tools_disponibles,
         'tools_rechazadas': tools_rechazadas,
+        'herramientas_en_renta': herramientas_en_renta,
     })
-
 
     
 
@@ -280,17 +287,23 @@ class ToolDetailView(DetailView):
 
         return self.get(request, *args, **kwargs)
 
+from django.contrib import messages
+
 @login_required
 def add_tool_view(request):
-    arrendador = Arrendador.objects.get(usuario=request.user)  # Obtenemos el arrendador
+    arrendador = Arrendador.objects.get(usuario=request.user)  # Obtener el arrendador
     if request.method == 'POST':
         form = ToolForm(request.POST, request.FILES)
         if form.is_valid():
             form.save(arrendador=arrendador)  # Guardar la herramienta con estado "Pendiente"
-            return redirect('arrendador_home')  # Redirige a la p gina del arrendador despu s de crear la herramienta
+            messages.success(request, "¡Tu publicación fue enviada con éxito y está en revisión!")
+            return redirect('arrendador_home')  # Redirige después de crear la herramienta
+        else:
+            messages.error(request, "Hubo un problema con tu publicación. Por favor revisa los campos.")
     else:
         form = ToolForm()
     return render(request, 'arrendadores/add_tool.html', {'form': form})
+
 
     
 @login_required
@@ -648,18 +661,23 @@ def detalles_herramienta(request, herramienta_id):
     return render(request, 'tools/tool_details.html', context)
 
 # tools/views.py
-# tools/views.py
 from django.shortcuts import get_object_or_404, redirect, render
 from .models import Tool
 from .forms import ToolForm
 
+from django.http import HttpResponseForbidden
+
+@login_required
 def editar_herramienta_view(request, tool_id):
     herramienta = get_object_or_404(Tool, id=tool_id, arrendador=request.user.arrendador)
+    
+    # Verificar si la herramienta está en renta activa
+    if Renta.objects.filter(herramienta=herramienta, estado="Activa").exists():
+        return HttpResponseForbidden("No puedes editar una herramienta que está en renta activa.")
 
     if request.method == 'POST':
         form = ToolForm(request.POST, request.FILES, instance=herramienta)
         if form.is_valid():
-            # Aquí pasamos el arrendador al método save del formulario
             form.save(arrendador=request.user.arrendador)
             return redirect('arrendador_home')
     else:
@@ -667,13 +685,18 @@ def editar_herramienta_view(request, tool_id):
 
     return render(request, 'tools/editar_herramienta.html', {'form': form})
 
+
 @login_required
 def eliminar_herramienta_view(request, tool_id):
     herramienta = get_object_or_404(Tool, id=tool_id, arrendador=request.user.arrendador)
 
+    # Verificar si la herramienta está en renta activa
+    if Renta.objects.filter(herramienta=herramienta, estado="Activa").exists():
+        return HttpResponseForbidden("No puedes eliminar una herramienta que está en renta activa.")
+
     if request.method == 'POST':
         herramienta.delete()
-        return redirect('arrendador_home')  # Redirige al home del arrendador
+        return redirect('arrendador_home')
 
     return render(request, 'tools/eliminar_herramienta.html', {'herramienta': herramienta})
 

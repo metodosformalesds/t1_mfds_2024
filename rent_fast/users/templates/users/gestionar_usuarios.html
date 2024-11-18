@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="bg-slate-50 min-h-screen px-6 py-10">
+    <div class="container mx-auto max-w-6xl">
+        <!-- Mensajes de éxito o error -->
+        {% if messages %}
+        <div class="mb-6">
+            {% for message in messages %}
+            <div class="p-4 rounded-lg
+                {% if message.tags == 'success' %} bg-green-100 text-green-700 border border-green-400 {% elif message.tags == 'error' %} bg-red-100 text-red-700 border border-red-400 {% endif %}">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        <a href="{% url 'admin_home' %}" class="flex items-center text-black pb-4">
+            <svg class="mr-2" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M10.854 4.146a.5.5 0 0 1 0 .708L7.707 8l3.147 3.146a.5.5 0 0 1-.708.708l-3.5-3.5a.5.5 0 0 1 0-.708l3.5-3.5a.5.5 0 0 1 .708 0z"/>
+            </svg>
+            Regresar
+        </a>
+
+        <!-- Título principal -->
+        <h1 class="text-4xl font-extrabold text-gray-800 mb-8">Gestión de Usuarios</h1>
+
+        <!-- Tabla de Arrendadores -->
+        <h2 class="text-2xl font-semibold text-gray-700 mb-5">Arrendadores</h2>
+        <div class="overflow-x-auto bg-white shadow-md rounded-lg">
+            <table class="table-auto w-full text-left border-collapse border border-gray-300">
+                <thead>
+                    <tr class="bg-gray-100">
+                        <th class="border border-gray-300 px-4 py-2 text-gray-600">ID</th>
+                        <th class="border border-gray-300 px-4 py-2 text-gray-600">Nombre</th>
+                        <th class="border border-gray-300 px-4 py-2 text-gray-600">Correo</th>
+                        <th class="border border-gray-300 px-4 py-2 text-gray-600">Teléfono</th>
+                        <th class="border border-gray-300 px-4 py-2 text-gray-600">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for arrendador in arrendadores %}
+                    <tr class="hover:bg-gray-50">
+                        <td class="border border-gray-300 px-4 py-2 text-gray-800">{{ arrendador.id }}</td>
+                        <td class="border border-gray-300 px-4 py-2 text-gray-800">{{ arrendador.nombre }} {{ arrendador.apellidos }}</td>
+                        <td class="border border-gray-300 px-4 py-2 text-gray-800">{{ arrendador.correo }}</td>
+                        <td class="border border-gray-300 px-4 py-2 text-gray-800">{{ arrendador.telefono }}</td>
+                        <td class="border border-gray-300 px-4 py-2">
+                            <a href="{% url 'editar_usuario' arrendador.id 'arrendador' %}" class="text-blue-500 hover:underline">Editar</a>
+                            <a href="{% url 'eliminar_usuario' arrendador.id 'arrendador' %}" class="text-red-500 hover:underline" onclick="return confirm('¿Estás seguro de que deseas eliminar a este usuario?');">Eliminar</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Tabla de Arrendatarios -->
+        <h2 class="text-2xl font-semibold text-gray-700 mt-8 mb-5">Arrendatarios</h2>
+        <div class="overflow-x-auto bg-white shadow-md rounded-lg">
+            <table class="table-auto w-full text-left border-collapse border border-gray-300">
+                <thead>
+                    <tr class="bg-gray-100">
+                        <th class="border border-gray-300 px-4 py-2 text-gray-600">ID</th>
+                        <th class="border border-gray-300 px-4 py-2 text-gray-600">Nombre</th>
+                        <th class="border border-gray-300 px-4 py-2 text-gray-600">Correo</th>
+                        <th class="border border-gray-300 px-4 py-2 text-gray-600">Teléfono</th>
+                        <th class="border border-gray-300 px-4 py-2 text-gray-600">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for arrendatario in arrendatarios %}
+                    <tr class="hover:bg-gray-50">
+                        <td class="border border-gray-300 px-4 py-2 text-gray-800">{{ arrendatario.id }}</td>
+                        <td class="border border-gray-300 px-4 py-2 text-gray-800">{{ arrendatario.nombre }} {{ arrendatario.apellidos }}</td>
+                        <td class="border border-gray-300 px-4 py-2 text-gray-800">{{ arrendatario.correo }}</td>
+                        <td class="border border-gray-300 px-4 py-2 text-gray-800">{{ arrendatario.telefono }}</td>
+                        <td class="border border-gray-300 px-4 py-2">
+                            <a href="{% url 'editar_usuario' arrendatario.id 'arrendatario' %}" class="text-blue-500 hover:underline">Editar</a>
+                            <a href="{% url 'eliminar_usuario' arrendatario.id 'arrendatario' %}" class="text-red-500 hover:underline" onclick="return confirm('¿Estás seguro de que deseas eliminar a este usuario?');">Eliminar</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -83,74 +83,139 @@ def pago_exitoso_view(request):
                 estado="Activa",
             )
             
-            # Opcional: Crear un chat relacionado con la renta
-            Chat.objects.create(
+            # Crear el chat relacionado con la renta
+            chat = Chat.objects.create(
                 arrendador=item.herramienta.arrendador,
                 arrendatario=arrendatario,
                 herramienta=item.herramienta,
                 renta=renta
             )
+
+            # Notificar al arrendador sobre el nuevo chat
+            mensaje = f"Nuevo chat creado para la herramienta '{item.herramienta.nombre}'."
+            Notificacion.objects.create(
+                usuario=item.herramienta.arrendador.usuario,
+                mensaje=mensaje,
+                herramienta=item.herramienta
+            )
         
         # Eliminar todos los items del carrito después de crear las rentas
         carrito_items.delete()
-        
-        return redirect("arrendatario_home")
+
+        # Redirigir a la pantalla de pago exitoso
+        return redirect("pago_confirmacion")
     else:
         messages.error(request, "Error al confirmar el pago")
         return redirect("carrito")
+
+
+def pago_confirmacion_view(request):
+    """
+    Pantalla de confirmación de pago.
+    """
+    return render(request, 'rentas/pago_confirmacion.html')
         
 def pago_cancelado_view(request):
     messages.info(request, "El pago fue cancelado.")
     return redirect("carrito")
 
+from django.shortcuts import redirect
+
 @login_required
 def ver_chat_view(request, chat_id):
     chat = get_object_or_404(Chat, id=chat_id)
 
-    # Verificar si el usuario es parte del chat
     if not (request.user == chat.arrendador.usuario or request.user == chat.arrendatario.usuario):
-        return redirect('home')  # Redirige si el usuario no es parte del chat
+        return redirect('home')
 
     if request.method == 'POST':
-        form = MensajeForm(request.POST)
-        if form.is_valid():
-            mensaje = form.save(commit=False)
-            mensaje.chat = chat
-            mensaje.remitente = request.user
-            mensaje.save()
-            return redirect('ver_chat', chat_id=chat.id)
-    else:
-        form = MensajeForm()
+        contenido = request.POST.get('contenido', '').strip()
+        archivo = request.FILES.get('archivo', None)
 
-    # Agrega la herramienta al contexto
-    herramienta = chat.herramienta  # Obtener la herramienta asociada al chat
+        if contenido or archivo:  # Asegurarse de que al menos uno esté presente
+            mensaje = Mensaje.objects.create(
+                chat=chat,
+                remitente=request.user,
+                contenido=contenido if contenido else None,
+                archivo=archivo if archivo else None
+            )
+            return redirect('ver_chat', chat_id=chat.id)
 
     return render(request, 'ver_chat.html', {
         'chat': chat,
-        'form': form,
         'mensajes': chat.mensajes.all().order_by('enviado'),
-        'herramienta': herramienta  # Incluye la herramienta en el contexto
+        'herramienta': chat.herramienta,
     })
-    
+
+
+
+
+from django.db.models import Q
 @login_required
 def listar_chats_view(request):
-    # Obtener los chats donde el usuario sea arrendador o arrendatario
-    chats = Chat.objects.filter(
-        arrendador__usuario=request.user
-    ) | Chat.objects.filter(
-        arrendatario__usuario=request.user
-    )
-
-    # Determinar la URL de redirección según el tipo de usuario
-    if hasattr(request.user, 'arrendador'):
-        url_redireccion = reverse('arrendador_home')
+    user = request.user
+    if hasattr(user, 'arrendador'):
+        chats_no_ocultos = Chat.objects.filter(arrendador__usuario=user, oculto_arrendador=False).order_by('-creado')
+        chats_ocultos = Chat.objects.filter(arrendador__usuario=user, oculto_arrendador=True).order_by('-creado')
+    elif hasattr(user, 'arrendatario'):
+        chats_no_ocultos = Chat.objects.filter(arrendatario__usuario=user, oculto_arrendatario=False).order_by('-creado')
+        chats_ocultos = Chat.objects.filter(arrendatario__usuario=user, oculto_arrendatario=True).order_by('-creado')
     else:
-        url_redireccion = reverse('arrendatario_home')
+        chats_no_ocultos = chats_ocultos = []
 
     return render(request, 'rentas/listar_chats.html', {
-        'chats': chats,
-        'url_redireccion': url_redireccion
+        'chats_no_ocultos': chats_no_ocultos,
+        'chats_ocultos': chats_ocultos,
     })
+
+from django.shortcuts import redirect
+from django.http import HttpResponseForbidden
+
+@login_required
+def ocultar_chat(request, chat_id):
+    chat = get_object_or_404(Chat, id=chat_id)
+    user = request.user
+
+    if hasattr(user, 'arrendador') and chat.arrendador.usuario == user:
+        chat.oculto_arrendador = True
+    elif hasattr(user, 'arrendatario') and chat.arrendatario.usuario == user:
+        chat.oculto_arrendatario = True
+
+    chat.save()
+    return redirect('listar_chats')
+
+@login_required
+def mostrar_chat(request, chat_id):
+    chat = get_object_or_404(Chat, id=chat_id)
+    user = request.user
+
+    if hasattr(user, 'arrendador') and chat.arrendador.usuario == user:
+        chat.oculto_arrendador = False
+    elif hasattr(user, 'arrendatario') and chat.arrendatario.usuario == user:
+        chat.oculto_arrendatario = False
+
+    chat.save()
+    return redirect('listar_chats')
+
+@login_required
+def restaurar_chat_view(request, chat_id):
+    chat = get_object_or_404(Chat, id=chat_id)
+
+    # Verificar que el usuario sea parte del chat
+    if not (request.user == chat.arrendador.usuario or request.user == chat.arrendatario.usuario):
+        return redirect('listar_chats')
+
+    # Restaurar el chat oculto
+    if chat.oculto:
+        chat.oculto = False
+        chat.save()
+        messages.success(request, "El chat ha sido restaurado.")
+    else:
+        messages.error(request, "Este chat no está oculto.")
+
+    return redirect('listar_chats')
+
+
 
 
 @login_required

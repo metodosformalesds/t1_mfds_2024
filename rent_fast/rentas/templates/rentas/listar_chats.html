@@ -11,43 +11,85 @@
     </a>
     <h1 class="text-3xl font-bold text-gray-800 mb-6 text-center">Mis Chats</h1>
 
-    <!-- Contenedor de chats -->
+    <!-- Sección de chats no ocultos -->
+    <h2 class="text-2xl font-semibold text-gray-800 mb-4">Chats Activos</h2>
     <div class="bg-white rounded-lg shadow-md p-6 space-y-4">
-        {% for chat in chats %}
-            <!-- Card de chat individual -->
-            <a href="{% url 'ver_chat' chat.id %}" class="block p-4 border rounded-lg hover:bg-blue-50 transition duration-150 ease-in-out">
-                <div class="flex items-center space-x-4">
-                    <!-- Mostrar imagen de la herramienta o imagen predeterminada -->
-                    <div class="w-16 h-16 flex-shrink-0">
-                        {% if chat.herramienta.imagen %}
-                            <img src="{{ chat.herramienta.imagen.url }}" alt="Imagen de la herramienta" class="w-full h-full object-cover rounded-lg">
-                        {% else %}
-                            <img src="https://th.bing.com/th/id/R.c686896019147f6d57529fcfb6d75a28?rik=x186ThmrCoWqCg&riu=http%3a%2f%2ffiles.123inventatuweb.com%2f51%2f04%2f51045ced-acc5-4921-908a-f734f25c548f.jpg&ehk=sh3bkI2UbFohecSeceNYuu%2b4PRQTpJvfgMz4yMjUVK4%3d&risl=&pid=ImgRaw&r=0" alt="Imagen de la herramienta predeterminada" class="w-full h-full object-cover rounded-lg">
-                        {% endif %}
-                    </div>
-                    <!-- Información del chat -->
-                    <div class="flex-1">
-                        <div class="flex justify-between items-center">
-                            <p class="text-lg font-semibold text-gray-900">{{ chat.herramienta.nombre }}</p>
-                            <p class="text-xs text-gray-500">{{ chat.creado|date:"d/m/Y" }}</p> <!-- Fecha de creación del chat -->
+        {% for chat in chats_no_ocultos %}
+        <div class="block p-4 border rounded-lg hover:bg-blue-50 transition duration-150 ease-in-out">
+            <div class="flex items-center space-x-4">
+                <a href="{% url 'ver_chat' chat.id %}" class="flex-1">
+                    <div class="flex items-center space-x-4">
+                        <div class="w-16 h-16 flex-shrink-0 rounded-lg bg-cover bg-center bg-no-repeat" style='background-image: url("{% if chat.herramienta.imagenes %}{{ chat.herramienta.imagenes.url }}{% else %}https://cdn.usegalileo.ai/sdxl10/84ed65ba-6d8e-4158-b97a-6d36dabc415d.png{% endif %}");'></div>
+                        <div>
+                            <div class="flex justify-between items-center">
+                                <p class="text-lg font-semibold text-gray-900">{{ chat.herramienta.nombre }}</p>
+                                <p class="text-xs text-gray-500">{{ chat.creado|date:"d/m/Y H:i" }}</p>
+                            </div>
+                            <p class="text-sm text-gray-600 mt-1">
+                                <span class="font-medium">Con: {% if request.user == chat.arrendatario.usuario %}{{ chat.arrendador.nombre }}{% else %}{{ chat.arrendatario.nombre }}{% endif %}</span>
+                            </p>
+                            <p class="text-sm mt-1">
+                                Estado de la renta: 
+                                {% if chat.renta.estado == "Activa" %}
+                                <span class="text-green-500 font-medium">Activa</span>
+                                {% else %}
+                                <span class="text-red-500 font-medium">Finalizada</span>
+                                {% endif %}
+                            </p>
                         </div>
-                        <p class="text-sm text-gray-600 mt-1">
-                            <span class="font-medium">Con:</span>
-                            {% if chat.arrendatario.usuario == request.user %}
-                                {{ chat.arrendador.usuario.get_full_name }}
-                            {% else %}
-                                {{ chat.arrendatario.usuario.get_full_name }}
-                            {% endif %}
-                        </p>
                     </div>
-                </div>
-            </a>
-        {% empty %}
-        <!-- Mensaje si no hay chats -->
-        <div class="text-center py-8">
-            <p class="text-gray-600 text-lg">No tienes chats activos.</p>
-            <p class="text-gray-400 text-sm">Empieza una conversación alquilando una herramienta.</p>
+                </a>
+                <!-- Botón para ocultar chat -->
+                {% if chat.renta.estado == "Finalizada" %}
+                <form method="post" action="{% url 'ocultar_chat' chat.id %}" class="ml-4">
+                    {% csrf_token %}
+                    <button type="submit" class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600">Ocultar Chat</button>
+                </form>
+                {% endif %}
+            </div>
         </div>
+        {% empty %}
+        <p class="text-gray-600 text-lg">No tienes chats activos.</p>
+        {% endfor %}
+    </div>
+
+    <!-- Sección de chats ocultos -->
+    <h2 class="text-2xl font-semibold text-gray-800 mt-8 mb-4">Chats Ocultos</h2>
+    <div class="bg-white rounded-lg shadow-md p-6 space-y-4">
+        {% for chat in chats_ocultos %}
+        <div class="block p-4 border rounded-lg hover:bg-gray-50 transition duration-150 ease-in-out">
+            <div class="flex items-center space-x-4">
+                <a href="{% url 'ver_chat' chat.id %}" class="flex-1">
+                    <div class="flex items-center space-x-4">
+                        <div class="w-16 h-16 flex-shrink-0 rounded-lg bg-cover bg-center bg-no-repeat" style='background-image: url("{% if chat.herramienta.imagenes %}{{ chat.herramienta.imagenes.url }}{% else %}https://cdn.usegalileo.ai/sdxl10/84ed65ba-6d8e-4158-b97a-6d36dabc415d.png{% endif %}");'></div>
+                        <div>
+                            <div class="flex justify-between items-center">
+                                <p class="text-lg font-semibold text-gray-900">{{ chat.herramienta.nombre }}</p>
+                                <p class="text-xs text-gray-500">{{ chat.creado|date:"d/m/Y H:i" }}</p>
+                            </div>
+                            <p class="text-sm text-gray-600 mt-1">
+                                <span class="font-medium">Con: {% if request.user == chat.arrendatario.usuario %}{{ chat.arrendador.nombre }}{% else %}{{ chat.arrendatario.nombre }}{% endif %}</span>
+                            </p>
+                            <p class="text-sm mt-1">
+                                Estado de la renta: 
+                                {% if chat.renta.estado == "Activa" %}
+                                <span class="text-green-500 font-medium">Activa</span>
+                                {% else %}
+                                <span class="text-red-500 font-medium">Finalizada</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                </a>
+                <!-- Botón para volver a mostrar chat -->
+                <form method="post" action="{% url 'mostrar_chat' chat.id %}" class="ml-4">
+                    {% csrf_token %}
+                    <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">Mostrar Chat</button>
+                </form>
+            </div>
+        </div>
+        {% empty %}
+        <p class="text-gray-600 text-lg">No tienes chats ocultos.</p>
         {% endfor %}
     </div>
 </div>

@@ -36,7 +36,7 @@
       <form method="post" action="{% url 'reject_tool' herramienta.id %}" class="space-y-4">
         {% csrf_token %}
         <label for="mensaje_rechazo" class="block text-lg font-semibold text-gray-700">Motivo del Rechazo:</label>
-        <textarea id="mensaje_rechazo" name="mensaje_rechazo" rows="3" class="w-full border border-gray-300 rounded-lg p-3 text-gray-800" placeholder="Escribe el motivo del rechazo..."></textarea>
+        <textarea id="mensaje_rechazo" name="mensaje_rechazo" class="w-full p-2 border border-gray-300 rounded-lg"></textarea>
         <button type="submit" class="px-6 py-3 bg-red-500 text-white rounded-lg hover:bg-red-600 transition duration-200">Rechazar</button>
       </form>
 

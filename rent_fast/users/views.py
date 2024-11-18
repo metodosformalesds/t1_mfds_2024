@@ -154,6 +154,7 @@ class RegisterWizard(SessionWizardView):
             calle=address_data['calle'],
             ciudad=address_data['ciudad'],
             estado=address_data['estado'],
+            colonia=address_data.get('colonia', ''),
             codigo_postal=address_data['codigo_postal'],
         )
         print("Dirección creada:", direccion)
@@ -506,35 +507,45 @@ from django.urls import reverse
 
 @login_required
 def update_address(request):
-    # Determina si el usuario es Arrendador o Arrendatario
+    """
+    Vista para actualizar la dirección del usuario autenticado.
+    Determina si el usuario es Arrendador o Arrendatario y permite actualizar los datos de su dirección.
+    """
     try:
+        # Determinar si el usuario es Arrendador
         perfil = Arrendador.objects.get(usuario=request.user)
         es_arrendador = True
     except Arrendador.DoesNotExist:
+        # Si no es Arrendador, verificar si es Arrendatario
         perfil = Arrendatario.objects.get(usuario=request.user)
         es_arrendador = False
 
+    # Obtener la dirección asociada al perfil
     direccion = perfil.direccion
 
-    # Determina la URL de redirección
+    # Determinar la URL de redirección según el rol del usuario
     redireccion_url = reverse('arrendador_home') if es_arrendador else reverse('arrendatario_home')
 
     if request.method == 'POST':
+        # Procesar el formulario con los datos enviados
         form = UpdateAddressForm(request.POST, instance=direccion)
         if form.is_valid():
+            # Guardar los cambios en la dirección
             form.save()
             messages.success(request, "¡Tu dirección ha sido actualizada correctamente!")
-            # No redirigimos, solo mostramos el mensaje
         else:
             messages.error(request, "Por favor, corrige los errores en el formulario.")
     else:
+        # Mostrar el formulario con los datos existentes
         form = UpdateAddressForm(instance=direccion)
 
+    # Contexto para renderizar la plantilla
     context = {
         'form': form,
-        'redireccion_url': redireccion_url
+        'redireccion_url': redireccion_url,
     }
     return render(request, 'users/update_address.html', context)
+
 
 
 
@@ -543,7 +554,11 @@ def update_address(request):
 def ver_notificaciones(request):
     notificaciones = Notificacion.objects.filter(usuario=request.user).order_by('-creado')
     notificaciones.update(leido=True)
-    return render(request, 'users/notificaciones.html', {'notificaciones': notificaciones})
+
+    context = {
+        'notificaciones': notificaciones,
+    }
+    return render(request, 'users/notificaciones.html', context)
 
 import uuid
 from django.core.cache import cache
@@ -619,3 +634,109 @@ def contratos_view(request):
     return render(request, 'users/contratos.html', {'tool': tool})
 
 
+from django.http import JsonResponse
+from django.conf import settings
+import requests
+
+def buscar_codigo_postal_calle(request):
+    codigo_postal = request.GET.get("codigo_postal")
+    calle = request.GET.get("calle")
+
+    if not codigo_postal or not calle:
+        return JsonResponse({"error": "El código postal y la calle son requeridos."}, status=400)
+
+    resultado = {"ciudad": "", "estado": ""}
+
+    # Construcción de la URL para la API de Geocoding
+    api_key = settings.GOOGLE_MAPS_API_KEY
+    maps_url = f"https://maps.googleapis.com/maps/api/geocode/json?address={calle},{codigo_postal}&key={api_key}"
+
+    try:
+        response = requests.get(maps_url)
+        data = response.json()
+
+        if data.get("status") == "OK":
+            address_components = data["results"][0]["address_components"]
+
+            # Extraer ciudad y estado
+            resultado["ciudad"] = next((comp["long_name"] for comp in address_components if "locality" in comp["types"]), "")
+            resultado["estado"] = next((comp["long_name"] for comp in address_components if "administrative_area_level_1" in comp["types"]), "")
+        else:
+            return JsonResponse({"error": "No se encontraron resultados para la dirección especificada."}, status=404)
+    except Exception as e:
+        return JsonResponse({"error": f"Error al conectar con Google Maps: {str(e)}"}, status=500)
+
+    return JsonResponse(resultado)
+
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from .models import Arrendador, Arrendatario
+
+@login_required
+def gestionar_usuarios(request):
+    """
+    Vista para listar y gestionar los usuarios registrados (Arrendadores y Arrendatarios).
+    """
+    arrendadores = Arrendador.objects.all()
+    arrendatarios = Arrendatario.objects.all()
+
+    context = {
+        'arrendadores': arrendadores,
+        'arrendatarios': arrendatarios,
+    }
+    return render(request, 'users/gestionar_usuarios.html', context)
+
+@login_required
+def eliminar_usuario(request, usuario_id, tipo_usuario):
+    """
+    Vista para eliminar un usuario (Arrendador o Arrendatario).
+    """
+    if tipo_usuario == 'arrendador':
+        usuario = get_object_or_404(Arrendador, id=usuario_id)
+    elif tipo_usuario == 'arrendatario':
+        usuario = get_object_or_404(Arrendatario, id=usuario_id)
+    else:
+        messages.error(request, 'Tipo de usuario no válido.')
+        return redirect('gestionar_usuarios')
+
+    # Almacenar el nombre del usuario antes de eliminarlo
+    nombre_usuario = f'{usuario.nombre} {usuario.apellidos}'
+
+    usuario.usuario.delete()  # Eliminar al usuario relacionado
+    usuario.delete()  # Eliminar el perfil
+
+    # Agregar un mensaje de éxito
+    messages.success(request, f'El usuario {nombre_usuario} ha sido eliminado correctamente.')
+
+    # Redirigir a la página de gestión de usuarios
+    return redirect('gestionar_usuarios')
+
+
+# views.py
+from django.contrib import messages
+from .forms import PersonalInfoForm, UpdateAddressForm
+from .models import Arrendador, Arrendatario
+from django.shortcuts import get_object_or_404, redirect, render
+from .forms import EditarArrendadorForm, EditarArrendatarioForm
+from .models import Arrendador, Arrendatario
+@login_required
+def editar_usuario(request, usuario_id, tipo_usuario):
+    if tipo_usuario == "arrendador":
+        usuario = get_object_or_404(Arrendador, id=usuario_id)
+        form_class = EditarArrendadorForm
+    elif tipo_usuario == "arrendatario":
+        usuario = get_object_or_404(Arrendatario, id=usuario_id)
+        form_class = EditarArrendatarioForm
+    else:
+        return redirect('gestionar_usuarios')  # Si el tipo no coincide, regresa a la gestión de usuarios.
+
+    if request.method == "POST":
+        form = form_class(request.POST, request.FILES, instance=usuario)
+        if form.is_valid():
+            form.save()  # Guarda los cambios en la base de datos.
+            return redirect('gestionar_usuarios')  # Redirige después de guardar.
+    else:
+        form = form_class(instance=usuario)  # Carga los datos actuales del usuario.
+
+    return render(request, 'users/editar_usuario.html', {'form': form, 'tipo_usuario': tipo_usuario})
