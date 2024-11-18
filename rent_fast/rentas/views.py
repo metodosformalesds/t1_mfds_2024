@@ -290,6 +290,8 @@ def preguntas_sin_responder_view(request):
 
     return render(request, 'rentas/preguntas_sin_responder.html', {'preguntas': preguntas, 'form': form})
 
+from users.models import Notificacion
+
 @login_required
 def finalizar_renta_view(request, renta_id):
     renta = get_object_or_404(Renta, id=renta_id, arrendatario__usuario=request.user)
@@ -300,6 +302,14 @@ def finalizar_renta_view(request, renta_id):
 
     renta.estado = "Finalizada"
     renta.save()
+
+    # Crear notificación para el arrendatario indicando que puede dejar una reseña
+    mensaje = f"Has finalizado la renta de '{renta.herramienta.nombre}'. Ahora puedes dejar una reseña sobre esta herramienta."
+    Notificacion.objects.create(
+        usuario=request.user,
+        mensaje=mensaje,
+        herramienta=renta.herramienta,
+    )
 
     messages.success(request, "La renta ha sido finalizada exitosamente.")
     return redirect("ver_chat", chat_id=renta.chat_set.first().id)  # Redirige al chat relacionado

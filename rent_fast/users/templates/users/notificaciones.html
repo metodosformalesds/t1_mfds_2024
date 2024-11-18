@@ -17,8 +17,8 @@
                     <!-- Enlace activo si hay chat asociado -->
                     <a href="{% url 'ver_chat' notificacion.chat.id %}" class="block p-4 border border-gray-200 rounded-lg shadow hover:shadow-lg bg-white">
                 {% elif notificacion.herramienta %}
-                    <!-- Enlace activo si hay herramienta asociada -->
-                    <a href="{% url 'editar_herramienta' notificacion.herramienta.id %}" class="block p-4 border border-gray-200 rounded-lg shadow hover:shadow-lg bg-white">
+                    <!-- Enlace activo a los detalles de la herramienta para dejar una reseña -->
+                    <a href="{% url 'tool_detail' notificacion.herramienta.id %}" class="block p-4 border border-gray-200 rounded-lg shadow hover:shadow-lg bg-white">
                 {% else %}
                     <!-- Sin enlace si no hay herramienta ni chat -->
                     <div class="block p-4 border border-gray-200 rounded-lg shadow bg-white">

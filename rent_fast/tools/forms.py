@@ -27,6 +27,7 @@ class ToolForm(forms.ModelForm):
         tool = super().save(commit=False)
         tool.arrendador = arrendador
         tool.estado = "Pendiente"  # Asignar el estado por defecto
+        tool.disponibilidad = True  # Asignar disponibilidad por defecto
         tool.save()
         return tool
 
