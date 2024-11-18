@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto mt-8 p-6 bg-white shadow-md rounded-lg">
+    <h1 class="text-2xl font-bold text-gray-800">Soporte</h1>
+    <p class="text-gray-600 mt-4">Encuentra respuestas a tus preguntas o contacta al soporte.</p>
+
+    <div class="mt-6">
+        <h2 class="text-xl font-semibold text-gray-700">Preguntas Frecuentes</h2>
+        <ul class="list-disc list-inside mt-4 text-gray-600">
+            {% for pregunta in preguntas_frecuentes %}
+            <li>{{ pregunta }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <div class="mt-6">
+        <h2 class="text-xl font-semibold text-gray-700">¿Necesitas más ayuda?</h2>
+        <form method="POST" class="mt-4">
+            {% csrf_token %}
+            <button type="submit" class="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600">Contactar Soporte</button>
+        </form>
+    </div>
+
+    {% if error %}
+    <p class="text-red-500 mt-4">{{ error }}</p>
+    {% endif %}
+</div>
+{% endblock %}

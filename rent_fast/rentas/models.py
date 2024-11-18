@@ -24,13 +24,14 @@ class Renta(models.Model):
         super().save(*args, **kwargs)
 
 class Chat(models.Model):
-    arrendador = models.ForeignKey('users.Arrendador', on_delete=models.CASCADE)
-    arrendatario = models.ForeignKey('users.Arrendatario', on_delete=models.CASCADE)
-    herramienta = models.ForeignKey('tools.Tool', on_delete=models.CASCADE)
-    renta = models.ForeignKey(Renta, on_delete=models.CASCADE)  
+    arrendador = models.ForeignKey('users.Arrendador', on_delete=models.CASCADE, null=True, blank=True)
+    arrendatario = models.ForeignKey('users.Arrendatario', on_delete=models.CASCADE, null=True, blank=True)
+    herramienta = models.ForeignKey('tools.Tool', on_delete=models.CASCADE, null=True, blank=True)
+    renta = models.ForeignKey(Renta, on_delete=models.CASCADE, null=True, blank=True)
     creado = models.DateTimeField(auto_now_add=True)
     oculto_arrendador = models.BooleanField(default=False)
     oculto_arrendatario = models.BooleanField(default=False)
+    es_soporte = models.BooleanField(default=False)
 
 class Mensaje(models.Model):
     chat = models.ForeignKey(Chat, related_name='mensajes', on_delete=models.CASCADE)

@@ -14,6 +14,8 @@ from users.models import Arrendatario, Arrendador
 from .forms import RespuestaForm, PreguntaForm
 from .models import Pregunta
 from users.models import Notificacion
+from django.contrib.auth.models import User
+from django.db.models import Q
 
 
 
@@ -153,11 +155,14 @@ def ver_chat_view(request, chat_id):
 @login_required
 def listar_chats_view(request):
     user = request.user
+    chats_admin = []
     if hasattr(user, 'arrendador'):
+        # Chats con arrendadores
         chats_no_ocultos = Chat.objects.filter(arrendador__usuario=user, oculto_arrendador=False).order_by('-creado')
         chats_ocultos = Chat.objects.filter(arrendador__usuario=user, oculto_arrendador=True).order_by('-creado')
         url_redireccion = reverse('arrendador_home')  # URL para arrendadores
     elif hasattr(user, 'arrendatario'):
+        # Chats con arrendatarios
         chats_no_ocultos = Chat.objects.filter(arrendatario__usuario=user, oculto_arrendatario=False).order_by('-creado')
         chats_ocultos = Chat.objects.filter(arrendatario__usuario=user, oculto_arrendatario=True).order_by('-creado')
         url_redireccion = reverse('arrendatario_home')  # URL para arrendatarios
@@ -165,9 +170,17 @@ def listar_chats_view(request):
         chats_no_ocultos = chats_ocultos = []
         url_redireccion = reverse('home')  # Redirigir al home por defecto
 
+    # Chats con el administrador (puede ser identificado por un campo especial)
+    if hasattr(user, 'arrendador') or hasattr(user, 'arrendatario'):
+        chats_admin = Chat.objects.filter(
+            Q(arrendador__usuario=user) | Q(arrendatario__usuario=user),
+            herramienta=None  # Si los chats de soporte no tienen herramienta asociada
+        ).order_by('-creado')
+
     return render(request, 'rentas/listar_chats.html', {
         'chats_no_ocultos': chats_no_ocultos,
         'chats_ocultos': chats_ocultos,
+        'chats_admin': chats_admin,
         'url_redireccion': url_redireccion,  # Pasamos la URL al contexto
     })
 
@@ -313,3 +326,29 @@ def finalizar_renta_view(request, renta_id):
 
     messages.success(request, "La renta ha sido finalizada exitosamente.")
     return redirect("ver_chat", chat_id=renta.chat_set.first().id)  # Redirige al chat relacionado
+
+@login_required
+def soporte_view(request):
+    if request.method == 'POST':
+        # Buscar o crear un chat con el primer administrador
+        admin_user = User.objects.filter(is_staff=True).first()
+        if not admin_user:
+            return render(request, 'rentas/soporte.html', {'error': 'No hay administradores disponibles.'})
+
+        # Crear chat solo si no existe
+        existing_chat = Chat.objects.filter(arrendatario__usuario=request.user).first()
+        if existing_chat:
+            return redirect('ver_chat', chat_id=existing_chat.id)
+
+        if hasattr(request.user, 'arrendatario'):
+            arrendatario = request.user.arrendatario
+            chat = Chat.objects.create(arrendador=None, arrendatario=arrendatario, herramienta=None)
+        elif hasattr(request.user, 'arrendador'):
+            arrendador = request.user.arrendador
+            chat = Chat.objects.create(arrendador=arrendador, arrendatario=None, herramienta=None)
+        else:
+            return render(request, 'rentas/soporte.html', {'error': 'No tienes un perfil asociado.'})
+
+        return redirect('ver_chat', chat_id=chat.id)
+
+    return render(request, 'rentas/soporte.html', {'preguntas_frecuentes': ["¿Cómo alquilo una herramienta?", "¿Cómo publico una herramienta?", "¿Qué métodos de pago aceptan?"]})
