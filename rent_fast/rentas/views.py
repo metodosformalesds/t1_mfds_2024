@@ -150,25 +150,27 @@ def ver_chat_view(request, chat_id):
     })
 
 
-
-
-from django.db.models import Q
 @login_required
 def listar_chats_view(request):
     user = request.user
     if hasattr(user, 'arrendador'):
         chats_no_ocultos = Chat.objects.filter(arrendador__usuario=user, oculto_arrendador=False).order_by('-creado')
         chats_ocultos = Chat.objects.filter(arrendador__usuario=user, oculto_arrendador=True).order_by('-creado')
+        url_redireccion = reverse('arrendador_home')  # URL para arrendadores
     elif hasattr(user, 'arrendatario'):
         chats_no_ocultos = Chat.objects.filter(arrendatario__usuario=user, oculto_arrendatario=False).order_by('-creado')
         chats_ocultos = Chat.objects.filter(arrendatario__usuario=user, oculto_arrendatario=True).order_by('-creado')
+        url_redireccion = reverse('arrendatario_home')  # URL para arrendatarios
     else:
         chats_no_ocultos = chats_ocultos = []
+        url_redireccion = reverse('home')  # Redirigir al home por defecto
 
     return render(request, 'rentas/listar_chats.html', {
         'chats_no_ocultos': chats_no_ocultos,
         'chats_ocultos': chats_ocultos,
+        'url_redireccion': url_redireccion,  # Pasamos la URL al contexto
     })
+
 
 from django.shortcuts import redirect
 from django.http import HttpResponseForbidden
