@@ -258,10 +258,18 @@ def rentas_arrendatario_view(request):
     })
 
 from .models import Respuesta
+from django.shortcuts import get_object_or_404, render, redirect
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+
 @login_required
 def preguntas_sin_responder_view(request):
     arrendador = Arrendador.objects.get(usuario=request.user)
-    preguntas = Pregunta.objects.filter(herramienta__arrendador=arrendador, respuesta=None)
+
+    # Ordenar preguntas más nuevas primero
+    preguntas = Pregunta.objects.filter(
+        herramienta__arrendador=arrendador, respuesta=None
+    ).order_by('-fecha_creacion')
 
     if request.method == 'POST':
         form = RespuestaForm(request.POST)

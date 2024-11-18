@@ -4,6 +4,12 @@
 <div class="layout-container flex h-full grow flex-col">
     <div class="flex flex-1 justify-center px-40 py-5">
         <div class="layout-content-container flex w-[512px] max-w-[512px] max-w-[960px] flex-1 flex-col py-5">
+            <a href="{% url 'arrendatario_home' %}" class="flex items-center text-black pb-4 ml-6">
+                <svg class="mr-2" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M10.854 4.146a.5.5 0 0 1 0 .708L7.707 8l3.147 3.146a.5.5 0 0 1-.708.708l-3.5-3.5a.5.5 0 0 1 0-.708l3.5-3.5a.5.5 0 0 1 .708 0z"/>
+                </svg>
+                Regresar
+            </a>
             <h2 class="px-4 pb-3 pt-5 text-[22px] font-bold leading-tight tracking-[-0.015em] text-[#111517]">Revisión y Confirmación</h2>
             
             <!-- Lista de productos en el resumen -->
@@ -11,8 +17,9 @@
             <div class="flex justify-between gap-4 bg-white px-4 py-3">
                 <div class="flex items-start gap-4">
                     <div class="aspect-square size-[70px] rounded-lg bg-cover bg-center bg-no-repeat" 
-                    style="background-image: url('{% if item.herramienta.imagen %}{{ item.herramienta.imagen.url }}{% else %}https://cdn.usegalileo.ai/sdxl10/84ed65ba-6d8e-4158-b97a-6d36dabc415d.png{% endif %}');">
-               </div>
+    style="background-image: url('{% if item.herramienta.imagenes %}{{ item.herramienta.imagenes.url }}{% else %}https://cdn.usegalileo.ai/sdxl10/84ed65ba-6d8e-4158-b97a-6d36dabc415d.png{% endif %}');">
+</div>
+
                                    <div class="flex flex-1 flex-col justify-center">
                         <p class="text-base font-medium leading-normal text-[#111517]">{{ item.herramienta.nombre }}</p>
                         <p class="text-sm font-normal leading-normal text-[#647987]">Total: ${{ item.costo_total }}</p>
