@@ -4,6 +4,7 @@ from users.models import Arrendador, Arrendatario
 from django.contrib.auth.models import User
 
 
+
 class Renta(models.Model):
     herramienta = models.ForeignKey('tools.Tool', on_delete=models.CASCADE)  # Referencia como cadena
     arrendatario = models.ForeignKey(Arrendatario, on_delete=models.CASCADE)

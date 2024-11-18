@@ -13,6 +13,8 @@ from .forms import MensajeForm
 from users.models import Arrendatario, Arrendador
 from .forms import RespuestaForm, PreguntaForm
 from .models import Pregunta
+from users.models import Notificacion
+
 
 
 
