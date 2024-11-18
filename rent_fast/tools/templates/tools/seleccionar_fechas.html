@@ -3,43 +3,35 @@
 {% block content %}
 <div class="relative flex size-full min-h-screen flex-col bg-slate-50 group/design-root overflow-x-hidden" style='font-family: "Public Sans", "Noto Sans", sans-serif;'>
   <div class="layout-container flex h-full grow flex-col">
-
     <div class="px-40 flex flex-1 justify-center py-5">
       <div class="layout-content-container flex flex-col w-[512px] max-w-[512px] py-5 max-w-[960px] flex-1">
         <div class="flex flex-wrap justify-between gap-3 p-4">
           <p class="text-[#0e141b] tracking-light text-[32px] font-bold leading-tight min-w-72">Rentar una herramienta</p>
         </div>
-        <h3 class="text-[#0e141b] text-lg font-bold leading-tight tracking-[-0.015em] px-4 pb-2 pt-4">Selecciona días y horas de renta</h3>
+        <h3 class="text-[#0e141b] text-lg font-bold leading-tight tracking-[-0.015em] px-4 pb-2 pt-4">Selecciona el rango de fechas de renta</h3>
         
-        <!-- Formulario para selección de fechas y horas -->
+        <!-- Formulario para selección de rango de fechas -->
         <form method="post">
           {% csrf_token %}
           <div class="flex flex-wrap items-center justify-center gap-6 p-4">
             <div class="flex min-w-72 max-w-[336px] flex-1 flex-col gap-0.5">
               <label class="flex flex-col min-w-40 flex-1">
-                <p class="text-[#0e141b] text-base font-medium leading-normal pb-2">Fecha de inicio</p>
-                {{ form.fecha_inicio }}
-              </label>
-              <label class="flex flex-col min-w-40 flex-1">
-                <p class="text-[#0e141b] text-base font-medium leading-normal pb-2">Fecha de fin</p>
-                {{ form.fecha_fin }}
-              </label>
-            </div>
-            <div class="flex min-w-72 max-w-[336px] flex-1 flex-col gap-0.5">
-              <label class="flex flex-col min-w-40 flex-1">
-                <p class="text-[#0e141b] text-base font-medium leading-normal pb-2">Hora de inicio</p>
-                <input type="time" name="hora_inicio" class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-[#0e141b] focus:outline-0 focus:ring-0 border-none bg-[#e7edf3] h-14 placeholder:text-[#4e7397] p-4 text-base font-normal leading-normal"/>
-              </label>
-              <label class="flex flex-col min-w-40 flex-1">
-                <p class="text-[#0e141b] text-base font-medium leading-normal pb-2">Hora de fin</p>
-                <input type="time" name="hora_fin" class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-[#0e141b] focus:outline-0 focus:ring-0 border-none bg-[#e7edf3] h-14 placeholder:text-[#4e7397] p-4 text-base font-normal leading-normal"/>
+                <p class="text-[#0e141b] text-base font-medium leading-normal pb-2">Rango de Fechas</p>
+                <input type="text" id="fechaRango" class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-[#0e141b] focus:outline-0 focus:ring-0 border-none bg-[#e7edf3] h-14 placeholder:text-[#4e7397] p-4 text-base font-normal leading-normal"/>
               </label>
             </div>
           </div>
 
-          <!-- Botón para confirmar la renta -->
-          <div class="flex px-4 py-3">
-            <button class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-12 px-5 flex-1 bg-[#1980e6] text-slate-50 text-base font-bold leading-normal tracking-[0.015em]">
+          <!-- Inputs ocultos para fecha_inicio y fecha_fin -->
+          <input type="hidden" name="fecha_inicio" id="fechaInicio">
+          <input type="hidden" name="fecha_fin" id="fechaFin">
+
+          <!-- Botones -->
+          <div class="flex px-4 py-3 gap-4">
+            <button type="button" onclick="window.history.back()" class="flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-12 px-5 flex-1 bg-gray-300 text-gray-700 text-base font-bold leading-normal tracking-[0.015em]">
+              <span class="truncate">Regresar</span>
+            </button>
+            <button type="submit" class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-12 px-5 flex-1 bg-[#1980e6] text-slate-50 text-base font-bold leading-normal tracking-[0.015em]">
               <span class="truncate">Rentar</span>
             </button>
           </div>
@@ -54,21 +46,26 @@
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
 <script>
-  document.addEventListener("DOMContentLoaded", function() {
-    const fechasOcupadas = {{ fechas_ocupadas|safe }};  // Recibe las fechas ocupadas desde el contexto
-    
-    flatpickr("input[name='fecha_inicio']", {
+  document.addEventListener("DOMContentLoaded", function () {
+    const fechasOcupadas = {{ fechas_ocupadas|safe }}; // Recibe las fechas ocupadas desde el contexto
+
+    // Inicializar flatpickr para rango de fechas
+    flatpickr("#fechaRango", {
+      mode: "range", // Habilitar selección de rango
       dateFormat: "Y-m-d",
-      disable: fechasOcupadas,  // Deshabilita las fechas ocupadas
-      minDate: "today",  // No permite seleccionar fechas pasadas
-      onChange: function(selectedDates, dateStr, instance) {
-        // Actualiza el campo de fecha fin para que comience después de la fecha de inicio seleccionada
-        flatpickr("input[name='fecha_fin']", {
-          dateFormat: "Y-m-d",
-          disable: fechasOcupadas,
-          minDate: dateStr  // Comienza desde la fecha seleccionada en fecha_inicio
-        });
-      }
+      disable: fechasOcupadas, // Deshabilita las fechas ocupadas
+      minDate: "today", // No permite seleccionar fechas pasadas
+      onClose: function (selectedDates) {
+        if (selectedDates.length === 2) {
+          // Extraer fecha de inicio y fin
+          const fechaInicio = selectedDates[0].toISOString().split("T")[0];
+          const fechaFin = selectedDates[1].toISOString().split("T")[0];
+
+          // Asignar valores a los inputs ocultos
+          document.getElementById("fechaInicio").value = fechaInicio;
+          document.getElementById("fechaFin").value = fechaFin;
+        }
+      },
     });
   });
 </script>
