@@ -94,30 +94,18 @@ def pago_exitoso_view(request):
             )
 
             # Notificar al arrendador sobre el nuevo chat
-            mensaje_arrendador = (
-                f"Nuevo chat creado para la herramienta '{item.herramienta.nombre}'. Haz clic para responder."
-            )
+            mensaje = f"Nuevo chat creado para la herramienta '{item.herramienta.nombre}'."
             Notificacion.objects.create(
                 usuario=item.herramienta.arrendador.usuario,
-                mensaje=mensaje_arrendador,
-                chat=chat
-            )
-
-            # Notificar al arrendatario sobre el nuevo chat
-            mensaje_arrendatario = (
-                f"Nuevo chat creado para la herramienta '{item.herramienta.nombre}'. Haz clic para ver."
-            )
-            Notificacion.objects.create(
-                usuario=arrendatario.usuario,
-                mensaje=mensaje_arrendatario,
-                chat=chat
+                mensaje=mensaje,
+                herramienta=item.herramienta
             )
         
         # Eliminar todos los items del carrito después de crear las rentas
         carrito_items.delete()
 
         # Redirigir a la pantalla de pago exitoso
-        return redirect("listar_chats")
+        return redirect("pago_confirmacion")
     else:
         messages.error(request, "Error al confirmar el pago")
         return redirect("carrito")
