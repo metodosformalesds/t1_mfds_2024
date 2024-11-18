@@ -64,9 +64,13 @@ class Arrendatario(models.Model):
     def __str__(self):
         return f"{self.nombre} {self.apellidos} (Arrendatario)"
 
+from rentas.models import Chat
+
 class Notificacion(models.Model):
     usuario = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notificaciones')
     mensaje = models.TextField()
+    herramienta = models.ForeignKey('tools.Tool', on_delete=models.CASCADE, null=True, blank=True)
+    chat = models.ForeignKey(Chat, on_delete=models.CASCADE, null=True, blank=True)  # Relación opcional con Chat
     leido = models.BooleanField(default=False)
     creado = models.DateTimeField(auto_now_add=True)
 

@@ -554,7 +554,11 @@ def update_address(request):
 def ver_notificaciones(request):
     notificaciones = Notificacion.objects.filter(usuario=request.user).order_by('-creado')
     notificaciones.update(leido=True)
-    return render(request, 'users/notificaciones.html', {'notificaciones': notificaciones})
+
+    context = {
+        'notificaciones': notificaciones,
+    }
+    return render(request, 'users/notificaciones.html', context)
 
 import uuid
 from django.core.cache import cache

@@ -7,11 +7,14 @@
     {% if notificaciones %}
         <div class="space-y-4">
             {% for notificacion in notificaciones %}
-                {% if notificacion.herramienta %}
+                {% if notificacion.chat %}
+                    <!-- Enlace activo si hay chat asociado -->
+                    <a href="{% url 'ver_chat' notificacion.chat.id %}" class="block p-4 border border-gray-200 rounded-lg shadow hover:shadow-lg bg-white">
+                {% elif notificacion.herramienta %}
                     <!-- Enlace activo si hay herramienta asociada -->
                     <a href="{% url 'editar_herramienta' notificacion.herramienta.id %}" class="block p-4 border border-gray-200 rounded-lg shadow hover:shadow-lg bg-white">
                 {% else %}
-                    <!-- Sin enlace si no hay herramienta -->
+                    <!-- Sin enlace si no hay herramienta ni chat -->
                     <div class="block p-4 border border-gray-200 rounded-lg shadow bg-white">
                 {% endif %}
                         <p class="text-gray-700">{{ notificacion.mensaje }}</p>
@@ -21,7 +24,7 @@
                         {% else %}
                             <span class="text-xs text-red-600">No leído</span>
                         {% endif %}
-                {% if notificacion.herramienta %}
+                {% if notificacion.chat or notificacion.herramienta %}
                     </a>
                 {% else %}
                     </div>
