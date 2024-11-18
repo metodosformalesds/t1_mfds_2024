@@ -21,7 +21,7 @@
                 <div class="flex flex-col gap-3 p-4">
                     <a href="{% url 'arrendador_home' %}" class="flex items-center text-black pb-4">
                         <svg class="mr-2" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                            <path fill-rule="evenodd" d="M10.854 4.146a.5.5 0 0 1 0 .708L7.707 8l3.147 3.146a.5.5 0 0 1-.708.708l-3.5-3.5a.5.5 0 0 1 0-.708l-3.5-3.5a.5.5 0 0 1 .708 0z" />
+                            <path fill-rule="evenodd" d="M10.854 4.146a.5.5 0 0 1 0 .708L7.707 8l3.147 3.146a.5.5 0 0 1-.708.708l-3.5-3.5a.5.5 0 0 1 0-.708l3.5-3.5a.5.5 0 0 1 .708 0z"/>
                         </svg>
                         Regresar
                     </a>
@@ -51,6 +51,11 @@
                             {{ form.costo_dia|add_class:"form-input placeholder-gray-500" }}
                             <span class="text-sm text-gray-500">Ejemplo: $50.00</span>
                         </label>
+                        <script>
+                            document.querySelector('input[name="costo_dia"]').setAttribute('min', '1');
+                        </script>
+                        
+                        
                         <!-- Categoría -->
                         <label class="flex flex-col">
                             <span class="text-[#0e141b] text-base font-medium pb-2">Categoría</span>
