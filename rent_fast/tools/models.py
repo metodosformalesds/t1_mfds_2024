@@ -16,11 +16,19 @@ class Tool(models.Model):
     costo_dia = models.DecimalField(max_digits=10, decimal_places=2)
     estado = models.CharField(max_length=20, choices=[('Pendiente', 'Pendiente'), ('Disponible', 'Disponible'), ('Rechazado', 'Rechazado')], default='Pendiente')
     imagenes = models.ImageField(upload_to='tools/', null=True, blank=True)
-    categoria = models.ForeignKey(Categoria, on_delete=models.SET_NULL, null=True, blank=True)  # Nueva relación
+    categoria = models.ForeignKey(Categoria, on_delete=models.SET_NULL, null=True, blank=True)
     mensaje_rechazo = models.TextField(null=True, blank=True)
 
     def __str__(self):
         return self.nombre
+
+    def is_available(self):
+        """
+        Verifica si la herramienta está disponible para rentar.
+        Retorna False si está en una renta activa, True en caso contrario.
+        """
+        return not Renta.objects.filter(herramienta=self, estado="Activa").exists()
+
 
         
 class Carrito(models.Model):

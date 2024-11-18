@@ -18,7 +18,6 @@
       <div class="flex flex-col gap-3">
         <div class="aspect-square w-full rounded-xl bg-cover bg-center bg-no-repeat" style='background-image: url("{% if tool.imagenes %}{{ tool.imagenes.url }}{% else %}https://cdn.usegalileo.ai/sdxl10/84ed65ba-6d8e-4158-b97a-6d36dabc415d.png{% endif %}");'></div>
       </div>
-      <!-- Más imágenes si las tienes -->
     </div>
 
     <!-- Sección de precios -->
@@ -27,17 +26,25 @@
         <p class="tracking-light text-2xl font-bold leading-tight text-[#0e141b]">${{ tool.costo_dia }}</p>
         <div class="flex items-center gap-2"><p class="text-sm font-normal leading-normal text-[#4e7397]">Por día</p></div>
       </div>
-      <!-- Más estadísticas -->
     </div>
 
     <!-- Sección de botones -->
     <div class="flex flex-col space-y-3 px-4 py-5">
-      <button class="flex h-12 py-2 flex-1 cursor-pointer items-center justify-center rounded-xl bg-[#1980e6] px-6 text-base font-bold text-slate-50" onclick="window.location.href='{% url 'seleccionar_fechas' tool.id %}'">
-         Agregar al carrito
+      {% if renta_activa %}
+      <button class="flex h-12 py-2 flex-1 cursor-not-allowed items-center justify-center rounded-xl bg-gray-400 px-6 text-base font-bold text-white" disabled>
+        No disponible
       </button>
+      <p class="text-red-500 mt-2">
+        Esta herramienta está ocupada desde {{ renta_activa.fecha_inicio|date:"d/m/Y" }} hasta {{ renta_activa.fecha_fin|date:"d/m/Y" }}.
+      </p>
+      {% else %}
+      <button class="flex h-12 py-2 flex-1 cursor-pointer items-center justify-center rounded-xl bg-[#1980e6] px-6 text-base font-bold text-slate-50" onclick="window.location.href='{% url 'seleccionar_fechas' tool.id %}'">
+        Agregar al carrito
+      </button>
+      {% endif %}
       <button class="bg-[#1980e6] text-white px-6 py-2 rounded-md font-bold" onclick="window.location.href='{% url 'uber_auth' %}'">
         Cotizar precio de envío
-      </button>   
+      </button>
     </div>
 
     <!-- Información del vendedor -->
@@ -56,8 +63,6 @@
 
     <!-- Sección de Reseñas -->
     <h2 class="px-4 pb-3 pt-5 text-[22px] font-bold text-[#0e141b]">Reseñas</h2>
-
-    <!-- Promedio de calificación -->
     {% if promedio_calificacion %}
       <p class="px-4 text-sm font-bold text-gray-700">Promedio de calificación: {{ promedio_calificacion|floatformat:1 }} / 5</p>
     {% endif %}
@@ -114,7 +119,7 @@
       <h2 class="px-4 pb-3 pt-5 text-[22px] font-bold text-[#0e141b]">Haz una Pregunta</h2>
       <form method="post" action="{% url 'tool_detail' tool.id %}" class="p-4 border rounded-lg bg-gray-100">
         {% csrf_token %}
-        {{ form.as_p }}
+        {{ pregunta_form.as_p }}
         <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Enviar Pregunta</button>
       </form>
     {% else %}

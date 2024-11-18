@@ -210,6 +210,8 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 
 
+from django.db.models import Q
+
 class ToolDetailView(DetailView):
     model = Tool
     template_name = "tools/tool_details.html"
@@ -238,7 +240,12 @@ class ToolDetailView(DetailView):
             context['form'] = ResenaForm()
         else:
             context['form'] = None
-        
+
+        # Información sobre disponibilidad
+        renta_activa = Renta.objects.filter(herramienta=tool, estado="Activa").first()
+        if renta_activa:
+            context['renta_activa'] = renta_activa
+
         # Agregar preguntas y respuestas
         context['preguntas'] = tool.preguntas.all()
         context['pregunta_form'] = PreguntaForm()
@@ -355,37 +362,41 @@ def agregar_al_carrito_view(request, tool_id):
     herramienta = get_object_or_404(Tool, id=tool_id)
     arrendatario = getattr(request.user, 'arrendatario', None)
 
-    # Verificar si el usuario tiene perfil de arrendatario
     if not arrendatario:
         return render(request, 'tools/no_role.html', {'error': "Necesitas un perfil de arrendatario para alquilar herramientas."})
 
-    # Obtener las fechas desde la sesi n
+    # Verificar disponibilidad de la herramienta
+    if not herramienta.is_available():
+        messages.error(request, "Esta herramienta ya está en renta y no está disponible.")
+        return redirect('tool_detail', pk=tool_id)
+
+    # Verificar si la herramienta ya está en el carrito
+    if Carrito.objects.filter(arrendatario=arrendatario, herramienta=herramienta).exists():
+        messages.error(request, "Esta herramienta ya está en tu carrito.")
+        return redirect('tool_detail', pk=tool_id)
+
+    # Obtener fechas y calcular costo
     fecha_inicio = request.session.get('fecha_inicio')
     fecha_fin = request.session.get('fecha_fin')
-    
+
     if fecha_inicio and fecha_fin:
-        # Convertir las fechas a objetos de fecha y calcular el costo total
         fecha_inicio = datetime.strptime(fecha_inicio, '%Y-%m-%d').date()
         fecha_fin = datetime.strptime(fecha_fin, '%Y-%m-%d').date()
         dias_renta = (fecha_fin - fecha_inicio).days + 1
         costo_total = dias_renta * herramienta.costo_dia
 
-        # Guardar en el carrito
-        carrito_item = Carrito.objects.create(
+        # Agregar herramienta al carrito
+        Carrito.objects.create(
             arrendatario=arrendatario,
             herramienta=herramienta,
             fecha_inicio=fecha_inicio,
             fecha_fin=fecha_fin,
             costo_total=costo_total
         )
-        
-        # Limpiar las fechas de la sesi n
-        del request.session['fecha_inicio']
-        del request.session['fecha_fin']
+        messages.success(request, "Herramienta agregada al carrito correctamente.")
+        return redirect('carrito')
 
-        return redirect('carrito')  # Redirige al carrito despu s de agregar el producto
-    
-    # Si las fechas no est n en la sesi n, redirigir a seleccionar fechas
+    messages.error(request, "Debes seleccionar las fechas antes de agregar la herramienta al carrito.")
     return redirect('seleccionar_fechas', tool_id=tool_id)
 
 @login_required

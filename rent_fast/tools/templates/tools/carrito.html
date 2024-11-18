@@ -18,30 +18,38 @@
     <!-- Lista de productos en el carrito -->
     <div class="mb-4">
       {% for item in carrito_items %}
-      <div class="flex justify-between items-center border-b py-4">
-        <div class="flex items-center">
-          <!-- Imagen de la herramienta -->
-          {% if item.herramienta.imagenes %}
-            <img src="{{ item.herramienta.imagenes.url }}" alt="{{ item.herramienta.nombre }}" class="w-12 h-12 object-cover mr-4"/>
-          {% else %}
-            <img src="https://cdn.usegalileo.ai/sdxl10/84ed65ba-6d8e-4158-b97a-6d36dabc415d.png" alt="Imagen no disponible" class="w-12 h-12 object-cover mr-4"/>
-          {% endif %}
-          <span>{{ item.herramienta.nombre }}</span>
-        </div>
-        <div class="flex items-center">
-          <span class="text-gray-500 mr-4">${{ item.costo_total }}</span>
-          <!-- Botón de eliminar -->
-          <button class="bg-gray-200 p-2 rounded hover:bg-gray-300 transition ease-in-out duration-200" 
-                  onclick="window.location.href='{% url 'eliminar_del_carrito' item.id %}'">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 text-black">
-                  <path d="M9 3H15C15.2652 3 15.5196 3.10536 15.7071 3.29289C15.8946 3.48043 16 3.73478 16 4H21C21.2652 4 21.5196 4.10536 21.7071 4.29289C21.8946 4.48043 22 4.73478 22 5V6C22 6.26522 21.8946 6.51957 21.7071 6.70711C21.5196 6.89464 21.2652 7 21 7H3C2.73478 7 2.48043 6.89464 2.29289 6.70711C2.10536 6.51957 2 6.26522 2 6V5C2 4.73478 2.10536 4.48043 2.29289 4.29289C2.48043 4.10536 2.73478 4 3 4H8C8 3.73478 8.10536 3.48043 8.29289 3.29289C8.48043 3.10536 8.73478 3 9 3ZM4 9V18C4 18.7956 4.31607 19.5587 4.87868 20.1213C5.44129 20.6839 6.20435 21 7 21H17C17.7956 21 18.5587 20.6839 19.1213 20.1213C19.6839 19.5587 20 18.7956 20 18V9H4Z" />
-              </svg>
-          </button>
-
-        </div>
-      </div>
+        {% if item.herramienta.is_available %}
+          <div class="flex justify-between items-center border-b py-4">
+            <div class="flex items-center">
+              <!-- Imagen de la herramienta -->
+              {% if item.herramienta.imagenes %}
+                <img src="{{ item.herramienta.imagenes.url }}" alt="{{ item.herramienta.nombre }}" class="w-12 h-12 object-cover mr-4"/>
+              {% else %}
+                <img src="https://cdn.usegalileo.ai/sdxl10/84ed65ba-6d8e-4158-b97a-6d36dabc415d.png" alt="Imagen no disponible" class="w-12 h-12 object-cover mr-4"/>
+              {% endif %}
+              <span>{{ item.herramienta.nombre }}</span>
+            </div>
+            <div class="flex items-center">
+              <span class="text-gray-500 mr-4">${{ item.costo_total }}</span>
+              <!-- Botón de eliminar -->
+              <button class="bg-gray-200 p-2 rounded hover:bg-gray-300 transition ease-in-out duration-200" 
+                      onclick="window.location.href='{% url 'eliminar_del_carrito' item.id %}'">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 text-black">
+                      <path d="M9 3H15C15.2652 3 15.5196 3.10536 15.7071 3.29289C15.8946 3.48043 16 3.73478 16 4H21C21.2652 4 21.5196 4.10536 21.7071 4.29289C21.8946 4.48043 22 4.73478 22 5V6C22 6.26522 21.8946 6.51957 21.7071 6.70711C21.5196 6.89464 21.2652 7 21 7H3C2.73478 7 2.48043 6.89464 2.29289 6.70711C2.10536 6.51957 2 6.26522 2 6V5C2 4.73478 2.10536 4.48043 2.29289 4.29289C2.48043 4.10536 2.73478 4 3 4H8C8 3.73478 8.10536 3.48043 8.29289 3.29289C8.48043 3.10536 8.73478 3 9 3ZM4 9V18C4 18.7956 4.31607 19.5587 4.87868 20.1213C5.44129 20.6839 6.20435 21 7 21H17C17.7956 21 18.5587 20.6839 19.1213 20.1213C19.6839 19.5587 20 18.7956 20 18V9H4Z" />
+                  </svg>
+              </button>
+            </div>
+          </div>
+        {% else %}
+          <!-- Mostrar mensaje si el artículo no está disponible -->
+          <div class="flex justify-between items-center border-b py-4 bg-red-100">
+            <div class="flex items-center">
+              <span class="text-red-500 font-bold">La herramienta "{{ item.herramienta.nombre }}" ya no está disponible.</span>
+            </div>
+          </div>
+        {% endif %}
       {% empty %}
-      <p class="text-gray-500">No tienes productos en el carrito.</p>
+        <p class="text-gray-500">No tienes productos en el carrito.</p>
       {% endfor %}
     </div>
 
