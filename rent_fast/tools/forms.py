@@ -2,25 +2,34 @@ from django import forms
 from .models import Tool, Carrito, Categoria
 from rentas.models import Renta
 
+from django.core.exceptions import ValidationError
+
 class ToolForm(forms.ModelForm):
     class Meta:
         model = Tool
-        fields = ['nombre', 'descripcion', 'costo_dia', 'imagenes', 'categoria']  # Incluimos el campo categoria
+        fields = ['nombre', 'descripcion', 'costo_dia', 'imagenes', 'categoria']
         labels = {
             'nombre': 'Nombre de la Herramienta',
             'descripcion': 'Descripción',
             'costo_dia': 'Costo por Día',
             'imagenes': 'Imágenes',
-            'categoria': 'Categoría'
+            'categoria': 'Categoría',
         }
 
+    def clean(self):
+        cleaned_data = super().clean()
+        imagenes = cleaned_data.get('imagenes')
+        if not imagenes:
+            raise ValidationError("Debes subir al menos una imagen para la herramienta.")
+        return cleaned_data
+
     def save(self, arrendador, *args, **kwargs):
-        if arrendador:
-            tool = super().save(commit=False)
+        tool = super().save(commit=False)
         tool.arrendador = arrendador
-        tool.estado = "Pendiente"  # Asignamos el estado por defecto a "Pendiente"
+        tool.estado = "Pendiente"  # Asignar el estado por defecto
         tool.save()
         return tool
+
 
 class RentaForm(forms.ModelForm):
     class Meta:

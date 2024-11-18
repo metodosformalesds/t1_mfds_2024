@@ -287,17 +287,23 @@ class ToolDetailView(DetailView):
 
         return self.get(request, *args, **kwargs)
 
+from django.contrib import messages
+
 @login_required
 def add_tool_view(request):
-    arrendador = Arrendador.objects.get(usuario=request.user)  # Obtenemos el arrendador
+    arrendador = Arrendador.objects.get(usuario=request.user)  # Obtener el arrendador
     if request.method == 'POST':
         form = ToolForm(request.POST, request.FILES)
         if form.is_valid():
             form.save(arrendador=arrendador)  # Guardar la herramienta con estado "Pendiente"
-            return redirect('arrendador_home')  # Redirige a la p gina del arrendador despu s de crear la herramienta
+            messages.success(request, "¡Tu publicación fue enviada con éxito y está en revisión!")
+            return redirect('arrendador_home')  # Redirige después de crear la herramienta
+        else:
+            messages.error(request, "Hubo un problema con tu publicación. Por favor revisa los campos.")
     else:
         form = ToolForm()
     return render(request, 'arrendadores/add_tool.html', {'form': form})
+
 
     
 @login_required
