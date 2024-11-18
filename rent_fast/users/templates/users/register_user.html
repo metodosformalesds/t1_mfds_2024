@@ -2,18 +2,18 @@
 {% load tailwind_filters %}
 {% block content %}
 <div class="flex min-h-screen justify-center items-center bg-slate-50">
-    <div class="bg-white p-8 rounded shadow-md w-full max-w-md">
+    <!-- Contenedor del formulario con estilo de cuadro -->
+    <div class="bg-white p-8 rounded shadow-md w-full max-w-md mt-4 mb-4">
         
         <!-- Enlace de "Regresar" -->
         <a href="{% url 'login' %}" class="flex items-center text-black pb-4">
             <svg class="mr-2" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
                 <path fill-rule="evenodd" d="M10.854 4.146a.5.5 0 0 1 0 .708L7.707 8l3.147 3.146a.5.5 0 0 1-.708.708l-3.5-3.5a.5.5 0 0 1 0-.708l3.5-3.5a.5.5 0 0 1 .708 0z"/>
             </svg>
-            Regresar
         </a>
 
-        <!-- Título -->
-        <h2 class="text-2xl font-bold mb-6 text-center">Crea tu cuenta</h2>
+        <!-- Título del formulario -->
+        <h2 class="text-2xl font-bold mb-6 text-center"> Crea tu cuenta</h2>
 
         <!-- Formulario -->
         <form method="post" enctype="multipart/form-data">
@@ -22,13 +22,11 @@
 
             <!-- Nombre de Usuario -->
             <div class="mb-4">
-                <label class="block text-gray-700 font-medium">Nombre de Usuario</label>
                 {{ wizard.form.username|as_crispy_field }}
             </div>
 
             <!-- Correo Electrónico -->
             <div class="mb-4">
-                <label class="block text-gray-700 font-medium">Correo Electrónico</label>
                 {{ wizard.form.email|as_crispy_field }}
             </div>
 

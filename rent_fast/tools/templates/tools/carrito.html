@@ -1,76 +1,70 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="bg-gray-100 flex justify-center items-center min-h-screen"> <!-- Ajuste para centrar la página -->
-  <!-- Sección izquierda del carrito -->
-  <div class="w-2/3 bg-white p-8 rounded-lg shadow-md">
-    <div class="mb-6">
-      <!-- Botón de retroceso cuadrado -->
-      <button class="bg-gray-200 hover:bg-gray-300 p-2 rounded" onclick="window.history.back()">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
-          <path fill-rule="evenodd" d="M15.75 4.5a.75.75 0 01.102 1.493l-.102.007H9.31l3.22 3.219a.75.75 0 01-.977 1.133l-.085-.072-4.5-4.5a.75.75 0 01-.072-.977l.072-.084 4.5-4.5a.75.75 0 011.133.976l-.072.085L9.31 3.75h6.44z"/>
-        </svg>
-      </button>
-      <!-- Título de Carrito de Compras debajo del botón -->
-      <h1 class="text-xl font-bold mt-4">Carrito de Compras</h1>
-    </div>
+<div class="bg-gray-100 min-h-screen flex justify-center items-center px-4 sm:px-6 lg:px-8">
+  <!-- Contenedor del carrito -->
+  <div class="w-full max-w-4xl bg-white rounded-lg shadow-lg p-6">
+    <h1 class="text-2xl font-bold text-gray-800 mb-6">Carrito de Compras</h1>
     
-    <!-- Lista de productos en el carrito -->
-    <div class="mb-4">
-      {% for item in carrito_items %}
-        {% if item.herramienta.is_available %}
-          <div class="flex justify-between items-center border-b py-4">
-            <div class="flex items-center">
-              <!-- Imagen de la herramienta -->
-              {% if item.herramienta.imagenes %}
-                <img src="{{ item.herramienta.imagenes.url }}" alt="{{ item.herramienta.nombre }}" class="w-12 h-12 object-cover mr-4"/>
-              {% else %}
-                <img src="https://cdn.usegalileo.ai/sdxl10/84ed65ba-6d8e-4158-b97a-6d36dabc415d.png" alt="Imagen no disponible" class="w-12 h-12 object-cover mr-4"/>
-              {% endif %}
-              <span>{{ item.herramienta.nombre }}</span>
-            </div>
-            <div class="flex items-center">
-              <span class="text-gray-500 mr-4">${{ item.costo_total }}</span>
-              <!-- Botón de eliminar -->
-              <button class="bg-gray-200 p-2 rounded hover:bg-gray-300 transition ease-in-out duration-200" 
-                      onclick="window.location.href='{% url 'eliminar_del_carrito' item.id %}'">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 text-black">
-                      <path d="M9 3H15C15.2652 3 15.5196 3.10536 15.7071 3.29289C15.8946 3.48043 16 3.73478 16 4H21C21.2652 4 21.5196 4.10536 21.7071 4.29289C21.8946 4.48043 22 4.73478 22 5V6C22 6.26522 21.8946 6.51957 21.7071 6.70711C21.5196 6.89464 21.2652 7 21 7H3C2.73478 7 2.48043 6.89464 2.29289 6.70711C2.10536 6.51957 2 6.26522 2 6V5C2 4.73478 2.10536 4.48043 2.29289 4.29289C2.48043 4.10536 2.73478 4 3 4H8C8 3.73478 8.10536 3.48043 8.29289 3.29289C8.48043 3.10536 8.73478 3 9 3ZM4 9V18C4 18.7956 4.31607 19.5587 4.87868 20.1213C5.44129 20.6839 6.20435 21 7 21H17C17.7956 21 18.5587 20.6839 19.1213 20.1213C19.6839 19.5587 20 18.7956 20 18V9H4Z" />
-                  </svg>
-              </button>
+    {% if carrito_items %}
+      <!-- Lista de productos en el carrito -->
+      <div class="space-y-6">
+        {% for item in carrito_items %}
+        <div class="flex flex-col sm:flex-row justify-between items-center border-b pb-4">
+          <!-- Imagen y nombre de la herramienta -->
+          <div class="flex items-center space-x-4">
+            {% if item.herramienta.imagenes %}
+              <img src="{{ item.herramienta.imagenes.url }}" alt="{{ item.herramienta.nombre }}" class="w-16 h-16 rounded-lg object-cover"/>
+            {% else %}
+              <img src="https://cdn.usegalileo.ai/sdxl10/84ed65ba-6d8e-4158-b97a-6d36dabc415d.png" alt="Imagen no disponible" class="w-16 h-16 rounded-lg object-cover"/>
+            {% endif %}
+            <div>
+              <p class="text-lg font-medium text-gray-800">{{ item.herramienta.nombre }}</p>
+              <p class="text-gray-500 text-sm">Fecha: {{ item.fecha_inicio }} - {{ item.fecha_fin }}</p>
             </div>
           </div>
-        {% else %}
-          <!-- Mostrar mensaje si el artículo no está disponible -->
-          <div class="flex justify-between items-center border-b py-4 bg-red-100">
-            <div class="flex items-center">
-              <span class="text-red-500 font-bold">La herramienta "{{ item.herramienta.nombre }}" ya no está disponible.</span>
-            </div>
+          <!-- Precio y botón de eliminar -->
+          <div class="mt-4 sm:mt-0 flex items-center space-x-6">
+            <span class="text-lg font-semibold text-gray-800">${{ item.costo_total }}</span>
+            <button class="bg-red-500 text-white p-2 rounded-full hover:bg-red-600 transition"
+                    onclick="window.location.href='{% url 'eliminar_del_carrito' item.id %}'">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
+                <path d="M9 3H15C15.2652 3 15.5196 3.10536 15.7071 3.29289C15.8946 3.48043 16 3.73478 16 4H21C21.2652 4 21.5196 4.10536 21.7071 4.29289C21.8946 4.48043 22 4.73478 22 5V6C22 6.26522 21.8946 6.51957 21.7071 6.70711C21.5196 6.89464 21.2652 7 21 7H3C2.73478 7 2.48043 6.89464 2.29289 6.70711C2.10536 6.51957 2 6.26522 2 6V5C2 4.73478 2.10536 4.48043 2.29289 4.29289C2.48043 4.10536 2.73478 4 3 4H8C8 3.73478 8.10536 3.48043 8.29289 3.29289C8.48043 3.10536 8.73478 3 9 3ZM4 9V18C4 18.7956 4.31607 19.5587 4.87868 20.1213C5.44129 20.6839 6.20435 21 7 21H17C17.7956 21 18.5587 20.6839 19.1213 20.1213C19.6839 19.5587 20 18.7956 20 18V9H4Z" />
+              </svg>
+            </button>
           </div>
-        {% endif %}
-      {% empty %}
-        <p class="text-gray-500">No tienes productos en el carrito.</p>
-      {% endfor %}
-    </div>
+        </div>
+        {% endfor %}
+      </div>
 
-    <!-- Método de pago -->
-    <h2 class="font-bold mb-2">Método de pago</h2>
-    <div class="flex items-center">
-      <input type="radio" id="paypal" name="payment_method" class="mr-2" checked />
-      <label for="paypal" class="flex items-center">
-        <img src="https://img.icons8.com/color/48/000000/paypal.png" class="w-6 h-6 mr-2" alt="PayPal"/>
-        PayPal
-      </label>
-    </div>
+      <!-- Método de pago -->
+      <h2 class="text-xl font-bold mt-8 mb-4">Método de pago</h2>
+      <div class="flex items-center space-x-4">
+        <input type="radio" id="paypal" name="payment_method" class="hidden" checked>
+        <label for="paypal" class="flex items-center cursor-pointer">
+          <img src="https://img.icons8.com/color/48/000000/paypal.png" class="w-8 h-8" alt="PayPal"/>
+          <span class="ml-2 text-lg text-gray-700">PayPal</span>
+        </label>
+      </div>
 
-    <!-- Total y botón para proceder al pago -->
-    <div class="mt-6">
-      <h2 class="font-bold text-lg mb-4">Monto Total</h2>
-      <p class="text-2xl font-bold text-gray-800">${{ monto_total }}</p>
-      <button class="mt-6 bg-blue-600 text-white font-bold py-3 px-6 rounded hover:bg-blue-700 transition duration-200 w-full" onclick="window.location.href='{% url 'resumen' %}'">
-        Continuar al Resumen
-      </button>
-    </div>
+      <!-- Total y botón para proceder al pago -->
+      <div class="mt-8">
+        <h2 class="text-xl font-bold mb-4">Monto Total</h2>
+        <p class="text-3xl font-bold text-gray-800">${{ monto_total }}</p>
+        <button class="mt-6 w-full bg-blue-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-blue-700 transition"
+                onclick="window.location.href='{% url 'resumen' %}'">
+          Continuar al Resumen
+        </button>
+      </div>
+    {% else %}
+      <!-- Mensaje si el carrito está vacío -->
+      <div class="text-center py-16">
+        <p class="text-gray-500 text-lg mb-6">No tienes productos en el carrito.</p>
+        <a href="{% url 'home' %}" class="inline-block bg-blue-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-blue-700 transition">
+          Explorar Herramientas
+        </a>
+      </div>
+    {% endif %}
   </div>
 </div>
 {% endblock %}

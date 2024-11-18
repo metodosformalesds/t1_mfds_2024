@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="flex justify-center items-center h-screen">
+    <div class="text-center">
+        <h1 class="text-3xl font-bold text-green-600 mb-4">¡Pago Exitoso!</h1>
+        <p class="text-lg text-gray-700">Tu pago se ha procesado correctamente.</p>
+        <div class="mt-6">
+            <a href="{% url 'listar_chats' %}" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700">
+                Ir a Mis Chats
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

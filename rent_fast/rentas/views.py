@@ -13,6 +13,8 @@ from .forms import MensajeForm
 from users.models import Arrendatario, Arrendador
 from .forms import RespuestaForm, PreguntaForm
 from .models import Pregunta
+from users.models import Notificacion
+
 
 
 
@@ -83,21 +85,37 @@ def pago_exitoso_view(request):
                 estado="Activa",
             )
             
-            # Opcional: Crear un chat relacionado con la renta
-            Chat.objects.create(
+            # Crear el chat relacionado con la renta
+            chat = Chat.objects.create(
                 arrendador=item.herramienta.arrendador,
                 arrendatario=arrendatario,
                 herramienta=item.herramienta,
                 renta=renta
             )
+
+            # Notificar al arrendador sobre el nuevo chat
+            mensaje = f"Nuevo chat creado para la herramienta '{item.herramienta.nombre}'."
+            Notificacion.objects.create(
+                usuario=item.herramienta.arrendador.usuario,
+                mensaje=mensaje,
+                herramienta=item.herramienta
+            )
         
         # Eliminar todos los items del carrito después de crear las rentas
         carrito_items.delete()
-        
-        return redirect("arrendatario_home")
+
+        # Redirigir a la pantalla de pago exitoso
+        return redirect("pago_confirmacion")
     else:
         messages.error(request, "Error al confirmar el pago")
         return redirect("carrito")
+
+
+def pago_confirmacion_view(request):
+    """
+    Pantalla de confirmación de pago.
+    """
+    return render(request, 'rentas/pago_confirmacion.html')
         
 def pago_cancelado_view(request):
     messages.info(request, "El pago fue cancelado.")

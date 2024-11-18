@@ -49,13 +49,13 @@
 
     <!-- Información del vendedor -->
     <div class="flex items-center px-4 py-4">
-      <img class="w-12 h-12 rounded-full" src="https://randomuser.me/api/portraits/men/31.jpg" alt="Foto del vendedor"/>
+      <img class="w-12 h-12 rounded-full" src="{% if tool.arrendador.profile_picture %}{{ tool.arrendador.profile_picture.url }}{% else %}https://via.placeholder.com/150{% endif %}" alt="Foto del vendedor"/>
       <p class="ml-4 text-[#0e141b] font-bold">Herramienta de: {{ tool.arrendador.nombre }} {{ tool.arrendador.apellidos }}</p>
     </div>
 
     <!-- Ubicación del vendedor -->
     <h2 class="px-4 pb-3 pt-5 text-[22px] font-bold text-[#0e141b]">Ubicación</h2>
-    <p class="px-4 pb-3 pt-1 text-base font-normal text-[#0e141b]">{{ tool.arrendador.direccion }}</p>
+    <p class="px-4 pb-3 pt-1 text-base font-normal text-[#0e141b]">{{ tool.arrendador.direccion.colonia }}</p>
 
     <!-- Descripción de la herramienta -->
     <h2 class="px-4 pb-3 pt-5 text-[22px] font-bold text-[#0e141b]">Descripción</h2>
@@ -114,8 +114,8 @@
       {% endfor %}
     </div>
 
-    <!-- Formulario para hacer una pregunta -->
-    {% if user.is_authenticated and user.arrendatario %}
+    {% if user.is_authenticated %}
+    {% if user.arrendatario %}
       <h2 class="px-4 pb-3 pt-5 text-[22px] font-bold text-[#0e141b]">Haz una Pregunta</h2>
       <form method="post" action="{% url 'tool_detail' tool.id %}" class="p-4 border rounded-lg bg-gray-100">
         {% csrf_token %}
@@ -125,6 +125,9 @@
     {% else %}
       <p class="text-red-500">Debes ser un arrendatario registrado para hacer preguntas.</p>
     {% endif %}
+  {% else %}
+    <p class="text-red-500">Debes iniciar sesión para hacer preguntas.</p>
+  {% endif %}
   </div>
 </div>
 {% endblock %}

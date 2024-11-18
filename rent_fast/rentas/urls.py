@@ -1,6 +1,6 @@
 # rentas/urls.py
 from django.urls import path
-from .views import iniciar_pago_view,preguntas_sin_responder_view, pago_exitoso_view, pago_cancelado_view, ver_chat_view, listar_chats_view, rentas_arrendador_view, rentas_arrendatario_view, finalizar_renta_view, ocultar_chat, restaurar_chat_view, mostrar_chat
+from .views import iniciar_pago_view,preguntas_sin_responder_view, pago_confirmacion_view, pago_exitoso_view, pago_cancelado_view, ver_chat_view, listar_chats_view, rentas_arrendador_view, rentas_arrendatario_view, finalizar_renta_view, ocultar_chat, restaurar_chat_view, mostrar_chat
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -17,4 +17,6 @@ urlpatterns = [
     path('ocultar_chat/<int:chat_id>/', ocultar_chat, name='ocultar_chat'),
     path('restaurar_chat/<int:chat_id>/', restaurar_chat_view, name='restaurar_chat'),
     path('chats/mostrar/<int:chat_id>/', mostrar_chat, name='mostrar_chat'),
+    path("pago/confirmacion/", pago_confirmacion_view, name="pago_confirmacion"),
+
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
