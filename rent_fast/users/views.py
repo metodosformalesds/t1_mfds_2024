@@ -546,19 +546,25 @@ def update_address(request):
     }
     return render(request, 'users/update_address.html', context)
 
-
-
-
-
 @login_required
 def ver_notificaciones(request):
     notificaciones = Notificacion.objects.filter(usuario=request.user).order_by('-creado')
     notificaciones.update(leido=True)
 
+    # Determinar la redirección según el tipo de usuario
+    if hasattr(request.user, 'arrendador'):
+        url_redireccion = 'arrendador_home'
+    elif hasattr(request.user, 'arrendatario'):
+        url_redireccion = 'arrendatario_home'
+    else:
+        url_redireccion = 'home'  # Ruta predeterminada si no tiene rol específico
+
     context = {
         'notificaciones': notificaciones,
+        'url_redireccion': reverse(url_redireccion),  # Obtener la URL completa
     }
     return render(request, 'users/notificaciones.html', context)
+
 
 import uuid
 from django.core.cache import cache

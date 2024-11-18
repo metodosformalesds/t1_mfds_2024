@@ -166,26 +166,50 @@ def arrendador_home(request):
     })
 
     
+from django.db.models import Q
 
 @login_required
 def arrendatario_home(request):
-    search_query = request.GET.get('search', '')  # Recoge el valor de b squeda (si existe)
+    search_query = request.GET.get('search', '')  # Captura el texto ingresado en el buscador
+    precio_minimo = request.GET.get('precio_minimo', None)
+    precio_maximo = request.GET.get('precio_maximo', None)
+    categoria_id = request.GET.get('categoria', None)
 
-    # Obtener herramientas disponibles agrupadas por categor a
+    # Filtrar herramientas disponibles
+    herramientas = Tool.objects.filter(estado="Disponible")
+
+    # Aplicar filtros según lo ingresado
+    if search_query:
+        herramientas = herramientas.filter(
+            Q(nombre__icontains=search_query) |
+            Q(categoria__nombre__icontains=search_query) |
+            Q(arrendador__direccion__icontains=search_query)
+        )
+
+    if precio_minimo:
+        herramientas = herramientas.filter(costo_dia__gte=precio_minimo)
+    if precio_maximo:
+        herramientas = herramientas.filter(costo_dia__lte=precio_maximo)
+    if categoria_id:
+        herramientas = herramientas.filter(categoria__id=categoria_id)
+
+    # Agrupar herramientas por categoría
     categorias = Categoria.objects.all()
     herramientas_por_categoria = {
-        categoria.nombre: Tool.objects.filter(categoria=categoria, estado="Disponible", nombre__icontains=search_query)[:5]
+        categoria.nombre: herramientas.filter(categoria=categoria)[:5]
         for categoria in categorias
     }
 
-    # Herramientas sin categor a (para la secci n "Cerca de ti")
-    herramientas_sin_categoria = Tool.objects.filter(categoria__isnull=True, estado="Disponible", nombre__icontains=search_query)
+    # Herramientas sin categoría
+    herramientas_sin_categoria = herramientas.filter(categoria__isnull=True)
 
     return render(request, 'arrendatarios/arrendatario_home_new.html', {
         'herramientas_sin_categoria': herramientas_sin_categoria,
         'herramientas_por_categoria': herramientas_por_categoria,
         'search_query': search_query,
     })
+
+
 
 class ToolFormView(LoginRequiredMixin, generic.FormView):
     template_name = "tools/add_tool.html"
