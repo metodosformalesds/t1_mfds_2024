@@ -746,3 +746,32 @@ def editar_usuario(request, usuario_id, tipo_usuario):
         form = form_class(instance=usuario)  # Carga los datos actuales del usuario.
 
     return render(request, 'users/editar_usuario.html', {'form': form, 'tipo_usuario': tipo_usuario})
+from .forms import RetiroForm
+from .models import Balance, Retiro
+
+@login_required
+def balance_view(request):
+    arrendador = request.user.arrendador
+    balance, created = Balance.objects.get_or_create(arrendador=arrendador)
+    retiros = Retiro.objects.filter(arrendador=arrendador).order_by('-fecha')
+
+    if request.method == 'POST':
+        form = RetiroForm(request.POST)
+        if form.is_valid():
+            monto = form.cleaned_data['monto']
+            if monto <= balance.saldo_total:
+                Retiro.objects.create(arrendador=arrendador, monto=monto)
+                balance.saldo_total -= monto
+                balance.save()
+                messages.success(request, f"Se ha solicitado un retiro de ${monto:.2f}.")
+                return redirect('balance_view')
+            else:
+                messages.error(request, "No tienes saldo suficiente para este retiro.")
+    else:
+        form = RetiroForm()
+
+    return render(request, 'users/balance.html', {
+        'balance': balance,
+        'retiros': retiros,
+        'form': form,
+    })

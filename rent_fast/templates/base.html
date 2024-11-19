@@ -13,7 +13,7 @@
             var menu = document.getElementById("dropdown-menu");
             menu.classList.toggle("hidden");
         }
-        
+       
         function toggleNotifications() {
             var dropdown = document.getElementById("notification-dropdown");
             dropdown.classList.toggle("hidden");
@@ -63,6 +63,7 @@
                         <a href="{% url 'preguntas_sin_responder' %}" class="text-sm font-bold text-[#0e141b] hover:text-[#1980e6]">Preguntas</a>
                         <a href="{% url 'add_tool' %}" class="flex items-center justify-center rounded-xl h-10 px-4 bg-[#1980e6] text-white text-sm font-bold leading-normal">Publicar</a>
                         <a href="{% url 'soporte' %}" class="text-sm font-bold text-[#0e141b] hover:text-[#1980e6]">Soporte</a>
+                        <a href="{% url 'balance_view' %}" class="text-sm font-medium text-gray-700 hover:text-blue-500">Balance</a>
                         <a href="#" class="text-sm font-bold text-[#0e141b] hover:text-[#1980e6]">Pagos Recibidos</a>
                     {% endif %}
                     <div class="relative">

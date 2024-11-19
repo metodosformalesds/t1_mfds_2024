@@ -1,8 +1,15 @@
 from django import forms
 from django.contrib.auth.models import User
 from .models import Direccion, Arrendador, Arrendatario
-import re
-
+ 
+class RetiroForm(forms.Form):
+    monto = forms.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        label="Cantidad a retirar",
+        widget=forms.NumberInput(attrs={'class': 'form-input', 'placeholder': 'Monto'})
+    )
+ 
 # Paso 1: Formulario de información básica de usuario
 class UserForm(forms.ModelForm):
     """
@@ -28,11 +35,11 @@ class UserForm(forms.ModelForm):
         widget=forms.PasswordInput(attrs={'id': 'id_password2', 'class': 'form-input'}),
         label="Confirmar Contraseña"
     )
-
+ 
     class Meta:
         model = User
         fields = ['username', 'email']
-
+ 
     def clean(self):
         """
         Realiza las validaciones del formulario:
@@ -44,11 +51,11 @@ class UserForm(forms.ModelForm):
         cleaned_data = super().clean()
         password1 = cleaned_data.get("password1")
         password2 = cleaned_data.get("password2")
-
+ 
         # Verifica que ambas contraseñas coincidan
         if password1 and password2 and password1 != password2:
             self.add_error('password2', "Las contraseñas no coinciden.")
-
+ 
         # Validaciones adicionales para la contraseña
         if password1:
             if len(password1) < 8:
@@ -61,22 +68,22 @@ class UserForm(forms.ModelForm):
                 self.add_error('password1', "La contraseña debe contener al menos un número.")
             if not re.search(r"[!@#$%^&*(),.?\":{}|<>]", password1):
                 self.add_error('password1', "La contraseña debe contener al menos un carácter especial.")
-
+ 
         return cleaned_data
-
-
+ 
+ 
 # Paso 2: Formulario de información personal (con selección de rol y foto de perfil)
 class PersonalInfoForm(forms.Form):
     """
     Formulario para capturar información personal del usuario y su rol en la plataforma.
-    Incluye campos para nombre, apellidos, teléfono, rol (arrendador o arrendatario), 
+    Incluye campos para nombre, apellidos, teléfono, rol (arrendador o arrendatario),
     carga de imagen INE y foto de perfil.
     """
     ROLE_CHOICES = [
         ('arrendador', 'Arrendador'),
         ('arrendatario', 'Arrendatario'),
     ]
-    
+   
     nombre = forms.CharField(max_length=100, label="Nombre")
     apellidos = forms.CharField(max_length=100, label="Apellidos")
     telefono = forms.CharField(max_length=15, label="Teléfono")
@@ -84,7 +91,7 @@ class PersonalInfoForm(forms.Form):
     # Asignamos un ID específico al campo ine_image
     ine_image = forms.ImageField(label="Sube tu INE Mexicano", required=True, widget=forms.ClearableFileInput(attrs={'id': 'id_ine_image'}))
     profile_picture = forms.ImageField(label="Foto de perfil", required=False)
-
+ 
     def clean_nombre(self):
         """
         Valida que el campo nombre solo contenga letras y espacios.
@@ -93,7 +100,7 @@ class PersonalInfoForm(forms.Form):
         if not nombre.replace(" ", "").isalpha():
             raise forms.ValidationError("El nombre solo puede contener letras y espacios.")
         return nombre
-
+ 
     def clean_apellidos(self):
         """
         Valida que el campo apellidos solo contenga letras y espacios.
@@ -102,7 +109,7 @@ class PersonalInfoForm(forms.Form):
         if not apellidos.replace(" ", "").isalpha():
             raise forms.ValidationError("Los apellidos solo pueden contener letras y espacios.")
         return apellidos
-
+ 
     def clean_telefono(self):
         """
         Valida que el campo teléfono solo contenga números y tenga exactamente 10 dígitos.
@@ -113,11 +120,11 @@ class PersonalInfoForm(forms.Form):
         if len(telefono) != 10:
             raise forms.ValidationError("El teléfono debe tener 10 dígitos.")
         return telefono
-
+ 
     def save(self, user, direccion):
         """
         Guarda la información del perfil del usuario en la base de datos.
-        Crea un perfil de Arrendador o Arrendatario según el rol seleccionado y 
+        Crea un perfil de Arrendador o Arrendatario según el rol seleccionado y
         asocia la dirección, imagen del INE y foto de perfil.
         """
         role = self.cleaned_data.get('role')
@@ -141,7 +148,7 @@ class PersonalInfoForm(forms.Form):
                 profile_picture=self.cleaned_data.get('profile_picture'),  # Guarda la foto de perfil
                 direccion=direccion
             )
-
+ 
 # Paso 3: Formulario de dirección
 class AddressForm(forms.ModelForm):
     """
@@ -151,7 +158,7 @@ class AddressForm(forms.ModelForm):
     class Meta:
         model = Direccion
         fields = ['calle', 'colonia', 'codigo_postal', 'ciudad', 'estado' ]
-
+ 
 class UpdateAddressForm(forms.ModelForm):
     class Meta:
         model = Direccion
@@ -163,10 +170,10 @@ class UpdateAddressForm(forms.ModelForm):
             'estado': forms.TextInput(attrs={'class': 'form-input'}),
             'codigo_postal': forms.TextInput(attrs={'class': 'form-input'}),
         }
-
+ 
 from django import forms
 from .models import Arrendador, Arrendatario
-
+ 
 class EditarArrendadorForm(forms.ModelForm):
     """
     Formulario para editar la información de un Arrendador.
@@ -174,7 +181,7 @@ class EditarArrendadorForm(forms.ModelForm):
     class Meta:
         model = Arrendador
         fields = ['nombre', 'apellidos', 'telefono', 'correo', 'profile_picture']
-
+ 
 class EditarArrendatarioForm(forms.ModelForm):
     """
     Formulario para editar la información de un Arrendatario.
