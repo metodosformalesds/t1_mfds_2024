@@ -41,7 +41,7 @@ Rent Fast es una plataforma innovadora para la renta de herramientas.
 | 🔍 **Presentacion Ejecutiva**     | Manual técnico del sistema                            | [Presentacion](https://docs.google.com/presentation/d/1HG1plcm2fi8WrhMR_xxK0vFT4hqbWSCDsdASkHXe8d8/edit?usp=drive_open&ouid=0)            |
 | 🔗 **Deployment**             | Acceso al sistema                   | [Produccion](https://rentfast.live/)                   |
 | 🔗 **Diagrama de Gantt**             | Diagrama                   | [Excel](https://alumnosuacj-my.sharepoint.com/:x:/g/personal/al214720_alumnos_uacj_mx/EbK-gQDheoRDii-Ij9QbU0MB7bxXEGIa1FOWTC5etZafVQ?e=wkDc5L )                   |
-| 🔗 **Caso de Uso**             | Caso de uso                   | [World](https://docs.google.com/document/d/1A6KYdG0eG6XtxhBEghS4FSh59YGc_fzoYsPU8UY18Gs/edit?usp=sharing)                   |
+| 🔗 **Caso de Uso**             | Caso de uso                   | [Word](https://docs.google.com/document/d/1z0mwspCGT4p9O1_DsHVvyoTiW04ZuCfdoCDASbId9bo/edit?usp=sharing)                   |
 | 🔗 **LOP**             | LOP Rentfast                   | [Excel](https://docs.google.com/spreadsheets/d/10TVIGTao-HNS1O8hR-kylg5nKtoe0EEAW4MW8teMSTc/edit?usp=sharing)                   |
 | 📊 **ClickUp**         | Programing task Gantt              | [Equipo](https://app.clickup.com/9011548244/v/li/901106282701)                     |
 | 📋 **Dominio**   | Documentación del dominio            | [Documenacion](https://docs.google.com/document/d/1Vl7ueZ5hsXziPJTrkL4wLrr6eUPZtXWD/edit)               |
