@@ -64,15 +64,15 @@ class Respuesta(models.Model):
         return f"Respuesta a pregunta sobre {self.pregunta.herramienta.nombre}"
     
 class Resena(models.Model):
+    CALIFICACIONES = [(i, str(i)) for i in range(1, 6)]  # Calificación del 1 al 5
     arrendatario = models.ForeignKey(Arrendatario, on_delete=models.CASCADE)
     herramienta = models.ForeignKey('tools.Tool', on_delete=models.CASCADE)
     comentario = models.TextField()
-    calificacion = models.IntegerField(default=0)  # Valor predeterminado
+    calificacion = models.IntegerField(choices=CALIFICACIONES, default=0)  # Cambia aquí
     fecha_creacion = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         unique_together = ('arrendatario', 'herramienta')
 
     def __str__(self):
-        return f"Rese a de {self.arrendatario} para {self.herramienta.nombre}"
-
+        return f"Reseña de {self.arrendatario} para {self.herramienta.nombre}"

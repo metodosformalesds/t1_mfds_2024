@@ -1,7 +1,7 @@
 # chat/forms.py
 from django import forms
 from .models import Mensaje
-from .models import Pregunta, Respuesta
+from .models import Pregunta, Respuesta, Resena
 
 class PreguntaForm(forms.ModelForm):
     class Meta:
@@ -32,6 +32,10 @@ class ResenaForm(forms.ModelForm):
         model = Resena
         fields = ['comentario', 'calificacion']
         widgets = {
-            'comentario': forms.Textarea(attrs={'class': 'form-input', 'placeholder': 'Escribe tu comentario aqu ...'}),
+            'comentario': forms.Textarea(attrs={'class': 'form-input', 'placeholder': 'Escribe tu comentario aquí...'}),
             'calificacion': forms.Select(attrs={'class': 'form-select'}),
+        }
+        labels = {
+            'comentario': 'Comentario',
+            'calificacion': 'Calificación'
         }

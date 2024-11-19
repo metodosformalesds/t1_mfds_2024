@@ -655,34 +655,30 @@ from rentas.models import Renta
 def detalles_herramienta(request, herramienta_id):
     herramienta = get_object_or_404(Tool, id=herramienta_id)
     resenas = Resena.objects.filter(herramienta=herramienta)
-
-    # Calcular el promedio de las calificaciones
     promedio_calificacion = resenas.aggregate(Avg('calificacion'))['calificacion__avg']
 
-    # Verificar si el usuario ha alquilado y finalizado la herramienta
     ha_alquilado_y_finalizado = Renta.objects.filter(
         herramienta=herramienta,
         arrendatario=request.user.arrendatario,
         estado="Finalizada"
     ).exists()
 
-    # Verificar si ya existe una rese a para este arrendatario y herramienta
-    resena_existente = Resena.objects.filter(
+    ha_dejado_resena = Resena.objects.filter(
         herramienta=herramienta,
         arrendatario=request.user.arrendatario
     ).exists()
 
-    if request.method == 'POST' and ha_alquilado_y_finalizado and not resena_existente:
+    if request.method == 'POST' and ha_alquilado_y_finalizado and not ha_dejado_resena:
         form = ResenaForm(request.POST)
         if form.is_valid():
             resena = form.save(commit=False)
             resena.arrendatario = request.user.arrendatario
             resena.herramienta = herramienta
             resena.save()
-            messages.success(request, "Tu rese a ha sido enviada con  xito.")
+            messages.success(request, "¡Reseña enviada exitosamente!")
             return redirect('tool_detail', herramienta_id=herramienta.id)
         else:
-            messages.error(request, "Hubo un error con tu rese a. Int ntalo de nuevo.")
+            messages.error(request, "Hubo un error al enviar tu reseña. Por favor intenta nuevamente.")
     else:
         form = ResenaForm()
 
@@ -690,7 +686,8 @@ def detalles_herramienta(request, herramienta_id):
         'herramienta': herramienta,
         'resenas': resenas,
         'promedio_calificacion': promedio_calificacion,
-        'ha_alquilado_y_finalizado': ha_alquilado_y_finalizado and not resena_existente,
+        'ha_alquilado_y_finalizado': ha_alquilado_y_finalizado,
+        'ha_dejado_resena': ha_dejado_resena,
         'form': form,
     }
     return render(request, 'tools/tool_details.html', context)

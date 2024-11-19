@@ -80,17 +80,19 @@
 
     <!-- Formulario de Reseñas -->
     {% if ha_alquilado_y_finalizado and not ha_dejado_resena %}
-      <h2 class="px-4 pb-3 pt-5 text-[22px] font-bold text-[#0e141b]">Deja una Reseña</h2>
-      <form method="post" class="space-y-4 px-4">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Enviar Reseña</button>
-      </form>
-    {% elif ha_dejado_resena %}
-      <p class="px-4 text-gray-500">Ya has dejado una reseña para esta herramienta.</p>
-    {% else %}
-      <p class="px-4 text-gray-500">Debes finalizar la renta de esta herramienta para dejar una reseña.</p>
-    {% endif %}
+    <h2 class="px-4 pb-3 pt-5 text-[22px] font-bold text-[#0e141b]">Deja una Reseña</h2>
+    <form method="post" class="space-y-4 px-4">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Enviar Reseña</button>
+    </form>
+  {% elif ha_dejado_resena %}
+    <p class="px-4 text-gray-500">Ya has dejado una reseña para esta herramienta.</p>
+  {% else %}
+    <p class="px-4 text-gray-500">Debes finalizar la renta de esta herramienta para dejar una reseña.</p>
+  {% endif %}
+  
+  
 
     <!-- Preguntas y Respuestas -->
     <h2 class="px-4 pb-3 pt-5 text-[22px] font-bold text-[#0e141b]">Preguntas y Respuestas</h2>
