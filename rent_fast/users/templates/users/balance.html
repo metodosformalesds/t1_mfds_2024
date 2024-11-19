@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+ 
+{% block content %}
+<div class="max-w-4xl mx-auto mt-10">
+    <h2 class="text-2xl font-bold mb-6">Balance</h2>
+ 
+    <!-- Saldo total -->
+    <div class="bg-white p-6 rounded-lg shadow">
+        <h3 class="text-lg font-semibold text-gray-700">Saldo disponible</h3>
+        <p class="text-4xl font-bold text-green-500">${{ balance.saldo_total }}</p>
+    </div>
+ 
+    <!-- Formulario de retiro -->
+    <div class="bg-white p-6 rounded-lg shadow mt-6">
+        <h3 class="text-lg font-semibold text-gray-700 mb-4">Solicitar retiro</h3>
+        <form method="POST">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded mt-2">Solicitar retiro</button>
+        </form>
+    </div>
+ 
+    <!-- Historial de retiros -->
+    <div class="bg-white p-6 rounded-lg shadow mt-6">
+        <h3 class="text-lg font-semibold text-gray-700 mb-4">Historial de retiros</h3>
+        {% if retiros %}
+            <ul>
+                {% for retiro in retiros %}
+                    <li class="flex justify-between py-2 border-b">
+                        <span>${{ retiro.monto }}</span>
+                        <span>{{ retiro.fecha }}</span>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="text-gray-500">Aún no has realizado retiros.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+ 
+ 
+{% extends "base.html" %}
+ 
+{% block content %}
+<div class="max-w-4xl mx-auto mt-10">
+    <h2 class="text-2xl font-bold mb-6">Balance</h2>
+ 
+    <!-- Saldo total -->
+    <div class="bg-white p-6 rounded-lg shadow">
+        <h3 class="text-lg font-semibold text-gray-700">Saldo disponible</h3>
+        <p class="text-4xl font-bold text-green-500">${{ balance.saldo_total }}</p>
+    </div>
+ 
+    <!-- Formulario de retiro -->
+    <div class="bg-white p-6 rounded-lg shadow mt-6">
+        <h3 class="text-lg font-semibold text-gray-700 mb-4">Solicitar retiro</h3>
+        <form method="POST">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded mt-2">Solicitar retiro</button>
+        </form>
+    </div>
+ 
+    <!-- Historial de retiros -->
+    <div class="bg-white p-6 rounded-lg shadow mt-6">
+        <h3 class="text-lg font-semibold text-gray-700 mb-4">Historial de retiros</h3>
+        {% if retiros %}
+            <ul>
+                {% for retiro in retiros %}
+                    <li class="flex justify-between py-2 border-b">
+                        <span>${{ retiro.monto }}</span>
+                        <span>{{ retiro.fecha }}</span>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="text-gray-500">Aún no has realizado retiros.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+ 
+ 

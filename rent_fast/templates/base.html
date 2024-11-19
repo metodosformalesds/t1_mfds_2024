@@ -13,7 +13,7 @@
             var menu = document.getElementById("dropdown-menu");
             menu.classList.toggle("hidden");
         }
-        
+       
         function toggleNotifications() {
             var dropdown = document.getElementById("notification-dropdown");
             dropdown.classList.toggle("hidden");
@@ -44,24 +44,26 @@
                         <a href="{% url 'listar_chats' %}" class="text-sm font-bold text-[#0e141b] hover:text-[#1980e6]">Mis Chats</a>
                         <a href="{% url 'rentas_arrendatario' %}" class="text-sm font-bold text-[#0e141b] hover:text-[#1980e6]">Ver Mis Rentas</a>
                         <a href="{% url 'home' %}" class="flex items-center justify-center rounded-xl h-10 px-4 bg-[#1980e6] text-white text-sm font-bold leading-normal">Explorar</a>
-                         <!-- Icono del carrito de compras -->
-                    <div class="relative">
-                        <a href="{% url 'carrito' %}" class="text-[#0e141b] hover:text-[#1980e6]">
-                            <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.344 2.175L7.503 15h9.992l2.169-9H5.654" />
-                                <circle cx="10" cy="20.5" r="1.5" />
-                                <circle cx="17" cy="20.5" r="1.5" />
-                            </svg>
-                            {% if cart_count > 0 %}
-                                <span class="absolute -top-2 -right-2 bg-green-500 text-white rounded-full text-xs px-2">{{ cart_count }}</span>
-                            {% endif %}
-                        </a>
-                    </div>
-                        {% elif user.arrendador %}
+                        <a href="{% url 'soporte' %}" class="text-sm font-bold text-[#0e141b] hover:text-[#1980e6]">Soporte</a>
+                        <div class="relative">
+                            <a href="{% url 'carrito' %}" class="text-[#0e141b] hover:text-[#1980e6]">
+                                <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.344 2.175L7.503 15h9.992l2.169-9H5.654" />
+                                    <circle cx="10" cy="20.5" r="1.5" />
+                                    <circle cx="17" cy="20.5" r="1.5" />
+                                </svg>
+                                {% if cart_count > 0 %}
+                                    <span class="absolute -top-2 -right-2 bg-green-500 text-white rounded-full text-xs px-2">{{ cart_count }}</span>
+                                {% endif %}
+                            </a>
+                        </div>
+                    {% elif user.arrendador %}
                         <a href="{% url 'listar_chats' %}" class="text-sm font-bold text-[#0e141b] hover:text-[#1980e6]">Mis Chats</a>
                         <a href="{% url 'rentas_arrendador' %}" class="text-sm font-bold text-[#0e141b] hover:text-[#1980e6]">Ver Mis Rentas</a>
                         <a href="{% url 'preguntas_sin_responder' %}" class="text-sm font-bold text-[#0e141b] hover:text-[#1980e6]">Preguntas</a>
                         <a href="{% url 'add_tool' %}" class="flex items-center justify-center rounded-xl h-10 px-4 bg-[#1980e6] text-white text-sm font-bold leading-normal">Publicar</a>
+                        <a href="{% url 'soporte' %}" class="text-sm font-bold text-[#0e141b] hover:text-[#1980e6]">Soporte</a>
+                        <a href="{% url 'balance_view' %}" class="text-sm font-medium text-gray-700 hover:text-blue-500">Balance</a>
                         <a href="#" class="text-sm font-bold text-[#0e141b] hover:text-[#1980e6]">Pagos Recibidos</a>
                     {% endif %}
                     <div class="relative">
@@ -100,26 +102,21 @@
                         </button>
                         <div id="dropdown-menu" class="absolute right-0 mt-2 w-48 bg-white border rounded-md shadow-lg hidden z-50">
                             {% if user.arrendatario or user.arrendador %}
-                                <a href="{% url 'update_dates' %}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Actualizar Datos</a>
-                                <a href="{% url 'update_address' %}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Actualizar Dirección</a>
-                            {% else %}
-                                <div class="block px-4 py-2 text-gray-500">Opciones no disponibles</div>
+                                <a href="{% url 'update_dates' %}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Perfil</a>
                             {% endif %}
-                            <form action="{% url 'logout' %}" method="post" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">
-                                {% csrf_token %}
-                                <button type="submit" class="w-full text-left">Cerrar sesión</button>
-                            </form>
+                            <a href="{% url 'logout' %}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Cerrar sesión</a>
                         </div>
                     </div>
                 {% else %}
-                    <a href="{% url 'login' %}" class="text-sm font-bold text-[#0e141b] hover:text-[#1980e6]">Login</a>
+                    <a href="{% url 'login' %}" class="text-sm font-bold text-[#0e141b] hover:text-[#1980e6]">Iniciar sesión</a>
+                    <a href="{% url 'register' %}" class="text-sm font-bold text-[#0e141b] hover:text-[#1980e6]">Registrarse</a>
                 {% endif %}
             </div>
         </nav>
     </header>
-    <div>
+    <main>
         {% block content %}
-        {% endblock content %}
-    </div>
+        {% endblock %}
+    </main>
 </body>
 </html>
