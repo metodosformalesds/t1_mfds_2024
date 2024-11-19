@@ -31,7 +31,7 @@ class Chat(models.Model):
     creado = models.DateTimeField(auto_now_add=True)
     oculto_arrendador = models.BooleanField(default=False)
     oculto_arrendatario = models.BooleanField(default=False)
-    es_soporte = models.BooleanField(default=False)
+    es_soporte = models.BooleanField(default=False, null=True, blank=True )
 
 class Mensaje(models.Model):
     chat = models.ForeignKey(Chat, related_name='mensajes', on_delete=models.CASCADE)
