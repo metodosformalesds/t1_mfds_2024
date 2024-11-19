@@ -252,35 +252,40 @@
         if (stream) { stream.getTracks().forEach(track => track.stop()); }
     }
 
-    // Captura la foto y verifica con el backend
     function captureAndVerify() {
         const video = document.getElementById("live-video");
         const canvas = document.createElement("canvas");
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
-        canvas.getContext("2d").drawImage(video, 0, 0);
-
-        // Convertir la captura en vivo a base64
+    
+        // Dibujar la imagen del video en el canvas
+        const context = canvas.getContext("2d");
+        context.drawImage(video, 0, 0);
+    
+        // Detener el video (congela la imagen en el último frame)
+        const stream = video.srcObject;
+        if (stream) {
+            stream.getTracks().forEach(track => track.stop());
+        }
+    
+        // Convertir la imagen capturada en formato base64
         const liveImageData = canvas.toDataURL("image/png");
-        console.log("Imagen en vivo capturada:", liveImageData ? "Sí" : "No");
-
-        // Obtener el archivo de INE usando el ID forzado
+    
+        // Obtener la imagen INE cargada
         const ineImageInput = document.getElementById("id_ine_image");
         const ineImageFile = ineImageInput ? ineImageInput.files[0] : null;
-        console.log("Archivo de imagen INE cargado:", ineImageFile ? "Sí" : "No");
-
-        // Comprobar que ambas imágenes están presentes
+    
         if (!liveImageData || !ineImageFile) {
             alert("Ambas imágenes son necesarias para la verificación.");
             return;
         }
-
-        // Crear un objeto FormData para enviar ambas imágenes
+    
+        // Crear un FormData para enviar al backend
         const formData = new FormData();
-        formData.append("captured_image", liveImageData);  // La imagen capturada en vivo
-        formData.append("ine_image", ineImageFile);        // La imagen INE cargada
-
-        // Realizar la solicitud de verificación de identidad
+        formData.append("captured_image", liveImageData);  // Imagen capturada
+        formData.append("ine_image", ineImageFile);       // Imagen INE cargada
+    
+        // Realizar la solicitud de verificación
         fetch("{% url 'verify_identity' %}", {
             method: "POST",
             headers: { "X-CSRFToken": "{{ csrf_token }}" },
@@ -292,12 +297,28 @@
             if (data.success) {
                 alert("Identidad verificada correctamente.");
                 document.getElementById("continue-btn").disabled = false;
-                closeVerificationDialog();
             } else {
                 alert("La verificación de identidad falló. Inténtalo nuevamente.");
             }
         })
         .catch(error => console.error("Error:", error));
+    }
+    
+    
+    // Función para restaurar el flujo del video
+    function restoreVideo(video, canvas) {
+        // Eliminar el canvas (imagen congelada)
+        canvas.remove();
+        video.classList.remove("hidden");
+    
+        // Reiniciar el flujo del video
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then(stream => {
+                video.srcObject = stream;
+            })
+            .catch(error => {
+                console.error("No se pudo reiniciar el video:", error);
+            });
     }
 </script>
 {% endblock %}
