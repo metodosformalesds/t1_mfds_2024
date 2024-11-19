@@ -19,6 +19,31 @@
         {% endif %}
     </h1>
 
+    <!-- Información de la herramienta (si no es soporte) -->
+    {% if not es_soporte %}
+    <div class="bg-white p-6 rounded-lg shadow-md mb-6 flex items-center">
+        <div class="w-24 h-24 mr-4 flex-shrink-0">
+            <div class="aspect-square w-full h-full rounded-lg bg-cover bg-center bg-no-repeat" style='background-image: url("{% if chat.herramienta.imagenes %}{{ chat.herramienta.imagenes.url }}{% else %}https://cdn.usegalileo.ai/sdxl10/84ed65ba-6d8e-4158-b97a-6d36dabc415d.png{% endif %}");'></div>
+        </div>
+        <div>
+            <h2 class="text-2xl font-semibold text-gray-800">{{ herramienta.nombre }}</h2>
+            <p class="text-gray-600">Fecha de inicio: {{ chat.renta.fecha_inicio }}</p>
+            <p class="text-gray-600">Fecha de fin: {{ chat.renta.fecha_fin }}</p>
+            <p class="text-gray-600"><strong>Chateando con:</strong> {% if request.user == chat.arrendatario.usuario %}{{ chat.arrendador.nombre }}{% else %}{{ chat.arrendatario.nombre }}{% endif %}</p>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if es_soporte and contacto_info %}
+    <div class="bg-white p-6 rounded-lg shadow-md mb-6 flex items-center">
+        <div class="w-24 h-24 mr-4 flex-shrink-0 rounded-full bg-cover bg-center bg-no-repeat" style='background-image: url("{% if contacto_info.foto %}{{ contacto_info.foto.url }}{% else %}https://cdn-icons-png.flaticon.com/512/2504/2504240.png{% endif %}");'></div>
+        <div>
+            <h2 class="text-2xl font-semibold text-gray-800">Contacto: {{ contacto_info.nombre }}</h2>
+            <p class="text-gray-600"><strong>Email:</strong> {{ contacto_info.email }}</p>
+        </div>
+    </div>
+    {% endif %}
+
     <!-- Información de ubicación de los usuarios -->
     {% if not es_soporte %}
     <div class="bg-white p-6 rounded-lg shadow-md mb-6">
@@ -27,6 +52,31 @@
         <p class="text-gray-600"><strong>Arrendador:</strong> {{ chat.arrendador.usuario.get_full_name }} - {{ chat.arrendador.direccion }}</p>
     </div>
     {% endif %}
+
+    <!-- Contenedor de mensajes -->
+    <div class="bg-white border rounded-lg shadow-md p-6 max-h-96 overflow-y-auto space-y-4">
+        {% for mensaje in mensajes %}
+        <div class="p-3 rounded-lg {% if mensaje.remitente == request.user %} bg-blue-50 text-right {% else %} bg-gray-100 text-left {% endif %}">
+            <div class="flex items-center space-x-4">
+                <div class="w-10 h-10 flex-shrink-0 rounded-full bg-cover bg-center bg-no-repeat" style='background-image: url("{% if mensaje.remitente.profile.foto %}{{ mensaje.remitente.profile.foto.url }}{% else %}https://cdn-icons-png.flaticon.com/512/2504/2504240.png{% endif %}");'></div>
+                <div>
+                    <p class="text-sm font-medium text-gray-800">{{ mensaje.remitente.get_full_name }}</p>
+                    {% if mensaje.contenido %}
+                        <p class="text-base text-gray-700">{{ mensaje.contenido }}</p>
+                    {% endif %}
+                    {% if mensaje.archivo %}
+                        <a href="{{ mensaje.archivo.url }}" class="text-blue-500 underline" target="_blank">📎 Ver archivo adjunto</a>
+                    {% endif %}
+                    <span class="text-xs text-gray-500 block mt-1">{{ mensaje.enviado }}</span>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="text-center py-4">
+            <p class="text-gray-600 text-lg">No hay mensajes en este chat.</p>
+        </div>
+        {% endfor %}
+    </div>
 
     <!-- Botón para solicitar Uber -->
     {% if not es_soporte and request.user == chat.arrendatario.usuario %}
@@ -39,22 +89,45 @@
         </button>
     </div>
     {% endif %}
+
+    <!-- Botón para finalizar la renta -->
+    {% if not es_soporte and chat.renta.estado == "Activa" and request.user == chat.arrendatario.usuario %}
+    <form method="post" action="{% url 'finalizar_renta' chat.renta.id %}" class="mt-6">
+        {% csrf_token %}
+        <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition duration-150">
+            Finalizar Renta
+        </button>
+    </form>
+    {% endif %}
+
+    <!-- Formulario para enviar un nuevo mensaje -->
+    <form method="post" enctype="multipart/form-data" class="mt-6">
+        {% csrf_token %}
+        <div class="flex items-center space-x-3">
+            <input type="text" name="contenido" class="flex-1 border rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Escribe tu mensaje...">
+            <label for="archivo" class="p-2 cursor-pointer">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-gray-600 hover:text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 002.828 2.828l6.586-6.586a4 4 0 00-5.656-5.656l-6.586 6.586a6 6 0 008.486 8.486l6.586-6.586" />
+                </svg>
+                <input type="file" id="archivo" name="archivo" class="hidden" onchange="mostrarPrevisualizacion(this)">
+            </label>
+            <div id="archivoPreview" class="text-gray-600 text-sm mt-2 hidden">
+                <p>Archivo seleccionado: <span id="archivoNombre"></span></p>
+            </div>
+            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition duration-150">Enviar</button>
+        </div>
+    </form>
 </div>
 
 <script>
     async function obtenerCoordenadasEstructuradas(direccion) {
-        const { street, postalcode, city, state, country } = direccion;
-        const url = `https://nominatim.openstreetmap.org/search?format=json&street=${encodeURIComponent(street)}&postalcode=${postalcode}&city=${encodeURIComponent(city)}&state=${encodeURIComponent(state)}&country=${encodeURIComponent(country)}`;
-
-        console.log("URL estructurada:", url);
+        const { calle, codigo_postal, ciudad, estado } = direccion;
+        const url = `https://nominatim.openstreetmap.org/search?format=json&street=${encodeURIComponent(calle)}&postalcode=${codigo_postal}&city=${encodeURIComponent(ciudad)}&state=${encodeURIComponent(estado)}&country=Mexico`;
 
         try {
-            const response = await fetch(url, {
-                headers: { 'User-Agent': 'ChatGPT-Django-App' }, // Identificador requerido por Nominatim
-            });
+            const response = await fetch(url, { headers: { 'User-Agent': 'ChatGPT-Django-App' } });
             const data = await response.json();
             if (data.length > 0) {
-                console.log("Coordenadas obtenidas:", data[0]);
                 return { lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon) };
             } else {
                 console.warn("No se encontraron coordenadas para la dirección:", direccion);
@@ -67,40 +140,42 @@
     }
 
     async function solicitarUberConNominatim() {
-        // Direcciones estructuradas del arrendatario y arrendador
         const direccionOrigen = {
-            street: "Salvarcar",
-            postalcode: "32676",
-            city: "Juarez",
-            state: "Chihuahua",
-            country: "Mexico"
-        };
-        const direccionDestino = {
-            street: "Palacio de mitla",
-            postalcode: "32573",
-            city: "Juarez",
-            state: "Chihuahua",
-            country: "Mexico"
+            calle: "{{ chat.arrendatario.direccion.calle|escapejs }}",
+            codigo_postal: "{{ chat.arrendatario.direccion.codigo_postal|escapejs }}",
+            ciudad: "{{ chat.arrendatario.direccion.ciudad|escapejs }}",
+            estado: "{{ chat.arrendatario.direccion.estado|escapejs }}"
         };
 
-        console.log("Iniciando solicitud de Uber con Nominatim...");
-        console.log("Dirección de origen:", direccionOrigen);
-        console.log("Dirección de destino:", direccionDestino);
+        const direccionDestino = {
+            calle: "{{ chat.arrendador.direccion.calle|escapejs }}",
+            codigo_postal: "{{ chat.arrendador.direccion.codigo_postal|escapejs }}",
+            ciudad: "{{ chat.arrendador.direccion.ciudad|escapejs }}",
+            estado: "{{ chat.arrendador.direccion.estado|escapejs }}"
+        };
 
         try {
-            // Obtener coordenadas para origen y destino
             const origenCoords = await obtenerCoordenadasEstructuradas(direccionOrigen);
             const destinoCoords = await obtenerCoordenadasEstructuradas(direccionDestino);
 
             if (origenCoords && destinoCoords) {
                 const uberURL = `https://m.uber.com/ul/?action=setPickup&pickup[latitude]=${origenCoords.lat}&pickup[longitude]=${origenCoords.lng}&dropoff[latitude]=${destinoCoords.lat}&dropoff[longitude]=${destinoCoords.lng}`;
-                console.log("URL de Uber generada:", uberURL);
                 window.open(uberURL, '_blank');
             } else {
                 alert("No se pudieron obtener las coordenadas para alguna de las direcciones.");
             }
         } catch (error) {
             console.error("Error al solicitar Uber:", error);
+        }
+    }
+
+    function mostrarPrevisualizacion(input) {
+        const archivo = input.files[0];
+        if (archivo) {
+            document.getElementById('archivoPreview').classList.remove('hidden');
+            document.getElementById('archivoNombre').textContent = archivo.name;
+        } else {
+            document.getElementById('archivoPreview').classList.add('hidden');
         }
     }
 </script>
