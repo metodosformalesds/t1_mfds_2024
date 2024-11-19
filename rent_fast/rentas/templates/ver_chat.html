@@ -34,6 +34,17 @@
     </div>
     {% endif %}
 
+    {% if es_soporte and contacto_info %}
+    <div class="bg-white p-6 rounded-lg shadow-md mb-6 flex items-center">
+        <div class="w-24 h-24 mr-4 flex-shrink-0 rounded-full bg-cover bg-center bg-no-repeat" style='background-image: url("{% if contacto_info.foto %}{{ contacto_info.foto.url }}{% else %}https://cdn-icons-png.flaticon.com/512/2504/2504240.png{% endif %}");'></div>
+        <div>
+            <h2 class="text-2xl font-semibold text-gray-800">Contacto: {{ contacto_info.nombre }}</h2>
+            <p class="text-gray-600"><strong>Email:</strong> {{ contacto_info.email }}</p>
+        </div>
+    </div>
+    {% endif %}
+    
+
     <!-- Información de ubicación de los usuarios (solo si no es soporte) -->
     {% if not es_soporte %}
     <div class="bg-white p-6 rounded-lg shadow-md mb-6">
@@ -47,14 +58,20 @@
     <div class="bg-white border rounded-lg shadow-md p-6 max-h-96 overflow-y-auto space-y-4">
         {% for mensaje in mensajes %}
         <div class="p-3 rounded-lg {% if mensaje.remitente == request.user %} bg-blue-50 text-right {% else %} bg-gray-100 text-left {% endif %}">
-            <p class="text-sm font-medium text-gray-800">{{ mensaje.remitente.get_full_name }}</p>
-            {% if mensaje.contenido %}
-                <p class="text-base text-gray-700">{{ mensaje.contenido }}</p>
-            {% endif %}
-            {% if mensaje.archivo %}
-                <a href="{{ mensaje.archivo.url }}" class="text-blue-500 underline" target="_blank">📎 Ver archivo adjunto</a>
-            {% endif %}
-            <span class="text-xs text-gray-500 block mt-1">{{ mensaje.enviado }}</span>
+            <div class="flex items-center space-x-4">
+                <!-- Foto de perfil del remitente -->
+                <div class="w-10 h-10 flex-shrink-0 rounded-full bg-cover bg-center bg-no-repeat" style='background-image: url("{% if mensaje.remitente.profile.foto %}{{ mensaje.remitente.profile.foto.url }}{% else %}https://cdn-icons-png.flaticon.com/512/2504/2504240.png{% endif %}");'></div>
+                <div>
+                    <p class="text-sm font-medium text-gray-800">{{ mensaje.remitente.get_full_name }}</p>
+                    {% if mensaje.contenido %}
+                        <p class="text-base text-gray-700">{{ mensaje.contenido }}</p>
+                    {% endif %}
+                    {% if mensaje.archivo %}
+                        <a href="{{ mensaje.archivo.url }}" class="text-blue-500 underline" target="_blank">📎 Ver archivo adjunto</a>
+                    {% endif %}
+                    <span class="text-xs text-gray-500 block mt-1">{{ mensaje.enviado }}</span>
+                </div>
+            </div>
         </div>
         {% empty %}
         <div class="text-center py-4">

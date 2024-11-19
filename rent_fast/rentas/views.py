@@ -140,6 +140,22 @@ def ver_chat_view(request, chat_id):
     # Identificar si es un chat de soporte (sin herramienta asociada)
     es_soporte = chat.herramienta is None
 
+    # Preparar información de contacto si es un chat de soporte
+    contacto_info = None
+    if es_soporte:
+        if chat.arrendador:
+            contacto_info = {
+                'nombre': chat.arrendador.usuario.get_full_name(),
+                'email': chat.arrendador.usuario.email,
+                'foto': getattr(chat.arrendador, 'foto', None),  # Reemplaza 'foto' si tienes un campo explícito en `Arrendador`
+            }
+        elif chat.arrendatario:
+            contacto_info = {
+                'nombre': chat.arrendatario.usuario.get_full_name(),
+                'email': chat.arrendatario.usuario.email,
+                'foto': getattr(chat.arrendatario, 'foto', None),  # Reemplaza 'foto' si tienes un campo explícito en `Arrendatario`
+            }
+
     if request.method == 'POST':
         contenido = request.POST.get('contenido', '').strip()
         archivo = request.FILES.get('archivo', None)
@@ -157,9 +173,9 @@ def ver_chat_view(request, chat_id):
         'chat': chat,
         'mensajes': chat.mensajes.all().order_by('enviado'),
         'herramienta': chat.herramienta,  # Solo será relevante si no es un chat de soporte
-        'es_soporte': es_soporte,  # Variable para distinguir en la plantilla
+        'es_soporte': es_soporte,
+        'contacto_info': contacto_info,  # Información del contacto si es un chat de soporte
     })
-
 
 @login_required
 def listar_chats_view(request):
