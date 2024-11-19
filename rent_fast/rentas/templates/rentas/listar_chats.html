@@ -19,12 +19,19 @@
             <div class="flex items-center space-x-4">
                 <a href="{% url 'ver_chat' chat.id %}" class="flex-1">
                     <div class="flex items-center space-x-4">
-                        <div class="w-16 h-16 flex-shrink-0 rounded-lg bg-cover bg-center bg-no-repeat" style='background-image: url("{% if chat.herramienta.imagenes %}{{ chat.herramienta.imagenes.url }}{% else %}https://cdn.usegalileo.ai/sdxl10/84ed65ba-6d8e-4158-b97a-6d36dabc415d.png{% endif %}");'></div>
+                        <div class="w-16 h-16 flex-shrink-0 rounded-lg bg-cover bg-center bg-no-repeat" style='background-image: url("{% if chat.es_soporte %}https://cdn-icons-png.flaticon.com/512/2504/2504240.png{% elif chat.herramienta and chat.herramienta.imagenes %}{{ chat.herramienta.imagenes.url }}{% else %}https://cdn.usegalileo.ai/sdxl10/84ed65ba-6d8e-4158-b97a-6d36dabc415d.png{% endif %}");'></div>
                         <div>
                             <div class="flex justify-between items-center">
-                                <p class="text-lg font-semibold text-gray-900">{{ chat.herramienta.nombre }}</p>
+                                <p class="text-lg font-semibold text-gray-900">
+                                    {% if chat.es_soporte %}
+                                    Chat con Soporte
+                                    {% else %}
+                                    {{ chat.herramienta.nombre }}
+                                    {% endif %}
+                                </p>
                                 <p class="text-xs text-gray-500">{{ chat.creado|date:"d/m/Y H:i" }}</p>
                             </div>
+                            {% if not chat.es_soporte %}
                             <p class="text-sm text-gray-600 mt-1">
                                 <span class="font-medium">Con: {% if request.user == chat.arrendatario.usuario %}{{ chat.arrendador.nombre }}{% else %}{{ chat.arrendatario.nombre }}{% endif %}</span>
                             </p>
@@ -36,11 +43,16 @@
                                 <span class="text-red-500 font-medium">Finalizada</span>
                                 {% endif %}
                             </p>
+                            {% else %}
+                            <p class="text-sm text-gray-600 mt-1">
+                                Chat de atención al cliente
+                            </p>
+                            {% endif %}
                         </div>
                     </div>
                 </a>
                 <!-- Botón para ocultar chat -->
-                {% if chat.renta.estado == "Finalizada" %}
+                {% if not chat.es_soporte and chat.renta.estado == "Finalizada" %}
                 <form method="post" action="{% url 'ocultar_chat' chat.id %}" class="ml-4">
                     {% csrf_token %}
                     <button type="submit" class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600">Ocultar Chat</button>
@@ -61,12 +73,19 @@
             <div class="flex items-center space-x-4">
                 <a href="{% url 'ver_chat' chat.id %}" class="flex-1">
                     <div class="flex items-center space-x-4">
-                        <div class="w-16 h-16 flex-shrink-0 rounded-lg bg-cover bg-center bg-no-repeat" style='background-image: url("{% if chat.herramienta.imagenes %}{{ chat.herramienta.imagenes.url }}{% else %}https://cdn.usegalileo.ai/sdxl10/84ed65ba-6d8e-4158-b97a-6d36dabc415d.png{% endif %}");'></div>
+                        <div class="w-16 h-16 flex-shrink-0 rounded-lg bg-cover bg-center bg-no-repeat" style='background-image: url("{% if chat.es_soporte %}https://cdn-icons-png.flaticon.com/512/2504/2504240.png{% elif chat.herramienta and chat.herramienta.imagenes %}{{ chat.herramienta.imagenes.url }}{% else %}https://cdn.usegalileo.ai/sdxl10/84ed65ba-6d8e-4158-b97a-6d36dabc415d.png{% endif %}");'></div>
                         <div>
                             <div class="flex justify-between items-center">
-                                <p class="text-lg font-semibold text-gray-900">{{ chat.herramienta.nombre }}</p>
+                                <p class="text-lg font-semibold text-gray-900">
+                                    {% if chat.es_soporte %}
+                                    Chat con Soporte
+                                    {% else %}
+                                    {{ chat.herramienta.nombre }}
+                                    {% endif %}
+                                </p>
                                 <p class="text-xs text-gray-500">{{ chat.creado|date:"d/m/Y H:i" }}</p>
                             </div>
+                            {% if not chat.es_soporte %}
                             <p class="text-sm text-gray-600 mt-1">
                                 <span class="font-medium">Con: {% if request.user == chat.arrendatario.usuario %}{{ chat.arrendador.nombre }}{% else %}{{ chat.arrendatario.nombre }}{% endif %}</span>
                             </p>
@@ -78,6 +97,11 @@
                                 <span class="text-red-500 font-medium">Finalizada</span>
                                 {% endif %}
                             </p>
+                            {% else %}
+                            <p class="text-sm text-gray-600 mt-1">
+                                Chat de atención al cliente
+                            </p>
+                            {% endif %}
                         </div>
                     </div>
                 </a>

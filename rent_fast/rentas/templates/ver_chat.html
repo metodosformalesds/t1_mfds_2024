@@ -3,7 +3,7 @@
 {% block content %}
 <div class="container mx-auto py-8 px-4 sm:px-6 lg:px-8">
     <!-- Regresar -->
-    <a href="{% url 'listar_chats' %}"  class="flex items-center text-black pb-4">
+    <a href="{% url 'listar_chats' %}" class="flex items-center text-black pb-4">
         <svg class="mr-2" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
             <path fill-rule="evenodd" d="M10.854 4.146a.5.5 0 0 1 0 .708L7.707 8l3.147 3.146a.5.5 0 0 1-.708.708l-3.5-3.5a.5.5 0 0 1 0-.708l3.5-3.5a.5.5 0 0 1 .708 0z"/>
         </svg>
@@ -11,9 +11,16 @@
     </a>
     
     <!-- Título del chat -->
-    <h1 class="text-3xl font-bold text-gray-800 mb-6 text-center">Chat</h1>
+    <h1 class="text-3xl font-bold text-gray-800 mb-6 text-center">
+        {% if es_soporte %}
+            Chat con Soporte
+        {% else %}
+            Chat sobre {{ herramienta.nombre }}
+        {% endif %}
+    </h1>
 
-    <!-- Información de la herramienta -->
+    <!-- Información de la herramienta (si no es soporte) -->
+    {% if not es_soporte %}
     <div class="bg-white p-6 rounded-lg shadow-md mb-6 flex items-center">
         <div class="w-24 h-24 mr-4 flex-shrink-0">
             <div class="aspect-square w-full h-full rounded-lg bg-cover bg-center bg-no-repeat" style='background-image: url("{% if chat.herramienta.imagenes %}{{ chat.herramienta.imagenes.url }}{% else %}https://cdn.usegalileo.ai/sdxl10/84ed65ba-6d8e-4158-b97a-6d36dabc415d.png{% endif %}");'></div>
@@ -25,13 +32,16 @@
             <p class="text-gray-600"><strong>Chateando con:</strong> {% if request.user == chat.arrendatario.usuario %}{{ chat.arrendador.nombre }}{% else %}{{ chat.arrendatario.nombre }}{% endif %}</p>
         </div>
     </div>
+    {% endif %}
 
-    <!-- Información de ubicación de los usuarios -->
+    <!-- Información de ubicación de los usuarios (solo si no es soporte) -->
+    {% if not es_soporte %}
     <div class="bg-white p-6 rounded-lg shadow-md mb-6">
         <h2 class="text-2xl font-semibold text-gray-800 mb-4">Ubicación de los usuarios</h2>
         <p class="text-gray-600"><strong>Arrendatario:</strong> {{ chat.arrendatario.usuario.get_full_name }} - {{ chat.arrendatario.direccion }}</p>
         <p class="text-gray-600"><strong>Arrendador:</strong> {{ chat.arrendador.usuario.get_full_name }} - {{ chat.arrendador.direccion }}</p>
     </div>
+    {% endif %}
 
     <!-- Contenedor de mensajes -->
     <div class="bg-white border rounded-lg shadow-md p-6 max-h-96 overflow-y-auto space-y-4">
@@ -53,8 +63,19 @@
         {% endfor %}
     </div>
 
-    <!-- Botón para finalizar la renta -->
-    {% if chat.renta.estado == "Activa" and request.user == chat.arrendatario.usuario %}
+    <!-- Botón de camión solo para el arrendatario -->
+    {% if not es_soporte and request.user == chat.arrendatario.usuario %}
+    <div class="flex items-center justify-end mt-4">
+        <button type="button" class="p-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-gray-600 hover:text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l1.38-4.607A2 2 0 0016.5 7h-9a2 2 0 00-1.933 1.524L3 13zm0 0v6a1 1 0 001 1h1a1 1 0 001-1v-1h8v1a1 1 0 001 1h1a1 1 0 001-1v-6M5 21h.01M19 21h.01" />
+            </svg>
+        </button>
+    </div>
+    {% endif %}
+
+    <!-- Botón para finalizar la renta (solo para chats con herramienta y si el usuario es arrendatario) -->
+    {% if not es_soporte and chat.renta.estado == "Activa" and request.user == chat.arrendatario.usuario %}
     <form method="post" action="{% url 'finalizar_renta' chat.renta.id %}" class="mt-6">
         {% csrf_token %}
         <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition duration-150">
@@ -81,15 +102,6 @@
             <div id="archivoPreview" class="text-gray-600 text-sm mt-2 hidden">
                 <p>Archivo seleccionado: <span id="archivoNombre"></span></p>
             </div>
-            
-            <!-- Botón de camión solo para el arrendatario -->
-            {% if request.user == chat.arrendatario.usuario %}
-            <button type="button" class="p-2">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-gray-600 hover:text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l1.38-4.607A2 2 0 0016.5 7h-9a2 2 0 00-1.933 1.524L3 13zm0 0v6a1 1 0 001 1h1a1 1 0 001-1v-1h8v1a1 1 0 001 1h1a1 1 0 001-1v-6M5 21h.01M19 21h.01" />
-                </svg>
-            </button>
-            {% endif %}
             
             <!-- Botón para enviar -->
             <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition duration-150">Enviar</button>
