@@ -31,12 +31,7 @@
             {% for renta in rentas %}
                 <div class="flex p-4 border border-gray-200 rounded-lg shadow hover:shadow-lg bg-white">
                     <div class="w-24 h-24 mr-4">
-                        <!-- Imagen de la herramienta o imagen predeterminada -->
-                        {% if renta.herramienta.imagen %}
-                            <img src="{{ renta.herramienta.imagen.url }}" alt="Imagen de la herramienta" class="w-full h-full object-cover rounded-lg">
-                        {% else %}
-                            <img src="https://th.bing.com/th/id/R.c686896019147f6d57529fcfb6d75a28?rik=x186ThmrCoWqCg&riu=http%3a%2f%2ffiles.123inventatuweb.com%2f51%2f04%2f51045ced-acc5-4921-908a-f734f25c548f.jpg&ehk=sh3bkI2UbFohecSeceNYuu%2b4PRQTpJvfgMz4yMjUVK4%3d&risl=&pid=ImgRaw&r=0" alt="Imagen predeterminada" class="w-full h-full object-cover rounded-lg">
-                        {% endif %}
+                        <div class="w-24 h-24 flex-shrink-0 rounded-lg bg-cover bg-center bg-no-repeat" style='background-image: url("{% if renta.es_soporte %}https://cdn-icons-png.flaticon.com/512/2504/2504240.png{% elif renta.herramienta and renta.herramienta.imagenes %}{{ renta.herramienta.imagenes.url }}{% else %}https://cdn.usegalileo.ai/sdxl10/84ed65ba-6d8e-4158-b97a-6d36dabc415d.png{% endif %}");'></div>
                     </div>
                     <div>
                         <h3 class="text-xl font-bold">{{ renta.herramienta.nombre }} (Folio: {{ renta.id }})</h3>
