@@ -1,6 +1,23 @@
 {% extends "base.html" %}
 
 {% block content %}
+<!--
+    Esta plantilla se utiliza para mostrar los chats activos y ocultos del usuario en el sistema.
+
+    Funcionalidades:
+    - Muestra una lista de chats activos con información sobre la herramienta asociada y su estado.
+    - Permite ocultar chats que no están activos mediante un formulario.
+    - Muestra una lista de chats ocultos y permite reactivarlos mediante un formulario.
+    - Los chats están organizados en dos secciones: "Chats Activos" y "Chats Ocultos".
+    - Cada chat incluye la posibilidad de ver el historial, así como información sobre el estado de la renta o soporte.
+
+    Variables de contexto utilizadas:
+    - "chats_no_ocultos": Una lista de chats activos que el usuario tiene.
+    - "chats_ocultos": Una lista de chats que han sido ocultados por el usuario.
+    - "url_redireccion": URL para redirigir al usuario a la página anterior o a un enlace relevante.
+
+    El diseño utiliza TailwindCSS para el estilo de la interfaz de usuario, con soporte para navegación sencilla y botones interactivos.
+-->
 <div class="container mx-auto py-8 px-4 sm:px-6 lg:px-8">
     <!-- Título del chat -->
     <a href="{{ url_redireccion }}" class="flex items-center text-black pb-4">

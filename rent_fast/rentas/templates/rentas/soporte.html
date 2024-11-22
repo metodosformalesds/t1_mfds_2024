@@ -1,6 +1,30 @@
 {% extends "base.html" %}
 
 {% block content %}
+<!--
+    Plantilla de Soporte para el usuario, que incluye preguntas frecuentes y un formulario para contactar al soporte.
+
+    Funcionalidades:
+    - Muestra un título y una breve descripción del soporte disponible.
+    - Presenta una lista de preguntas frecuentes (FAQ), que son dinámicamente generadas a partir de la variable `preguntas_frecuentes`.
+    - Incluye un formulario de contacto con un botón que permite al usuario contactar al soporte.
+    - Si hay un error en el proceso de contacto, se muestra un mensaje de error.
+
+    Variables de contexto utilizadas:
+    - `preguntas_frecuentes`: Lista de preguntas frecuentes que se muestran en la página.
+    - `error`: Mensaje de error que se muestra si ocurre algún problema al intentar contactar al soporte.
+
+    Estilo:
+    - Utiliza TailwindCSS para una disposición limpia y moderna.
+    - Los componentes se presentan en un diseño centrado con sombra para destacarse, ofreciendo una experiencia visual agradable.
+    - Los botones y los mensajes de error tienen un estilo claramente visible, utilizando colores como azul para el botón y rojo para los mensajes de error.
+
+    Flujo:
+    1. El usuario verá una lista de preguntas frecuentes relacionadas con el soporte.
+    2. Si el usuario necesita más ayuda, puede hacer clic en el botón para contactar al soporte.
+    3. Si hay algún error en la solicitud, se muestra un mensaje de error en la parte inferior de la página.
+
+-->
 <div class="max-w-4xl mx-auto mt-8 p-6 bg-white shadow-md rounded-lg">
     <h1 class="text-2xl font-bold text-gray-800">Soporte</h1>
     <p class="text-gray-600 mt-4">Encuentra respuestas a tus preguntas o contacta al soporte.</p>

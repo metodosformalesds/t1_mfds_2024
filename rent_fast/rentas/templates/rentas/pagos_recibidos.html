@@ -1,6 +1,32 @@
 {% extends "base.html" %}
 
 {% block content %}
+<!--
+    Plantilla para mostrar el historial de pagos recibidos y el total pendiente.
+
+    Funcionalidades:
+    - Muestra el total pendiente que aún debe ser retirado.
+    - Permite al usuario realizar un retiro de dinero a través de un formulario.
+    - Muestra un listado detallado de pagos recibidos, con su fecha, monto y estado.
+    - Si el estado del pago es "Pendiente", se resalta en color amarillo; si es "Completado", en verde.
+    
+    Variables de contexto utilizadas:
+    - `total_pendiente`: El monto total que el usuario aún tiene pendiente de retirar.
+    - `pagos`: Una lista de pagos recibidos, cada uno con su fecha, monto y estado (Pendiente/Completado).
+    
+    Estilo:
+    - Utiliza clases de TailwindCSS para el diseño responsivo y la disposición visual (contenedor centrado, tablas estilizadas).
+    - Los botones y textos están estilizados para proporcionar una experiencia de usuario limpia y sencilla.
+
+    Flujo:
+    1. Se muestra el total pendiente a retirar.
+    2. Si el usuario desea retirar el dinero, puede presionar el botón de "Retirar Dinero", lo que envía una solicitud de retiro.
+    3. Se presenta una tabla con el historial de pagos recibidos, permitiendo al usuario visualizar el estado y detalles de cada pago.
+
+    Uso:
+    Esta plantilla es útil para sistemas donde se realiza un seguimiento de pagos y permite gestionar el retiro de fondos.
+
+-->
 <div class="container mx-auto py-10">
     <h1 class="text-2xl font-bold mb-5">Pagos Recibidos</h1>
 

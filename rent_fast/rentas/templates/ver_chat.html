@@ -1,6 +1,37 @@
 {% extends "base.html" %}
 
 {% block content %}
+<!--
+    Plantilla para mostrar el chat entre un arrendatario y un arrendador, o entre el usuario y el soporte.
+
+    Funcionalidades:
+    - Muestra un chat interactivo donde los usuarios pueden intercambiar mensajes.
+    - Si es un chat de soporte, se muestra la información del contacto de soporte.
+    - Si no es un chat de soporte, se muestran los detalles de la herramienta y la renta asociada (fechas, arrendatario, arrendador, etc.).
+    - Permite enviar mensajes y adjuntar archivos, con una previsualización del archivo seleccionado.
+    - Si el arrendatario desea solicitar un Uber para la entrega de la herramienta, hay un botón que abre Uber en el navegador con la ubicación de origen y destino predefinida.
+    - Si el arrendatario tiene una renta activa, también puede finalizar la renta con un botón de "Finalizar Renta".
+
+    Variables de contexto utilizadas:
+    - `es_soporte`: Variable booleana que determina si el chat es con soporte o no.
+    - `herramienta`: Información de la herramienta relacionada con el chat (solo si no es un chat de soporte).
+    - `chat`: Información del chat, incluyendo datos sobre la renta y los usuarios involucrados.
+    - `contacto_info`: Información de contacto del soporte (solo si es un chat de soporte).
+    - `mensajes`: Lista de mensajes intercambiados en el chat.
+    
+    Estilo:
+    - Utiliza TailwindCSS para una interfaz limpia y moderna.
+    - Cada mensaje tiene un diseño diferenciado según si el remitente es el usuario actual o no (mensajes del usuario en azul, del otro en gris).
+    - La interfaz de usuario está organizada para facilitar la navegación, con botones claramente visibles para acciones importantes (volver, finalizar renta, solicitar Uber).
+
+    Flujo:
+    1. El usuario ve un listado de mensajes en el chat con detalles de la herramienta y renta si corresponde.
+    2. El usuario puede escribir nuevos mensajes y adjuntar archivos.
+    3. Si el chat es con soporte, se muestra la información de contacto del soporte.
+    4. Si el chat es con el arrendador, el usuario puede solicitar un Uber para la entrega o finalizar la renta si está activa.
+    5. En caso de que haya un archivo adjunto, el usuario puede hacer clic en el enlace para verlo.
+
+-->
 <div class="container mx-auto py-8 px-4 sm:px-6 lg:px-8">
     <!-- Regresar -->
     <a href="{% url 'listar_chats' %}" class="flex items-center text-black pb-4">

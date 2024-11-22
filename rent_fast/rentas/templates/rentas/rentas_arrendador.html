@@ -1,5 +1,29 @@
 {% extends "base.html" %}
 {% block content %}
+<!--
+    Plantilla para mostrar el listado de rentas del usuario y permitir filtrar por estado.
+
+    Funcionalidades:
+    - Muestra un listado de rentas con detalles como la herramienta, arrendatario, fechas, costo y estado de la renta.
+    - Incluye un filtro para seleccionar el estado de las rentas, lo que permite al usuario ver únicamente las rentas que cumplen con el estado seleccionado.
+    - El filtro muestra una lista desplegable de opciones de estado (por ejemplo, "Activa", "Finalizada").
+
+    Variables de contexto utilizadas:
+    - `rentas`: Lista de objetos de renta, donde cada objeto tiene atributos como `herramienta`, `arrendatario`, `fecha_inicio`, `fecha_fin`, `costo_total`, y `estado`.
+    - `estados`: Diccionario con las claves y etiquetas para los diferentes estados de renta disponibles en el sistema.
+    - `estado_filtro`: Estado seleccionado en el filtro de búsqueda.
+    
+    Estilo:
+    - La página utiliza TailwindCSS para crear una interfaz limpia y responsiva.
+    - Cada renta se presenta en una tarjeta con sombra y bordes redondeados, que incluye un icono o imagen de la herramienta, y detalles clave como el nombre de la herramienta, el arrendatario, las fechas de inicio y fin, el costo total y el estado.
+    - El filtro se presenta como un formulario con una lista desplegable y un botón de envío.
+
+    Flujo:
+    1. El usuario verá un listado de rentas con detalles clave de cada una.
+    2. El usuario puede filtrar las rentas por estado utilizando la lista desplegable y el botón de filtro.
+    3. Si no hay rentas en el estado seleccionado, se muestra un mensaje indicando que no hay resultados.
+
+-->
 <div class="container mx-auto py-8">
     <a href="{% url 'arrendador_home' %}" class="flex items-center text-black pb-4 ml-6">
         <svg class="mr-2" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">

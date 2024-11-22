@@ -1,5 +1,30 @@
 {% extends "base.html" %}
 {% block content %}
+<!--
+    Plantilla para mostrar el listado de rentas del arrendatario y permitir filtrar por estado.
+
+    Funcionalidades:
+    - Muestra un listado de rentas con detalles clave, como la herramienta arrendada, el arrendador, las fechas de inicio y fin, el costo total y el estado de la renta.
+    - Incluye un filtro para seleccionar el estado de las rentas, permitiendo al usuario ver únicamente las rentas que cumplen con el estado seleccionado.
+    - La lista de rentas muestra una imagen de la herramienta (si está disponible) o una imagen predeterminada.
+    - El filtro muestra una lista desplegable de opciones de estado (por ejemplo, "Activa", "Finalizada").
+
+    Variables de contexto utilizadas:
+    - `rentas`: Lista de objetos de renta, donde cada objeto tiene atributos como `herramienta`, `arrendador`, `fecha_inicio`, `fecha_fin`, `costo_total` y `estado`.
+    - `estados`: Diccionario con las claves y etiquetas para los diferentes estados de renta disponibles.
+    - `estado_filtro`: El estado seleccionado en el filtro de búsqueda.
+
+    Estilo:
+    - La página utiliza TailwindCSS para crear una interfaz limpia y responsiva.
+    - Cada renta se presenta en una tarjeta con borde redondeado y sombra, que incluye una imagen de la herramienta o una imagen predeterminada, así como los detalles clave de la renta.
+    - El filtro se presenta como un formulario con una lista desplegable y un botón para enviar el filtro.
+
+    Flujo:
+    1. El usuario verá un listado de rentas con detalles clave de cada una.
+    2. El usuario puede filtrar las rentas por estado utilizando la lista desplegable y el botón de filtro.
+    3. Si no hay rentas en el estado seleccionado, se muestra un mensaje indicando que no hay resultados.
+
+-->
 <div class="container mx-auto py-8">
     <a href="{% url 'arrendatario_home' %}" class="flex items-center text-black pb-4 ml-6">
         <svg class="mr-2" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">

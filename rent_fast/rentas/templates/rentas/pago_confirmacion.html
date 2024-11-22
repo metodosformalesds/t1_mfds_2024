@@ -1,6 +1,24 @@
 {% extends "base.html" %}
 
 {% block content %}
+<!--
+    Plantilla de confirmación de pago exitoso.
+
+    Funcionalidades:
+    - Muestra un mensaje indicando que el pago se ha procesado correctamente.
+    - Incluye un botón que redirige al usuario a la lista de chats.
+
+    Variables de contexto:
+    - Ninguna variable de contexto específica es requerida para esta plantilla. Se asume que el usuario ya está autenticado.
+
+    Estilo:
+    - Utiliza clases de TailwindCSS para la disposición centrada en la pantalla y los estilos de los botones.
+    - El mensaje de éxito es destacado con color verde, mientras que el botón de acción es azul.
+
+    Flujo:
+    1. Al realizar un pago exitoso, esta plantilla muestra un mensaje de éxito.
+    2. Proporciona un enlace para redirigir al usuario a la página "Mis Chats".
+-->
 <div class="flex justify-center items-center h-screen">
     <div class="text-center">
         <h1 class="text-3xl font-bold text-green-600 mb-4">¡Pago Exitoso!</h1>

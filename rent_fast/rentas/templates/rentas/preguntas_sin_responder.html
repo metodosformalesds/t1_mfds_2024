@@ -1,6 +1,29 @@
 {% extends "base.html" %}
 
 {% block content %}
+<!--
+    Plantilla para mostrar y responder preguntas sin responder de las herramientas.
+
+    Funcionalidades:
+    - Muestra un listado de preguntas sin responder relacionadas con las herramientas.
+    - Cada pregunta incluye el nombre de la herramienta y el texto de la pregunta.
+    - El usuario puede proporcionar una respuesta para cada pregunta mediante un campo de entrada de texto.
+    - Incluye un formulario para enviar la respuesta a la pregunta seleccionada.
+
+    Variables de contexto utilizadas:
+    - `preguntas`: Lista de objetos de preguntas sin respuesta. Cada pregunta tiene los atributos `herramienta` (con su nombre) y `pregunta_texto` (el texto de la pregunta).
+    
+    Flujo:
+    1. El usuario verá una lista de preguntas sin respuesta.
+    2. Cada pregunta mostrará la herramienta relacionada y el texto de la pregunta.
+    3. El usuario puede escribir una respuesta para cada pregunta y enviarla usando el botón de "Enviar Respuesta".
+    4. Las respuestas serán enviadas a través de un formulario POST a la misma vista.
+    
+    Estilo:
+    - Utiliza clases de TailwindCSS para crear una disposición limpia y centrada.
+    - Cada pregunta se presenta en una tarjeta con bordes redondeados y un fondo gris claro para facilitar la lectura.
+    - El formulario es accesible y visualmente atractivo, con campos de entrada y botones estilizados para mejorar la experiencia del usuario.
+-->
 <div class="min-h-screen bg-gray-50 py-10 px-5">
     <div class="max-w-4xl mx-auto bg-white rounded-lg shadow-md p-6">
         <a href="{% url 'arrendador_home' %}" class="flex items-center text-black pb-4">
