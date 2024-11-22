@@ -18,23 +18,18 @@
 
             <!-- Campos de formulario -->
             <div class="mb-4">
-                <label for="nombre" class="block text-gray-700 font-medium">Nombre</label>
                 {{ wizard.form.nombre|as_crispy_field }}
             </div>
             <div class="mb-4">
-                <label for="apellidos" class="block text-gray-700 font-medium">Apellidos</label>
                 {{ wizard.form.apellidos|as_crispy_field }}
             </div>
             <div class="mb-4">
-                <label for="telefono" class="block text-gray-700 font-medium">Teléfono</label>
                 {{ wizard.form.telefono|as_crispy_field }}
             </div>
             <div class="mb-4">
-                <label class="block text-gray-700 font-medium">¿Qué serás?</label>
                 {{ wizard.form.role|as_crispy_field }}
             </div>
             <div class="mb-6">
-                <label class="block text-gray-700 font-medium">Sube tu INE Mexicano</label>
                 {{ wizard.form.ine_image|as_crispy_field }}
             </div>
 
