@@ -101,12 +101,14 @@
             <div class="flex items-center {% if mensaje.remitente == request.user %} justify-end {% else %} justify-start {% endif %}">
                 <!-- Foto de perfil -->
                 <div class="w-10 h-10 flex-shrink-0 rounded-full bg-cover bg-center bg-no-repeat border-2 border-gray-300"
-                     style='background-image: url("{% if mensaje.remitente.arrendatario and mensaje.remitente.arrendatario.foto %}{{ mensaje.remitente.arrendatario.foto.url }}{% elif mensaje.remitente.arrendador and mensaje.remitente.arrendador.foto %}{{ mensaje.remitente.arrendador.foto.url }}{% else %}https://cdn-icons-png.flaticon.com/512/2504/2504240.png{% endif %}");'>
+                     style='background-image: url("{% if mensaje.remitente.is_staff %}https://cdn-icons-png.flaticon.com/512/2504/2504240.png{% elif mensaje.remitente.arrendatario and mensaje.remitente.arrendatario.profile_picture %}{{ mensaje.remitente.arrendatario.profile_picture.url }}{% elif mensaje.remitente.arrendador and mensaje.remitente.arrendador.profile_picture %}{{ mensaje.remitente.arrendador.profile_picture.url }}{% else %}https://cdn-icons-png.flaticon.com/512/2504/2504240.png{% endif %}");'>
                 </div>
                 <!-- Información del remitente -->
                 <div class="ml-3">
                     <p class="text-sm font-semibold text-gray-800">
-                        {% if mensaje.remitente.arrendatario %}
+                        {% if mensaje.remitente.is_staff %}
+                            Soporte
+                        {% elif mensaje.remitente.arrendatario %}
                             {{ mensaje.remitente.arrendatario.usuario.email }}
                         {% elif mensaje.remitente.arrendador %}
                             {{ mensaje.remitente.arrendador.usuario.email }}
@@ -126,7 +128,7 @@
                     {% endif %}
                     <span class="text-xs text-gray-500 mt-1">{{ mensaje.enviado }}</span>
                 </div>
-            </div>
+            </div>            
         </div>
         
         
