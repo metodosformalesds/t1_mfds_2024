@@ -5,7 +5,17 @@ import sys
 
 
 def main():
-    """Run administrative tasks."""
+    """
+    Ejecuta tareas administrativas de Django.
+
+    Este script es utilizado para ejecutar diversos comandos de administración de Django
+    como iniciar el servidor, aplicar migraciones, crear superusuario, entre otros. 
+    Configura el entorno de Django, establece el módulo de configuración y ejecuta 
+    los comandos necesarios.
+
+    Se asegura de que Django esté instalado y disponible en el entorno actual antes de
+    proceder a ejecutar el comando solicitado.
+    """
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'rent_fast.settings')
     try:
         from django.core.management import execute_from_command_line
