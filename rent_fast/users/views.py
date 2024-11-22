@@ -2,6 +2,7 @@
 from django.views.decorators.csrf import csrf_exempt
 
 import requests
+from django.db.models import Q
 import boto3
 import qrcode
 from urllib.parse import quote  # En lugar de urlquote
@@ -685,28 +686,42 @@ def update_address(request):
 def ver_notificaciones(request):
     """
     Vista para mostrar las notificaciones del usuario autenticado.
-    Las notificaciones son marcadas como leídas al momento de ser visualizadas.
-
-    Parámetros:
-    request (HttpRequest): La solicitud HTTP del usuario.
-
-    Retorna:
-    HttpResponse: Renderiza la página de notificaciones con las notificaciones correspondientes.
+    Incluye filtros por tipo y estado.
     """
-    notificaciones = Notificacion.objects.filter(usuario=request.user).order_by('-creado')
+    usuario = request.user
+
+    # Obtener todas las notificaciones del usuario actual
+    notificaciones = Notificacion.objects.filter(usuario=usuario).order_by('-creado')
+
+    # Aplicar filtros basados en los parámetros GET
+    tipo = request.GET.get('tipo')  # 'herramienta', 'chat', 'general'
+    estado = request.GET.get('estado')  # 'leido', 'no_leido'
+
+    if tipo == 'herramienta':
+        notificaciones = notificaciones.filter(Q(mensaje__icontains='Tu') | Q(mensaje__icontains='Has'))
+    elif tipo == 'chat':
+        # Filtrar por notificaciones relacionadas con "chat" basadas en el mensaje
+        notificaciones = notificaciones.filter(mensaje__icontains='chat')
+
+    if estado == 'leido':
+        notificaciones = notificaciones.filter(leido=True)
+    elif estado == 'no_leido':
+        notificaciones = notificaciones.filter(leido=False)
+
+    # Marcar todas las notificaciones como leídas
     notificaciones.update(leido=True)
 
-    # Determinar la redirección según el tipo de usuario
-    if hasattr(request.user, 'arrendador'):
+    # Determinar la redirección según el rol del usuario
+    if hasattr(usuario, 'arrendador'):
         url_redireccion = 'arrendador_home'
-    elif hasattr(request.user, 'arrendatario'):
+    elif hasattr(usuario, 'arrendatario'):
         url_redireccion = 'arrendatario_home'
     else:
-        url_redireccion = 'home'  # Ruta predeterminada si no tiene rol específico
+        url_redireccion = 'home'
 
     context = {
         'notificaciones': notificaciones,
-        'url_redireccion': reverse(url_redireccion),  # Obtener la URL completa
+        'url_redireccion': reverse(url_redireccion),
     }
     return render(request, 'users/notificaciones.html', context)
 
