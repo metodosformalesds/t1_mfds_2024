@@ -41,11 +41,22 @@
                             <div class="flex justify-between items-center">
                                 <p class="text-lg font-semibold text-gray-900">
                                     {% if chat.es_soporte %}
-                                    Chat con Soporte
+                                        {% if request.user.is_staff %}
+                                        Chat de soporte con: 
+                                        {% if chat.arrendatario %}
+                                            {{ chat.arrendatario.usuario.email }}
+                                        {% elif chat.arrendador %}
+                                            {{ chat.arrendador.usuario.email }}
+                                        {% endif %}
+                                        {% else %}
+                                        Chat con Soporte
+                                        {% endif %}
                                     {% else %}
                                     {{ chat.herramienta.nombre }}
                                     {% endif %}
                                 </p>
+                                
+                                
                                 <p class="text-xs text-gray-500">{{ chat.creado|date:"d/m/Y H:i" }}</p>
                             </div>
                             {% if not chat.es_soporte %}
@@ -95,11 +106,21 @@
                             <div class="flex justify-between items-center">
                                 <p class="text-lg font-semibold text-gray-900">
                                     {% if chat.es_soporte %}
-                                    Chat con Soporte
+                                        {% if request.user.is_staff %}
+                                        Chat de soporte con: 
+                                        {% if chat.arrendatario %}
+                                            {{ chat.arrendatario.usuario.email }}
+                                        {% elif chat.arrendador %}
+                                            {{ chat.arrendador.usuario.email }}
+                                        {% endif %}
+                                        {% else %}
+                                        Chat con Soporte
+                                        {% endif %}
                                     {% else %}
                                     {{ chat.herramienta.nombre }}
                                     {% endif %}
                                 </p>
+                                
                                 <p class="text-xs text-gray-500">{{ chat.creado|date:"d/m/Y H:i" }}</p>
                             </div>
                             {% if not chat.es_soporte %}

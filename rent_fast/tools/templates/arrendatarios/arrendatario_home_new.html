@@ -33,7 +33,7 @@
                     </div>
 
                     <!-- Sección de herramientas sin categoría -->
-                    <h2 class="px-4 pb-3 pt-5 text-[18px] font-bold text-[#111418] sm:text-[22px]">Todas las herramientas</h2>
+                    <h2 class="px-4 pb-3 pt-5 text-[18px] font-bold text-[#111418] sm:text-[22px]">Recomendaciones:</h2>
                     <div class="grid grid-cols-2 gap-3 p-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
                         {% for tool in herramientas_sin_categoria|slice:":5" %}
                         <a href="{% url 'tool_detail' tool.id %}">

@@ -44,11 +44,21 @@
     <!-- Título del chat -->
     <h1 class="text-3xl font-bold text-gray-800 mb-6 text-center">
         {% if es_soporte %}
+            {% if request.user.is_staff %}
+            Chat de soporte con: 
+            {% if chat.arrendatario %}
+                {{ chat.arrendatario.usuario.email }}
+            {% elif chat.arrendador %}
+                {{ chat.arrendador.usuario.email }}
+            {% endif %}
+            {% else %}
             Chat con Soporte
+            {% endif %}
         {% else %}
             Chat sobre {{ herramienta.nombre }}
         {% endif %}
     </h1>
+    
 
     <!-- Información de la herramienta (si no es soporte) -->
     {% if not es_soporte %}
@@ -88,20 +98,38 @@
     <div class="bg-white border rounded-lg shadow-md p-6 max-h-96 overflow-y-auto space-y-4">
         {% for mensaje in mensajes %}
         <div class="p-3 rounded-lg {% if mensaje.remitente == request.user %} bg-blue-50 text-right {% else %} bg-gray-100 text-left {% endif %}">
-            <div class="flex items-center space-x-4">
-                <div class="w-10 h-10 flex-shrink-0 rounded-full bg-cover bg-center bg-no-repeat" style='background-image: url("{% if mensaje.remitente.profile.foto %}{{ mensaje.remitente.profile.foto.url }}{% else %}https://cdn-icons-png.flaticon.com/512/2504/2504240.png{% endif %}");'></div>
-                <div>
-                    <p class="text-sm font-medium text-gray-800">{{ mensaje.remitente.get_full_name }}</p>
+            <div class="flex items-center {% if mensaje.remitente == request.user %} justify-end {% else %} justify-start {% endif %}">
+                <!-- Foto de perfil -->
+                <div class="w-10 h-10 flex-shrink-0 rounded-full bg-cover bg-center bg-no-repeat border-2 border-gray-300"
+                     style='background-image: url("{% if mensaje.remitente.arrendatario and mensaje.remitente.arrendatario.foto %}{{ mensaje.remitente.arrendatario.foto.url }}{% elif mensaje.remitente.arrendador and mensaje.remitente.arrendador.foto %}{{ mensaje.remitente.arrendador.foto.url }}{% else %}https://cdn-icons-png.flaticon.com/512/2504/2504240.png{% endif %}");'>
+                </div>
+                <!-- Información del remitente -->
+                <div class="ml-3">
+                    <p class="text-sm font-semibold text-gray-800">
+                        {% if mensaje.remitente.arrendatario %}
+                            {{ mensaje.remitente.arrendatario.usuario.email }}
+                        {% elif mensaje.remitente.arrendador %}
+                            {{ mensaje.remitente.arrendador.usuario.email }}
+                        {% else %}
+                            {{ mensaje.remitente.get_full_name }}
+                        {% endif %}
+                    </p>
                     {% if mensaje.contenido %}
-                        <p class="text-base text-gray-700">{{ mensaje.contenido }}</p>
+                        <div class="mt-1 bg-white p-3 rounded-lg shadow-md">
+                            <p class="text-gray-700">{{ mensaje.contenido }}</p>
+                        </div>
                     {% endif %}
                     {% if mensaje.archivo %}
-                        <a href="{{ mensaje.archivo.url }}" class="text-blue-500 underline" target="_blank">📎 Ver archivo adjunto</a>
+                        <div class="mt-2">
+                            <a href="{{ mensaje.archivo.url }}" class="text-blue-500 font-medium underline" target="_blank">📎 Ver archivo adjunto</a>
+                        </div>
                     {% endif %}
-                    <span class="text-xs text-gray-500 block mt-1">{{ mensaje.enviado }}</span>
+                    <span class="text-xs text-gray-500 mt-1">{{ mensaje.enviado }}</span>
                 </div>
             </div>
         </div>
+        
+        
         {% empty %}
         <div class="text-center py-4">
             <p class="text-gray-600 text-lg">No hay mensajes en este chat.</p>

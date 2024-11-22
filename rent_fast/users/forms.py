@@ -84,22 +84,19 @@ class UserForm(forms.ModelForm):
 class PersonalInfoForm(forms.Form):
     """
     Formulario para capturar información personal del usuario y su rol en la plataforma.
-    Incluye campos para nombre, apellidos, teléfono, rol (arrendador o arrendatario),
-    carga de imagen INE y foto de perfil.
     """
     ROLE_CHOICES = [
         ('arrendador', 'Arrendador'),
         ('arrendatario', 'Arrendatario'),
     ]
-   
+    
     nombre = forms.CharField(max_length=100, label="Nombre")
     apellidos = forms.CharField(max_length=100, label="Apellidos")
     telefono = forms.CharField(max_length=15, label="Teléfono")
     role = forms.ChoiceField(choices=ROLE_CHOICES, widget=forms.RadioSelect, label="¿Qué serás?")
-    # Asignamos un ID específico al campo ine_image
     ine_image = forms.ImageField(label="Sube tu INE Mexicano", required=True, widget=forms.ClearableFileInput(attrs={'id': 'id_ine_image'}))
     profile_picture = forms.ImageField(label="Foto de perfil", required=False)
- 
+    
     def clean_nombre(self):
         """
         Valida que el campo nombre solo contenga letras y espacios.
@@ -108,7 +105,7 @@ class PersonalInfoForm(forms.Form):
         if not nombre.replace(" ", "").isalpha():
             raise forms.ValidationError("El nombre solo puede contener letras y espacios.")
         return nombre
- 
+    
     def clean_apellidos(self):
         """
         Valida que el campo apellidos solo contenga letras y espacios.
@@ -117,7 +114,7 @@ class PersonalInfoForm(forms.Form):
         if not apellidos.replace(" ", "").isalpha():
             raise forms.ValidationError("Los apellidos solo pueden contener letras y espacios.")
         return apellidos
- 
+    
     def clean_telefono(self):
         """
         Valida que el campo teléfono solo contenga números y tenga exactamente 10 dígitos.

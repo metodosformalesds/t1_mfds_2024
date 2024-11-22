@@ -296,12 +296,25 @@
             console.log("Response from server:", data);
             if (data.success) {
                 alert("Identidad verificada correctamente.");
+                
+                // Habilitar el botón de Continuar
                 document.getElementById("continue-btn").disabled = false;
+    
+                // Cerrar el diálogo de verificación
+                closeVerificationDialog();
             } else {
                 alert("La verificación de identidad falló. Inténtalo nuevamente.");
             }
         })
         .catch(error => console.error("Error:", error));
+    }
+    
+    function closeVerificationDialog() {
+        document.getElementById("verification-dialog").classList.add("hidden");
+        const stream = document.getElementById("live-video").srcObject;
+        if (stream) {
+            stream.getTracks().forEach(track => track.stop());
+        }
     }
     
     
