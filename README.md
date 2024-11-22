@@ -67,26 +67,25 @@ pip install -r requirements.txt
  Linux:
  source ~/.envs/coffee_shop/bin/activate
 
- credenciales:
 
-(arrendador):
-usuario:
-arrendador
-password:
-rentfast
+# 🔑 **Credenciales de Acceso al Sistema**
 
-(arrendatario):
-usuario:
-arrendatario
-password:
-rentfast
+A continuación, se presentan las credenciales de acceso para los diferentes roles en la plataforma:
 
-(Admin):
-usuario:
-admin
-password:
-123456789
+| **Rol**            | **Usuario**       | **Contraseña**     |
+|---------------------|-------------------|--------------------|
+| **Arrendador**     | `arrendador`      | `rentfast`         |
+| **Arrendatario**    | `arrendatario`    | `rentfast`         |
+| **Administrador**   | `admin`          | `123456789`        |
 
-(Paypal):
-sb-nasg433710735@personal.example.com
-fFZN2gP*
+---
+
+## 💳 **Credenciales de Prueba PayPal (Sandbox)**
+
+Estas credenciales son para realizar pruebas de pagos en el entorno sandbox de PayPal:
+
+| **Descripción**         | **Email/Usuario**                     | **Contraseña**      |
+|--------------------------|---------------------------------------|---------------------|
+| **Cuenta Personal (Buyer)** | `sb-nasg433710735@personal.example.com` | `fFZN2gP*`          |
+
+---
