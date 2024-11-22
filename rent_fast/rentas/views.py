@@ -387,14 +387,14 @@ from users.models import Notificacion
 @login_required
 def finalizar_renta_view(request, renta_id):
     renta = get_object_or_404(Renta, id=renta_id, arrendatario__usuario=request.user)
- 
+
     if renta.estado != "Activa":
         messages.error(request, "Esta renta ya ha sido finalizada o no se puede modificar.")
-        return redirect("rentas_arrendatario")  # Cambia al nombre de la URL de tus rentas del arrendatario si es diferente
- 
+        return redirect("rentas_arrendatario")  # Asegúrate de que este nombre de URL sea correcto
+
     renta.estado = "Finalizada"
     renta.save()
- 
+
     # Crear notificación para el arrendatario indicando que puede dejar una reseña
     mensaje = f"Has finalizado la renta de '{renta.herramienta.nombre}'. Ahora puedes dejar una reseña sobre esta herramienta."
     Notificacion.objects.create(
@@ -402,8 +402,9 @@ def finalizar_renta_view(request, renta_id):
         mensaje=mensaje,
         herramienta=renta.herramienta,
     )
- 
+
     messages.success(request, "La renta ha sido finalizada exitosamente.")
+    return redirect("rentas_arrendatario")  # Redirige a una página específica tras finalizar
  
 @login_required
 def soporte_view(request):
