@@ -173,7 +173,7 @@ from django.shortcuts import redirect
 @login_required
 def ver_chat_view(request, chat_id):
     """
-    
+    Manuel Villarreal #201024
     Vista para ver el contenido de un chat entre un arrendador y un arrendatario.
 
     Verifica que el usuario tenga permiso para acceder al chat y muestra los mensajes.
@@ -236,6 +236,18 @@ def ver_chat_view(request, chat_id):
  
 @login_required
 def listar_chats_view(request):
+    """
+    Manuel Villarreal #201024
+    Vista para listar los chats del usuario según su rol (Administrador, Arrendador, Arrendatario).
+    El usuario puede ver chats de soporte o de interacción con otros usuarios.
+
+    Si el usuario es administrador, verá los chats de soporte.
+    Si el usuario es arrendador, verá los chats relacionados con su alquiler y los podrá ocultar o restaurar.
+    Si el usuario es arrendatario, verá los chats con sus arrendadores.
+
+    Returns:
+        render: Renderiza la plantilla 'listar_chats.html' con los chats no ocultos y ocultos del usuario.
+    """
     user = request.user
     chats_admin = []
  
@@ -269,6 +281,18 @@ from django.http import HttpResponseForbidden
  
 @login_required
 def ocultar_chat(request, chat_id):
+    """
+    Vista para ocultar un chat específico para el usuario autenticado.
+
+    El usuario puede ocultar chats relacionados con su rol (arrendador o arrendatario).
+    
+    Args:
+        request: La solicitud HTTP que contiene los datos del usuario y el chat.
+        chat_id: ID del chat que se desea ocultar.
+
+    Returns:
+        redirect: Redirige a la vista de listado de chats después de ocultar el chat.
+    """
     chat = get_object_or_404(Chat, id=chat_id)
     user = request.user
  
@@ -282,6 +306,18 @@ def ocultar_chat(request, chat_id):
  
 @login_required
 def mostrar_chat(request, chat_id):
+    """
+    Vista para mostrar un chat previamente oculto por el usuario.
+
+    El usuario puede restaurar chats que previamente ocultó, ya sea como arrendador o arrendatario.
+    
+    Args:
+        request: La solicitud HTTP que contiene los datos del usuario y el chat.
+        chat_id: ID del chat que se desea restaurar.
+
+    Returns:
+        redirect: Redirige a la vista de listado de chats después de restaurar el chat.
+    """
     chat = get_object_or_404(Chat, id=chat_id)
     user = request.user
  
@@ -316,6 +352,17 @@ def restaurar_chat_view(request, chat_id):
  
 @login_required
 def rentas_arrendador_view(request):
+    """
+    Vista para mostrar las rentas activas del arrendador.
+
+    El arrendador puede filtrar las rentas por su estado (Activa, Finalizada, etc.) y ver los detalles de las herramientas rentadas.
+    
+    Args:
+        request: La solicitud HTTP que contiene los datos del usuario y los filtros de rentas.
+
+    Returns:
+        render: Renderiza la plantilla 'rentas_arrendador.html' con las rentas filtradas.
+    """
     # Verificamos que el usuario sea un arrendador
     arrendador = Arrendador.objects.filter(usuario=request.user).first()
     if not arrendador:
@@ -334,6 +381,17 @@ def rentas_arrendador_view(request):
  
 @login_required
 def rentas_arrendatario_view(request):
+    """
+    Vista para mostrar las rentas activas del arrendatario.
+
+    El arrendatario puede filtrar las rentas por su estado (Activa, Finalizada, etc.) y ver los detalles de las herramientas alquiladas.
+    
+    Args:
+        request: La solicitud HTTP que contiene los datos del usuario y los filtros de rentas.
+
+    Returns:
+        render: Renderiza la plantilla 'rentas_arrendatario.html' con las rentas filtradas.
+    """
     # Verificamos que el usuario sea un arrendatario
     arrendatario = Arrendatario.objects.filter(usuario=request.user).first()
     if not arrendatario:
@@ -386,6 +444,18 @@ from users.models import Notificacion
  
 @login_required
 def finalizar_renta_view(request, renta_id):
+    """
+    Vista para finalizar una renta por parte del arrendatario.
+
+    Esta vista permite al arrendatario finalizar una renta y crea una notificación para dejar una reseña.
+
+    Args:
+        request: La solicitud HTTP que contiene los datos del usuario y la renta a finalizar.
+        renta_id: ID de la renta que se desea finalizar.
+
+    Returns:
+        redirect: Redirige a la vista de rentas del arrendatario después de finalizar la renta.
+    """
     renta = get_object_or_404(Renta, id=renta_id, arrendatario__usuario=request.user)
 
     if renta.estado != "Activa":
@@ -408,6 +478,21 @@ def finalizar_renta_view(request, renta_id):
  
 @login_required
 def soporte_view(request):
+    """
+    Manuel villarreal #201024
+    Vista para gestionar los chats de soporte para los usuarios.
+
+    Si el usuario es un arrendatario o arrendador, se crea un chat de soporte, o se redirige a uno existente.
+    Si el usuario no tiene un perfil asociado, se muestra un mensaje de error.
+
+    Cuando el formulario es enviado, se crea o recupera un chat de soporte para el usuario y se redirige a la vista de ese chat.
+
+    Args:
+        request: La solicitud HTTP que contiene los datos del usuario.
+
+    Returns:
+        render: Renderiza la plantilla de soporte con preguntas frecuentes o redirige a la vista del chat de soporte si se creó uno.
+    """
     if request.method == 'POST':
         # Buscar o crear un chat de soporte para el usuario actual
         if hasattr(request.user, 'arrendatario'):
@@ -441,6 +526,20 @@ from users.models import Balance
  
 @login_required
 def finalizar_renta(request, renta_id):
+    """
+    Manuel villarreal #201024
+    Vista para finalizar una renta por parte del arrendatario.
+
+    Esta vista permite al arrendatario finalizar una renta y actualiza el estado de la renta a 'Finalizada'.
+    También se actualiza el balance del arrendador con el monto de la renta.
+
+    Args:
+        request: La solicitud HTTP que contiene los datos del usuario y la renta a finalizar.
+        renta_id: ID de la renta que se desea finalizar.
+
+    Returns:
+        redirect: Redirige a la página de inicio del arrendador después de finalizar la renta.
+    """
     print("Inicio del proceso para finalizar renta.")  # Log inicial
    
     # Obtener la renta
