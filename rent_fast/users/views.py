@@ -41,6 +41,21 @@ TEMPLATES = {
 
 @csrf_exempt
 def verify_identity(request):
+    """
+    Verifica la identidad de un usuario utilizando AWS Rekognition.
+    
+    Recibe dos imágenes a través de una solicitud POST:
+    1. Imagen capturada por el usuario.
+    2. Imagen INE (identificación oficial).
+    
+    Realiza la detección de rostros en ambas imágenes y compara los rostros para verificar si coinciden. Si las imágenes coinciden, devuelve una respuesta positiva. De lo contrario, devuelve un error indicando que no hay coincidencias.
+
+    Args:
+        request (HttpRequest): La solicitud que contiene las imágenes capturadas y del INE.
+
+    Returns:
+        JsonResponse: Respuesta JSON con el resultado de la comparación de los rostros.
+    """
     if request.method == 'POST':
         # Obtener imagen capturada en base64 y la imagen INE del formulario
         captured_image_data = request.POST.get('captured_image')
@@ -116,14 +131,37 @@ def verify_identity(request):
     return JsonResponse({"success": False, "error": "Método no permitido."})
 
 class RegisterWizard(SessionWizardView):
+    """
+    Vista para el asistente de registro de nuevos usuarios, manejando el proceso en pasos. 
+    Permite capturar la información del usuario, datos personales y dirección.
+    """
+    
     form_list = FORMS
     template_name = 'users/register_wizard.html'
     file_storage = file_storage
 
     def get_template_names(self):
+        """
+        Devuelve la plantilla correspondiente según el paso actual del formulario.
+
+        Returns:
+            list: Lista con el nombre de la plantilla para el paso actual.
+        """
         return [TEMPLATES[self.steps.current]]
 
         def post(self, *args, **kwargs):
+         """
+        Sobreescribe el método `post` para agregar validación en el paso de información personal.
+
+        Verifica que la identidad del usuario esté verificada antes de proceder con el siguiente paso.
+        
+        Args:
+            *args: Argumentos posicionales para el método original.
+            **kwargs: Argumentos keyword para el método original.
+
+        Returns:
+            HttpResponse: Respuesta HTTP después de procesar el formulario.
+        """
          response = super().post(*args, **kwargs)
         if self.steps.current == 'personal':
         # Verificar si la identidad ha sido confirmada
@@ -134,6 +172,17 @@ class RegisterWizard(SessionWizardView):
 
 
     def done(self, form_list, **kwargs):
+        """
+        Método que se ejecuta cuando todos los pasos del formulario han sido completados exitosamente.
+        Crea el usuario, el perfil correspondiente (Arrendador o Arrendatario), y la dirección.
+
+        Args:
+            form_list (list): Lista de formularios completados.
+            **kwargs: Argumentos adicionales, si los hay.
+
+        Returns:
+            HttpResponse: Redirección a la página de login después de completar el registro.
+        """  
         print("Entrando en el método done()")  # Confirmar que hemos llegado a done()
 
         # Obtener los datos de cada formulario en `form_list`
@@ -196,6 +245,14 @@ class RegisterWizard(SessionWizardView):
     def verify_ine(self, ine_image):
         """
         Verifica el documento INE utilizando la API de IDAnalyzer.
+        
+        Convierte la imagen INE a Base64 y la envía a la API de IDAnalyzer para su verificación.
+        
+        Args:
+            ine_image (file): Imagen del INE proporcionada por el usuario.
+
+        Returns:
+            bool: Retorna True si la verificación fue exitosa, False si hubo un error.
         """
         api_key = settings.IDANALYZER_API_KEY  
         api_url = 'https://api2.idanalyzer.com/quickscan'
@@ -305,6 +362,25 @@ from .models import Arrendador, Arrendatario  # Importa tus modelos correctos
 
 # Función para validar la fortaleza de la contraseña
 def validate_password_strength(password):
+    """
+    Valida la fortaleza de una contraseña.
+
+    Verifica que la contraseña cumpla con los siguientes requisitos:
+    - Al menos 8 caracteres de longitud.
+    - Contiene al menos una letra mayúscula.
+    - Contiene al menos una letra minúscula.
+    - Contiene al menos un número.
+    - Contiene al menos un carácter especial.
+
+    Parámetros:
+    password (str): La contraseña que se va a validar.
+
+    Excepciones:
+    - Lanza `ValidationError` si alguna de las condiciones no se cumple.
+
+    Retorna:
+    None: Si la contraseña es válida.
+    """
     errors = []
     if len(password) < 8:
         errors.append("La contraseña debe tener al menos 8 caracteres.")
@@ -322,6 +398,19 @@ def validate_password_strength(password):
 
 # Vista para solicitar el restablecimiento de contraseña
 def password_reset_request(request):
+    """
+    Vista que maneja la solicitud de restablecimiento de contraseña.
+
+    Permite que el usuario ingrese su correo electrónico para solicitar un restablecimiento de contraseña.
+    Si el correo pertenece a un **Arrendador** o **Arrendatario**, se genera un código de verificación y se envía por correo.
+
+    Parámetros:
+    request (HttpRequest): La solicitud HTTP del usuario.
+
+    Retorna:
+    HttpResponse: Redirige a la vista de verificación de código si la solicitud es exitosa, 
+                  o renderiza la vista actual con un mensaje de error en caso contrario.
+    """
     if request.method == 'POST':
         email = request.POST.get('email')
 
@@ -363,6 +452,19 @@ def password_reset_request(request):
 
 # Vista para verificar el código de restablecimiento
 def verify_reset_code(request):
+    """
+    Vista que verifica el código de restablecimiento de contraseña.
+
+    Permite al usuario ingresar el código de verificación enviado por correo.
+    Si el código es correcto, se redirige al usuario a la vista para establecer una nueva contraseña.
+
+    Parámetros:
+    request (HttpRequest): La solicitud HTTP del usuario.
+
+    Retorna:
+    HttpResponse: Redirige a la vista de establecimiento de nueva contraseña si el código es correcto,
+                  o muestra un mensaje de error si el código es inválido o ha expirado.
+    """
     email = request.session.get('reset_email')
     stored_code = request.session.get('reset_code')
 
@@ -379,6 +481,20 @@ def verify_reset_code(request):
 
 # Vista para establecer una nueva contraseña
 def set_new_password(request):
+    """
+    Vista para permitir al usuario establecer una nueva contraseña.
+
+    Valida la fortaleza de la nueva contraseña y actualiza la contraseña en el modelo `User` del
+    **Arrendador** o **Arrendatario** correspondiente. Luego, limpia la sesión y redirige al usuario
+    a la página de inicio de sesión.
+
+    Parámetros:
+    request (HttpRequest): La solicitud HTTP del usuario.
+
+    Retorna:
+    HttpResponse: Redirige a la página de inicio de sesión si la contraseña es cambiada correctamente,
+                  o muestra los errores de validación si no se cumple con los requisitos de seguridad.
+    """
     email = request.session.get('reset_email')
     user_type = request.session.get('user_type')
 
@@ -430,6 +546,18 @@ from django.urls import reverse
 
 @login_required
 def actualizar_datos_view(request):
+    """
+    Vista para actualizar los datos de usuario (información personal y dirección) del usuario autenticado.
+    Dependiendo del tipo de usuario (Arrendador o Arrendatario), se muestra el formulario adecuado para editar sus datos.
+    Se validan y actualizan los datos del formulario y luego se guarda la nueva información.
+
+    Parámetros:
+    request (HttpRequest): La solicitud HTTP del usuario.
+
+    Retorna:
+    HttpResponse: Redirige a la página de inicio del arrendador o arrendatario según el tipo de usuario,
+                  o renderiza la vista con los mensajes correspondientes en caso de errores.
+    """ 
     # Determina si el usuario es Arrendador o Arrendatario
     try:
         perfil = Arrendador.objects.get(usuario=request.user)
@@ -510,6 +638,13 @@ def update_address(request):
     """
     Vista para actualizar la dirección del usuario autenticado.
     Determina si el usuario es Arrendador o Arrendatario y permite actualizar los datos de su dirección.
+
+    Parámetros:
+    request (HttpRequest): La solicitud HTTP del usuario.
+
+    Retorna:
+    HttpResponse: Redirige al usuario después de guardar la nueva dirección o muestra un mensaje de error
+                  si el formulario no es válido.
     """
     try:
         # Determinar si el usuario es Arrendador
@@ -548,6 +683,16 @@ def update_address(request):
 
 @login_required
 def ver_notificaciones(request):
+    """
+    Vista para mostrar las notificaciones del usuario autenticado.
+    Las notificaciones son marcadas como leídas al momento de ser visualizadas.
+
+    Parámetros:
+    request (HttpRequest): La solicitud HTTP del usuario.
+
+    Retorna:
+    HttpResponse: Renderiza la página de notificaciones con las notificaciones correspondientes.
+    """
     notificaciones = Notificacion.objects.filter(usuario=request.user).order_by('-creado')
     notificaciones.update(leido=True)
 
@@ -570,6 +715,16 @@ import uuid
 from django.core.cache import cache
 
 def generate_qr_for_identity(request):
+    """
+    Genera un código QR temporal para la verificación de identidad del usuario.
+    El código contiene una URL para cargar la imagen de identidad del usuario, que incluye un ID temporal.
+
+    Parámetros:
+    request (HttpRequest): La solicitud HTTP del usuario.
+
+    Retorna:
+    HttpResponse: La imagen PNG del código QR generado.
+    """
     temp_id = uuid.uuid4()  # Genera un UUID temporal
     url = request.build_absolute_uri(reverse('upload_identity_image')) + f"?temp_id={temp_id}"
     qr = qrcode.make(url)
@@ -582,6 +737,16 @@ def generate_qr_for_identity(request):
 
 @csrf_exempt
 def upload_identity_image(request):
+    """
+    Permite al usuario subir una imagen de identidad (INE) para la verificación.
+    Utiliza AWS Rekognition para comparar las imágenes subidas con la imagen capturada desde el dispositivo del usuario.
+
+    Parámetros:
+    request (HttpRequest): La solicitud HTTP que contiene la imagen capturada y la imagen del INE.
+
+    Retorna:
+    JsonResponse: La respuesta que indica si la verificación fue exitosa o fallida.
+    """
     if request.method == 'GET':
         # Renderiza la página para capturar la foto desde el dispositivo
         return render(request, 'users/mobile_verification.html')
@@ -635,6 +800,16 @@ from django.shortcuts import render
 from tools.models import Tool
 
 def contratos_view(request):
+    """
+    Vista para mostrar los contratos disponibles o relacionados con el usuario.
+    Este ejemplo asume que se está mostrando una herramienta asociada a un contrato.
+
+    Parámetros:
+    request (HttpRequest): La solicitud HTTP del usuario.
+
+    Retorna:
+    HttpResponse: Renderiza la vista de los contratos asociados.
+    """
     # Supongamos que quieres pasar una herramienta específica
     tool = Tool.objects.first()  # O la forma en que obtienes la herramienta
     return render(request, 'users/contratos.html', {'tool': tool})
@@ -645,6 +820,16 @@ from django.conf import settings
 import requests
 
 def buscar_codigo_postal_calle(request):
+    """
+    Busca la ciudad y el estado a partir de un código postal y una calle, utilizando la API de Geocoding de Google Maps.
+
+    Parámetros:
+    request (HttpRequest): La solicitud HTTP que contiene el código postal y la calle a buscar.
+
+    Retorna:
+    JsonResponse: Contiene los resultados de la búsqueda de la ciudad y el estado si la API devuelve éxito,
+                  o un error si no se proporcionan los parámetros requeridos o si la API falla.
+    """
     codigo_postal = request.GET.get("codigo_postal")
     calle = request.GET.get("calle")
 
@@ -683,6 +868,12 @@ from .models import Arrendador, Arrendatario
 def gestionar_usuarios(request):
     """
     Vista para listar y gestionar los usuarios registrados (Arrendadores y Arrendatarios).
+
+    Parámetros:
+    request (HttpRequest): La solicitud HTTP del usuario.
+
+    Retorna:
+    HttpResponse: Renderiza la vista para gestionar usuarios, mostrando tanto a los arrendadores como arrendatarios.
     """
     arrendadores = Arrendador.objects.all()
     arrendatarios = Arrendatario.objects.all()
@@ -695,6 +886,17 @@ def gestionar_usuarios(request):
 
 @login_required
 def eliminar_usuario(request, usuario_id, tipo_usuario):
+    """
+    Vista para eliminar un usuario (Arrendador o Arrendatario) del sistema.
+
+    Parámetros:
+    request (HttpRequest): La solicitud HTTP del usuario.
+    usuario_id (int): El ID del usuario a eliminar.
+    tipo_usuario (str): El tipo de usuario a eliminar ('arrendador' o 'arrendatario').
+
+    Retorna:
+    HttpResponse: Redirige al listado de usuarios después de eliminar el usuario seleccionado, o muestra un mensaje de error si el tipo es incorrecto.
+    """
     """
     Vista para eliminar un usuario (Arrendador o Arrendatario).
     """
@@ -728,6 +930,17 @@ from .forms import EditarArrendadorForm, EditarArrendatarioForm
 from .models import Arrendador, Arrendatario
 @login_required
 def editar_usuario(request, usuario_id, tipo_usuario):
+    """
+    Vista para editar la información de un usuario (Arrendador o Arrendatario).
+
+    Parámetros:
+    request (HttpRequest): La solicitud HTTP del usuario.
+    usuario_id (int): El ID del usuario a editar.
+    tipo_usuario (str): El tipo de usuario a editar ('arrendador' o 'arrendatario').
+
+    Retorna:
+    HttpResponse: Renderiza el formulario de edición para el usuario o redirige después de guardar los cambios.
+    """
     if tipo_usuario == "arrendador":
         usuario = get_object_or_404(Arrendador, id=usuario_id)
         form_class = EditarArrendadorForm
@@ -751,6 +964,15 @@ from .models import Balance, Retiro
 
 @login_required
 def balance_view(request):
+    """
+    Vista para mostrar y gestionar el balance y los retiros de un arrendador.
+
+    Parámetros:
+    request (HttpRequest): La solicitud HTTP del usuario.
+
+    Retorna:
+    HttpResponse: Renderiza la vista del balance del arrendador y permite hacer retiros si el saldo es suficiente.
+    """
     arrendador = request.user.arrendador
     balance, created = Balance.objects.get_or_create(arrendador=arrendador)
     retiros = Retiro.objects.filter(arrendador=arrendador).order_by('-fecha')
