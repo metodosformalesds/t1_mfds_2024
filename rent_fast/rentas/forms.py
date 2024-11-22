@@ -14,7 +14,7 @@ class PreguntaForm(forms.ModelForm):
     - model: `Pregunta`
     - fields: `['pregunta_texto']`: Define que el formulario solo tiene el campo `pregunta_texto`.
     - labels: Proporciona una etiqueta personalizada para el campo `pregunta_texto`.
-    JesusQuiñonez
+    Juan Flores
     """
     class Meta:
         model = Pregunta
@@ -32,7 +32,7 @@ class RespuestaForm(forms.ModelForm):
     - model: `Respuesta`
     - fields: `['respuesta_texto']`: Define que el formulario solo tiene el campo `respuesta_texto`.
     - labels: Proporciona una etiqueta personalizada para el campo `respuesta_texto`.
-    JesusQuiñonez
+    Manuel villarreal
     """
     class Meta:
         model = Respuesta
@@ -66,7 +66,7 @@ from .models import Resena
 
 class ResenaForm(forms.ModelForm):
     """
-    Juan Carlos & Manuel Villareal & Daniel Esqueda
+    Juan Carlos & Manuel Villarreal & Daniel Esqueda
     Formulario para crear una nueva reseña de una herramienta arrendada.
 
     Este formulario permite a los usuarios dejar una reseña sobre la herramienta que han arrendado.
