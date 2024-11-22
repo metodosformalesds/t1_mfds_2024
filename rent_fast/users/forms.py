@@ -3,6 +3,13 @@ from django.contrib.auth.models import User
 from .models import Direccion, Arrendador, Arrendatario
  
 class RetiroForm(forms.Form):
+    """
+    Formulario para realizar un retiro de dinero.
+    Permite al usuario ingresar la cantidad que desea retirar.
+    
+    Campos:
+    - monto: Un campo decimal que representa la cantidad a retirar.
+    """
     monto = forms.DecimalField(
         max_digits=10,
         decimal_places=2,
