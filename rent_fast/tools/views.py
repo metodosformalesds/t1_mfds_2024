@@ -213,9 +213,6 @@ from django.db.models import Q
 def arrendatario_home(request):
     """
     Vista principal para los arrendatarios, con un sistema de búsqueda y filtrado de herramientas disponibles.
-
-    Devuelve:
-    - Herramientas disponibles, agrupadas por categorías, y un sistema de filtrado basado en precio y categoría.
     """ 
     search_query = request.GET.get('search', '')  # Captura el texto ingresado en el buscador
     precio_minimo = request.GET.get('precio_minimo', None)
@@ -230,7 +227,7 @@ def arrendatario_home(request):
         herramientas = herramientas.filter(
             Q(nombre__icontains=search_query) |
             Q(categoria__nombre__icontains=search_query) |
-            Q(arrendador__direccion__icontains=search_query)
+            Q(arrendador__direccion__colonia__icontains=search_query)  # Ajusta al campo real
         )
 
     if precio_minimo:
@@ -255,7 +252,6 @@ def arrendatario_home(request):
         'herramientas_por_categoria': herramientas_por_categoria,
         'search_query': search_query,
     })
-
 
 
 class ToolFormView(LoginRequiredMixin, generic.FormView):
@@ -346,22 +342,17 @@ class ToolDetailView(DetailView):
             ).exists()
         )
         
-        # Solo muestra el formulario de reseña si la renta fue finalizada y aún no hay reseña
-        if context['ha_alquilado_y_finalizado'] and not Resena.objects.filter(herramienta=tool, arrendatario=arrendatario).exists():
-            context['form'] = ResenaForm()
-        else:
-            context['form'] = None
-
-        # Información sobre disponibilidad
-        renta_activa = Renta.objects.filter(herramienta=tool, estado="Activa").first()
-        if renta_activa:
-            context['renta_activa'] = renta_activa
-
-        # Agregar preguntas y respuestas
-        context['preguntas'] = tool.preguntas.all()
-        context['pregunta_form'] = PreguntaForm()
+        # Verificar si el usuario ya dejó una reseña
+        context['ha_dejado_resena'] = (
+            arrendatario and Resena.objects.filter(
+                herramienta=tool,
+                arrendatario=arrendatario
+            ).exists()
+        )
 
         return context
+
+
 
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
