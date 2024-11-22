@@ -20,7 +20,20 @@ from django.db.models import Q
  
  
 def iniciar_pago_view(request):
+    """
+    Vista para iniciar el proceso de pago a través de PayPal.
+
+    Esta vista calcula el monto total del carrito del arrendatario, crea una transacción 
+    en PayPal y redirige al usuario para que complete el pago.
+
+    GET:
+        Redirige a PayPal para completar el pago.
+
+    POST:
+        No aplica.
+    """
     # Obtén el usuario y el total del carrito
+    
     arrendatario = getattr(request.user, 'arrendatario', None)
     carrito_items = Carrito.objects.filter(arrendatario=arrendatario)
     monto_total = sum(item.costo_total for item in carrito_items)
@@ -63,6 +76,17 @@ def iniciar_pago_view(request):
         return redirect("carrito")
  
 def pago_exitoso_view(request):
+    """
+    Vista para manejar la confirmación de un pago exitoso realizado a través de PayPal.
+
+    Esta vista ejecuta el pago, crea las rentas correspondientes y vacía el carrito del arrendatario.
+
+    GET:
+        Redirige a la página de confirmación de pago o muestra un error.
+
+    POST:
+        No aplica.
+    """
     payment_id = request.GET.get("paymentId")
     payer_id = request.GET.get("PayerID")
    
@@ -114,11 +138,33 @@ def pago_exitoso_view(request):
  
 def pago_confirmacion_view(request):
     """
+    Vista de confirmación de pago.
+
+    Muestra una página que confirma que el pago fue procesado correctamente.
+
+    GET:
+        Muestra la página de confirmación de pago.
+    
+    POST:
+        No aplica.
+    """
+    """
     Pantalla de confirmación de pago.
     """
     return render(request, 'rentas/pago_confirmacion.html')
        
 def pago_cancelado_view(request):
+    """
+    Vista cuando el pago es cancelado por el usuario.
+
+    Muestra un mensaje informando que el pago fue cancelado y redirige a la página del carrito.
+
+    GET:
+        Muestra un mensaje y redirige al carrito.
+    
+    POST:
+        No aplica.
+    """
     messages.info(request, "El pago fue cancelado.")
     return redirect("carrito")
  
@@ -126,6 +172,17 @@ from django.shortcuts import redirect
  
 @login_required
 def ver_chat_view(request, chat_id):
+    """
+    Vista para ver el contenido de un chat entre un arrendador y un arrendatario.
+
+    Verifica que el usuario tenga permiso para acceder al chat y muestra los mensajes.
+
+    GET:
+        Muestra los mensajes del chat especificado.
+
+    POST:
+        Permite a los usuarios enviar mensajes al chat.
+    """
     chat = get_object_or_404(Chat, id=chat_id)
  
     # Verificar si el usuario está autorizado para ver el chat
