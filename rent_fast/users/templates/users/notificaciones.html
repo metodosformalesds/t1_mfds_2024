@@ -10,6 +10,21 @@
     </a>
     <h2 class="text-3xl font-bold mb-6 text-center">Notificaciones</h2>
 
+    <!-- Filtros -->
+    <form method="get" class="flex items-center justify-center gap-4 mb-6">
+        <select name="tipo" class="border rounded-lg p-2">
+            <option value="">Todos los tipos</option>
+            <option value="herramienta" {% if request.GET.tipo == "herramienta" %}selected{% endif %}>Herramientas</option>
+            <option value="chat" {% if request.GET.tipo == "chat" %}selected{% endif %}>Chats</option>
+        </select>
+        <select name="estado" class="border rounded-lg p-2">
+            <option value="">Todos los estados</option>
+            <option value="leido" {% if request.GET.estado == "leido" %}selected{% endif %}>Leído</option>
+            <option value="no_leido" {% if request.GET.estado == "no_leido" %}selected{% endif %}>No leído</option>
+        </select>
+        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Filtrar</button>
+    </form>
+
     {% if notificaciones %}
         <div class="space-y-4">
             {% for notificacion in notificaciones %}
