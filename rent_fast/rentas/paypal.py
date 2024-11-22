@@ -9,6 +9,7 @@ paypalrestsdk.configure({
     "client_secret": settings.PAYPAL_CLIENT_SECRET,
 })
 """
+Daniel Esqueda
 Este archivo contiene la configuración inicial del SDK de PayPal para el sistema de pagos.
 
 El SDK de PayPal se configura con los detalles proporcionados en las configuraciones del proyecto, 

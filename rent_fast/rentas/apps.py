@@ -3,6 +3,7 @@ from django.apps import AppConfig
 
 class RentasConfig(AppConfig):
     """
+    Daniel Esqueda
     Configuración de la aplicación Rentas en Django.
     
     Esta clase hereda de `AppConfig` y permite personalizar la configuración de la aplicación

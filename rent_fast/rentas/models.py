@@ -7,6 +7,7 @@ from django.contrib.auth.models import User
 
 class Renta(models.Model):
     """
+    Daniel Esqueda
     Representa una renta de herramienta realizada por un arrendatario.
 
     Atributos:
@@ -48,6 +49,7 @@ class Renta(models.Model):
 
 class Chat(models.Model):
     """
+    Daniel Esqueda
     Representa una conversación entre un arrendador y un arrendatario.
 
     Atributos:
@@ -71,6 +73,7 @@ class Chat(models.Model):
 
 class Mensaje(models.Model):
     """
+    Daniel Esqueda
     Representa un mensaje enviado dentro de un chat entre un arrendador y un arrendatario.
 
     Atributos:
@@ -89,6 +92,7 @@ class Mensaje(models.Model):
 
 class Pregunta(models.Model):
     """
+    Daniel Esqueda
     Representa una pregunta realizada por un arrendatario sobre una herramienta.
 
     Atributos:
@@ -117,6 +121,7 @@ class Pregunta(models.Model):
 
 class Respuesta(models.Model):
     """
+    Daniel Esqueda
     Representa una respuesta dada por un arrendador a una pregunta de un arrendatario.
 
     Atributos:
@@ -135,6 +140,7 @@ class Respuesta(models.Model):
     
 class Resena(models.Model):
     """
+    Juan Carlos, Manuel Villareal
     Representa una reseña realizada por un arrendatario sobre una herramienta.
 
     Atributos:

@@ -173,6 +173,7 @@ from django.shortcuts import redirect
 @login_required
 def ver_chat_view(request, chat_id):
     """
+    
     Vista para ver el contenido de un chat entre un arrendador y un arrendatario.
 
     Verifica que el usuario tenga permiso para acceder al chat y muestra los mensajes.

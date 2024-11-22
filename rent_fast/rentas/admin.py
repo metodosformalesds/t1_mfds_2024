@@ -5,6 +5,7 @@ from .models import Chat, Mensaje
 
 class MensajeInline(admin.TabularInline):
     """
+    Daniel Esqueda
     Esta clase permite la inclusión de mensajes en el formulario de edición del chat.
     Los mensajes se gestionan como objetos relacionados (inline) dentro del modelo de Chat.
     
@@ -17,6 +18,7 @@ class MensajeInline(admin.TabularInline):
 
 class ChatAdmin(admin.ModelAdmin):
     """
+    Daniel Esqueda
     Esta clase personaliza la vista de administración del modelo Chat.
     
     Atributos:
@@ -30,6 +32,7 @@ class ChatAdmin(admin.ModelAdmin):
 
 class MensajeAdmin(admin.ModelAdmin):
     """
+    Daniel Esqueda
     Esta clase personaliza la vista de administración del modelo Mensaje.
     
     Atributos:
@@ -46,11 +49,13 @@ admin.site.register(Mensaje, MensajeAdmin)
 
 class RentaAdmin(admin.ModelAdmin):
     """
+    Daniel Esqueda
     Esta clase personaliza la vista de administración del modelo Renta.
     
     Atributos:
     - model: El modelo que será registrado en la administración de Django.
     - list_display: Define los campos que se mostrarán en la lista de rentas en la vista de administración.
+    Hecho por Danie
     """
     model = Renta
     list_display = ["herramienta"]
