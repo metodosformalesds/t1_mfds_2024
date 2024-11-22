@@ -140,7 +140,7 @@ class Respuesta(models.Model):
     
 class Resena(models.Model):
     """
-    Juan Carlos, Manuel Villareal
+    Juan Carlos, Manuel Villarreal
     Representa una reseña realizada por un arrendatario sobre una herramienta.
 
     Atributos:
