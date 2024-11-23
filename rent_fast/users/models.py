@@ -1,7 +1,11 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.timezone import now
- 
+"""
+Juan Carlos & Manuel Villarreal & Daniel Esqueda
+Se trabajo en conjunto
+"""
+
  
 class Direccion(models.Model):
     """

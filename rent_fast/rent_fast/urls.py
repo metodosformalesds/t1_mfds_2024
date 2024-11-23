@@ -1,18 +1,11 @@
 """
-URL configuration for rent_fast project.
+  Juan Carlos & Manuel Villarreal & Daniel Esqueda
+Configuración de URLs para el proyecto rent_fast.
 
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/5.1/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
+Este archivo se encarga de enrutar las URLs a las vistas correspondientes dentro del proyecto Django. A continuación se describe cada uno de los patrones de URL que se incluyen en este archivo.
+
+Los patrones de URL permiten que Django sepa qué función o clase ejecutar para cada solicitud entrante basada en la URL solicitada por el usuario. Esto se configura a través de la lista `urlpatterns`.
+
 """
 from django.contrib import admin
 from django.urls import path, include

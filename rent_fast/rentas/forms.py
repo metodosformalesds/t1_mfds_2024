@@ -5,6 +5,7 @@ from .models import Pregunta, Respuesta, Resena
 
 class PreguntaForm(forms.ModelForm):
     """
+     Juan Flores
     Formulario para crear una nueva pregunta.
 
     Este formulario permite a los usuarios enviar una pregunta relacionada con un tema específico.
@@ -14,7 +15,7 @@ class PreguntaForm(forms.ModelForm):
     - model: `Pregunta`
     - fields: `['pregunta_texto']`: Define que el formulario solo tiene el campo `pregunta_texto`.
     - labels: Proporciona una etiqueta personalizada para el campo `pregunta_texto`.
-    Juan Flores
+
     """
     class Meta:
         model = Pregunta
@@ -23,6 +24,7 @@ class PreguntaForm(forms.ModelForm):
 
 class RespuestaForm(forms.ModelForm):
     """
+      Manuel villarreal
     Formulario para crear una respuesta a una pregunta existente.
 
     Este formulario permite a los usuarios enviar una respuesta a una pregunta publicada.
@@ -32,7 +34,6 @@ class RespuestaForm(forms.ModelForm):
     - model: `Respuesta`
     - fields: `['respuesta_texto']`: Define que el formulario solo tiene el campo `respuesta_texto`.
     - labels: Proporciona una etiqueta personalizada para el campo `respuesta_texto`.
-    Manuel villarreal
     """
     class Meta:
         model = Respuesta

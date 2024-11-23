@@ -16,7 +16,11 @@ from users.models import Notificacion
 from django.contrib.auth.models import User
 from django.db.models import Q
  
- 
+"""
+Juan Carlos & Manuel Villarreal & Daniel Esqueda
+Se trabajo en conjunto
+"""
+
  
  
 def iniciar_pago_view(request):

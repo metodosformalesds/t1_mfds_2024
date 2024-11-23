@@ -2,7 +2,11 @@ from django import forms
 from django.contrib.auth.models import User
 from .models import Direccion, Arrendador, Arrendatario
 import re
- 
+"""
+Juan Carlos & Manuel Villarreal & Daniel Esqueda
+Se trabajo en conjunto
+"""
+
 class RetiroForm(forms.Form):
     """
     Formulario para realizar un retiro de dinero.

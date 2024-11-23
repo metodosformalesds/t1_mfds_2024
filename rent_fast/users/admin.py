@@ -5,6 +5,11 @@ from .models import Arrendador, Arrendatario, Direccion
 # Muestra la información de la Dirección en el Admin
 class DireccionAdmin(admin.ModelAdmin):
     """
+Juan Carlos & Manuel Villarreal & Daniel Esqueda
+Se trabajo en conjunto
+"""
+
+    """
     Configuración del panel de administración para el modelo Direccion.
 
     Esta clase personaliza la forma en que las direcciones se muestran en el panel de administración de Django,

@@ -1,5 +1,9 @@
 # views.py
 from django.views.decorators.csrf import csrf_exempt
+"""
+Juan Carlos & Manuel Villarreal & Daniel Esqueda
+Se trabajo en conjunto
+"""
 
 import requests
 from django.db.models import Q

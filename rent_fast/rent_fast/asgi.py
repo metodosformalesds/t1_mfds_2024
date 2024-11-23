@@ -1,10 +1,12 @@
 """
-ASGI config for rent_fast project.
+Configuración ASGI para el proyecto rent_fast.
 
-It exposes the ASGI callable as a module-level variable named ``application``.
+Este archivo expone el callable ASGI como una variable a nivel de módulo llamada ``application``. 
 
-For more information on this file, see
-https://docs.djangoproject.com/en/5.1/howto/deployment/asgi/
+ASGI (Asynchronous Server Gateway Interface) es el estándar para manejar conexiones asíncronas, como WebSockets, en aplicaciones Django modernas. La configuración de ASGI permite que Django maneje tanto solicitudes HTTP tradicionales como WebSockets para comunicación en tiempo real.
+
+Para más información sobre cómo configurar y desplegar aplicaciones con ASGI, consulta la documentación oficial de Django:
+    https://docs.djangoproject.com/es/5.1/howto/deployment/asgi/
 """
 
 import os

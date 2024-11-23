@@ -1,10 +1,10 @@
 """
-WSGI config for rent_fast project.
+Configuración de WSGI para el proyecto rent_fast.
 
-It exposes the WSGI callable as a module-level variable named ``application``.
+Este archivo expone el callable de WSGI como una variable a nivel de módulo llamada ``application``.
 
-For more information on this file, see
-https://docs.djangoproject.com/en/5.1/howto/deployment/wsgi/
+WSGI (Web Server Gateway Interface) es el estándar que define cómo un servidor web interactúa con las aplicaciones web en Python. 
+Este archivo es utilizado para desplegar la aplicación Django en servidores de producción.
 """
 
 import os

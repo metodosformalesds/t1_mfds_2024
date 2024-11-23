@@ -4,6 +4,7 @@ from .views import soporte_view,iniciar_pago_view,preguntas_sin_responder_view, 
 from django.conf import settings
 from django.conf.urls.static import static
 """
+  Juan Carlos & Manuel Villarreal & Daniel Esqueda
 Este archivo define las URL para las vistas de la aplicación de Rentas.
 
 A través de estas URL, los usuarios pueden acceder a diferentes funcionalidades, como el inicio de pagos, 
