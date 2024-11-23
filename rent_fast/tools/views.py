@@ -330,10 +330,17 @@ class ToolDetailView(DetailView):
         user = self.request.user
         arrendatario = getattr(user, 'arrendatario', None)
 
-        # Obtener las reseñas de la herramienta
+        # Indicar si la herramienta está en el carrito del usuario
+        if arrendatario:
+            context['en_carrito'] = Carrito.objects.filter(
+                herramienta=tool,
+                arrendatario=arrendatario
+            ).exists()
+        else:
+            context['en_carrito'] = False
+
+        # Información existente (rentas activas, reseñas, etc.)
         context['resenas'] = Resena.objects.filter(herramienta=tool)
-        
-        # Verificar si el usuario ha alquilado y finalizado la herramienta
         context['ha_alquilado_y_finalizado'] = (
             arrendatario and Renta.objects.filter(
                 herramienta=tool,
@@ -341,14 +348,14 @@ class ToolDetailView(DetailView):
                 estado="Finalizada"
             ).exists()
         )
-        
-        # Verificar si el usuario ya dejó una reseña
-        context['ha_dejado_resena'] = (
-            arrendatario and Resena.objects.filter(
-                herramienta=tool,
-                arrendatario=arrendatario
-            ).exists()
-        )
+        context['form'] = ResenaForm() if context['ha_alquilado_y_finalizado'] else None
+
+        renta_activa = Renta.objects.filter(herramienta=tool, estado="Activa").first()
+        if renta_activa:
+            context['renta_activa'] = renta_activa
+
+        context['preguntas'] = tool.preguntas.all()
+        context['pregunta_form'] = PreguntaForm()
 
         return context
 

@@ -136,11 +136,6 @@ def verify_identity(request):
     return JsonResponse({"success": False, "error": "Método no permitido."})
 
 class RegisterWizard(SessionWizardView):
-    """
-    Vista para el asistente de registro de nuevos usuarios, manejando el proceso en pasos. 
-    Permite capturar la información del usuario, datos personales y dirección.
-    """
-    
     form_list = FORMS
     template_name = 'users/register_wizard.html'
     file_storage = file_storage
@@ -148,49 +143,32 @@ class RegisterWizard(SessionWizardView):
     def get_template_names(self):
         """
         Devuelve la plantilla correspondiente según el paso actual del formulario.
-
-        Returns:
-            list: Lista con el nombre de la plantilla para el paso actual.
         """
         return [TEMPLATES[self.steps.current]]
 
-        def post(self, *args, **kwargs):
-         """
-        Sobreescribe el método `post` para agregar validación en el paso de información personal.
-
-        Verifica que la identidad del usuario esté verificada antes de proceder con el siguiente paso.
-        
-        Args:
-            *args: Argumentos posicionales para el método original.
-            **kwargs: Argumentos keyword para el método original.
-
-        Returns:
-            HttpResponse: Respuesta HTTP después de procesar el formulario.
+    def post(self, *args, **kwargs):
         """
-         response = super().post(*args, **kwargs)
-        if self.steps.current == 'personal':
-        # Verificar si la identidad ha sido confirmada
-            if not self.request.session.get('identity_verified', False):
-                messages.error(self.request, "Por favor, verifica tu identidad antes de continuar.")
-            return self.render_to_response(self.get_context_data(form=self.get_form()))
-        return response
+        Sobreescribe el método `post` para agregar validación en el paso de información personal.
+        """
+        step = self.steps.current
+        response = super().post(*args, **kwargs)
 
+        if step == 'personal':
+            form = self.get_form(data=self.request.POST, files=self.request.FILES)
+            if not form.is_valid():
+                messages.error(self.request, "Por favor, verifica los campos del formulario.")
+                return self.render_to_response(self.get_context_data(form=form))
+            profile_picture = form.cleaned_data.get('profile_picture')
+            if not profile_picture:
+                messages.error(self.request, "La foto de perfil es obligatoria.")
+                return self.render_to_response(self.get_context_data(form=form))
+
+        return response
 
     def done(self, form_list, **kwargs):
         """
-        Método que se ejecuta cuando todos los pasos del formulario han sido completados exitosamente.
-        Crea el usuario, el perfil correspondiente (Arrendador o Arrendatario), y la dirección.
-
-        Args:
-            form_list (list): Lista de formularios completados.
-            **kwargs: Argumentos adicionales, si los hay.
-
-        Returns:
-            HttpResponse: Redirección a la página de login después de completar el registro.
-        """  
-        print("Entrando en el método done()")  # Confirmar que hemos llegado a done()
-
-        # Obtener los datos de cada formulario en `form_list`
+        Método obligatorio que maneja la finalización del asistente.
+        """
         user_data = form_list[0].cleaned_data
         personal_data = form_list[1].cleaned_data
         address_data = form_list[2].cleaned_data
@@ -198,10 +176,9 @@ class RegisterWizard(SessionWizardView):
         # Crear el usuario
         user = User.objects.create_user(
             username=user_data['username'],
-            email=user_data['email'],  # Asegúrate de que este campo proviene del formulario correctamente
-            password=user_data['password1'],
+            email=user_data['email'],
+            password=user_data['password1']
         )
-        print("Usuario creado con correo:", user.email)  # Línea de depuración para verificar el correo
 
         # Crear la dirección
         direccion = Direccion.objects.create(
@@ -209,42 +186,40 @@ class RegisterWizard(SessionWizardView):
             ciudad=address_data['ciudad'],
             estado=address_data['estado'],
             colonia=address_data.get('colonia', ''),
-            codigo_postal=address_data['codigo_postal'],
+            codigo_postal=address_data['codigo_postal']
         )
-        print("Dirección creada:", direccion)
 
-        # Crear el perfil (Arrendador o Arrendatario)
-        profile_picture = self.storage.extra_data.get('profile_picture')
+        # Crear perfil
         role = personal_data['role']
-        
+        profile_picture = personal_data.get('profile_picture')
+
         if role == 'arrendador':
             Arrendador.objects.create(
                 usuario=user,
                 nombre=personal_data['nombre'],
                 apellidos=personal_data['apellidos'],
                 telefono=personal_data['telefono'],
-                correo=user.email,  # Asegúrate de que estamos guardando el correo en el perfil
+                correo=user.email,
                 ine_image=personal_data['ine_image'],
-                direccion=direccion,
-                profile_picture=profile_picture
+                profile_picture=profile_picture,
+                direccion=direccion
             )
-            print("Perfil de Arrendador creado con correo:", user.email)
         else:
             Arrendatario.objects.create(
                 usuario=user,
                 nombre=personal_data['nombre'],
                 apellidos=personal_data['apellidos'],
                 telefono=personal_data['telefono'],
-                correo=user.email,  # Asegúrate de que estamos guardando el correo en el perfil
+                correo=user.email,
                 ine_image=personal_data['ine_image'],
-                direccion=direccion,
-                profile_picture=profile_picture
+                profile_picture=profile_picture,
+                direccion=direccion
             )
-            print("Perfil de Arrendatario creado con correo:", user.email)
 
+        # Mensaje de éxito y redirección
         messages.success(self.request, "Registro completado con éxito.")
-        print("Registro completado. Redirigiendo al login.")
         return redirect('login')
+
 
 
     def verify_ine(self, ine_image):

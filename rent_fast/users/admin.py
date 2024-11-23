@@ -182,3 +182,31 @@ class ArrendatarioAdmin(admin.ModelAdmin):
 admin.site.register(Direccion, DireccionAdmin)
 admin.site.register(Arrendador, ArrendadorAdmin)
 admin.site.register(Arrendatario, ArrendatarioAdmin)
+
+from .models import Balance, Retiro  # Importa los modelos Balance y Retiro
+
+# Configuración para el modelo Balance
+class BalanceAdmin(admin.ModelAdmin):
+    """
+    Configuración del panel de administración para el modelo Balance.
+
+    Esta clase muestra información del saldo total de cada arrendador,
+    y permite buscar balances por el nombre del arrendador.
+    """
+    list_display = ('arrendador', 'saldo_total')
+    search_fields = ('arrendador__nombre', 'arrendador__usuario__username')
+
+# Configuración para el modelo Retiro
+class RetiroAdmin(admin.ModelAdmin):
+    """
+    Configuración del panel de administración para el modelo Retiro.
+
+    Esta clase permite visualizar y filtrar los retiros realizados por los arrendadores.
+    """
+    list_display = ('arrendador', 'monto', 'fecha')
+    search_fields = ('arrendador__nombre', 'arrendador__usuario__username')
+    list_filter = ('fecha',)
+
+# Registra los modelos Balance y Retiro en el panel de admin
+admin.site.register(Balance, BalanceAdmin)
+admin.site.register(Retiro, RetiroAdmin)
